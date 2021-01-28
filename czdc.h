@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSharedMemory>
 #include <QDebug>
+#include <QByteArray>
 
 #define KEY "SmartCity 2021"
 
@@ -16,41 +17,42 @@
 
 //Structuration des données
 
+typedef enum couleurs {
+  ETEINT,
+  ROUGE,
+  VERT,
+  BLEU
+} T_COULEURS;
+
 typedef struct parking{
+    uint8_t addr;
     char affLigneSup[17];
     char affLigneInf[17];
-    uint8_t ordres;
-    uint8_t etats;
-
+    T_COULEURS couleurs;// Couleurs de l'écran
+    uint8_t ordres;// Monter, descendre
+    uint8_t etats;// Barrière montée, descendue, en cours
     uint8_t cptPlaces;
+    uint8_t rfid[5];// RFID des clients
 } T_PARKING;
 
 typedef struct eclairage{
-    bool secteur;
-    bool pourcentage;
-    bool eco;
-    bool pieton;
-    bool detect;
-    bool defect;
+    uint8_t addr;
+    uint8_t consigne; // 0% / 50% / 100%
+    bool presence;// Soit présent soit absent
+    bool cellule;// Soit jour soit nuit
 } T_ECLAIRAGE;
 
 typedef struct intersection{
-
+    uint8_t addr;
+    uint8_t boutonPieton; // 8 appels piétons
+    uint8_t mode;// normal, orange clignotant, manuel
+    uint8_t ordres;// bit 01 : voie 1 / bit 23 : voie 2 (00 : éteint / 01 : Vert / 02 : Orange / 03 : Rouge)
 } T_INTERSECTION;
-
-typedef enum couleurs {
-    ETEINT,
-    ROUGE,
-    VERT,
-    BLEU
-} T_COULEURS;
-
 
 typedef struct zdc {
     T_PARKING parking;
-    T_ECLAIRAGE eclairage;
+    T_ECLAIRAGE *eclairage;
     T_INTERSECTION intersection;
-    T_COULEURS couleurs;
 } T_ZDC;
 
 // ZDC : Zone De Données Communes
@@ -61,8 +63,8 @@ class CZdc : public QSharedMemory
 public:
     CZdc();
     ~CZdc();
+
     void setEtatBarriers(bool state, int msk);
-    void getDetect();
 
 private:
     T_ZDC *_adrZdc;
@@ -70,7 +72,6 @@ private:
 
 public slots:
     void on_sigErreur();
-    void on_sigUpdate();
 
 signals:
     //void sig_erreur(QString mess);
@@ -78,4 +79,3 @@ signals:
 };
 
 #endif // CZDC_H
-
