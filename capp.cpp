@@ -6,6 +6,7 @@ CApp::CApp(QObject *parent) : QObject(parent)
     connect(_serv, &CServerTcp::sig_erreur, this, &CApp::on_erreur);
     connect(_serv, &CServerTcp::sig_info, this, &CApp::on_info);
 
+
     //_zdc = new CZdc();  // accès à la mémoire partagée commune
     //_zdc->setEtatApp(ETAT_APP_ATTENTE_CONNEXION);  // en attente de connexion d'un client
 
@@ -26,12 +27,3 @@ void CApp::on_info(QString mess)
     emit sig_info(mess);  // remontée des erreurs à l'IHM
 }
 
-void CApp::on_newClient(QTcpSocket *client)
-{
-    _gthc = new QThread();
-    CGestionClient *_client = new CGestionClient(client);
-    //connect
-    _client->moveToThread(_gthc);
-    _gthc->start();//lance le thread
-    emit sig_goServer();//lance le travail du thread
-}

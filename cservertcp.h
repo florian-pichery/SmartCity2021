@@ -1,11 +1,14 @@
 #ifndef CSERVERTCP_H
 #define CSERVERTCP_H
 
+
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QDebug>
+#include <QThread>
 
+#include "cgestionclient.h"
 
 class CServerTcp : public QTcpServer
 {
@@ -17,22 +20,25 @@ public:
     int emettreVersClients(QString mess);
 
 private:
-    int init();
+    //variables
     quint16 m_noPort;
-    QList<QTcpSocket *> listeClients;  // liste des clients connectés
+    QList<QTcpSocket *> listeClients;//liste des clients connectés
+
+    //objects
+    CGestionClient *_client;
+    QThread *_gthc;//gestion Thread Client
+
+    //méthodes
+    int init();
+
 
 signals:
     void sig_erreur(QString mess);
     void sig_info(QString mess);
-    void sig_newClient(QTcpSocket *client);
 
 public slots:
     void onNewConnectionClient();
     void onDisconnectedClient();
-    void onErreurReseau(QAbstractSocket::SocketError err);
-    void onReadyReadClient();
-
-
 };
 
 #endif // CSERVERTCP_H

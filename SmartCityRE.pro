@@ -31,18 +31,14 @@ SOURCES += \
     capp.cpp \
     cservertcp.cpp \
     cgestionclient.cpp \
-    cmodbustcp.cpp \
-    czdc.cpp \
-    cgestionmaquette.cpp
+    cmodbustcp.cpp
 
 HEADERS += \
         cihm.h \
     capp.h \
     cservertcp.h \
     cgestionclient.h \
-    cmodbustcp.h \
-    czdc.h \
-    cgestionmaquette.h
+    cmodbustcp.h
 
 FORMS += \
         cihm.ui

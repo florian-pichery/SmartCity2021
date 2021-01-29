@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QDebug>
+
 #include "cmodbustcp.h"
 
 class CGestionClient: public QObject
@@ -11,12 +13,14 @@ class CGestionClient: public QObject
 
 public:
     CGestionClient(QObject *parent = nullptr, QTcpSocket *client = nullptr);
+    ~CGestionClient();
 
-private slots :
+public slots :
     void on_readyRead();
+    void on_writeToClients(QString req);
 
-signals:
 
+signals :
     void sig_erreur(QString mess);
     void sig_info(QString mess);
 
