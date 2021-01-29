@@ -21,11 +21,22 @@ CZdc::~CZdc()
 
 void CZdc::setEtatBarriers(bool state, int msk)
 {
-    (state ? _adrZdc->parking.etats|=msk : _adrZdc->parking.etats &=~msk);
+    lock();
+        (state ? _adrZdc->parking.etats|=msk : _adrZdc->parking.etats &=~msk);
+    unlock();
 }
 
-void CZdc::getDetect()
+void CZdc::clear()
+{
+    // RAZ de toutes les informations
+    lock();
+        bzero(_adrZdc, sizeof(T_ZDC));
+    unlock();
+}
+
+void CZdc::setOrdreBarriers(QString ordre)
 {
 
 }
+
 

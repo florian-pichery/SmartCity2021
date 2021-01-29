@@ -5,6 +5,7 @@
 #include <QSharedMemory>
 #include <QDebug>
 #include <QByteArray>
+#include "cconfig.cpp"
 
 #define KEY "SmartCity 2021"
 
@@ -25,7 +26,7 @@ typedef enum couleurs {
 } T_COULEURS;
 
 typedef struct parking{
-    uint8_t addr;
+    uint8_t addr[Addr_park];//adresse I2C
     char affLigneSup[17];
     char affLigneInf[17];
     T_COULEURS couleurs;// Couleurs de l'écran
@@ -51,7 +52,7 @@ typedef struct intersection{
 
 typedef struct zdc {
     T_PARKING parking;
-    T_ECLAIRAGE *eclairage;
+    T_ECLAIRAGE *eclairage;//possibilité d'ajouter un grand nombre de cartes d'éclairage
     T_INTERSECTION intersection;
 } T_ZDC;
 
@@ -64,7 +65,22 @@ public:
     CZdc();
     ~CZdc();
 
+//Barrières
     void setEtatBarriers(bool state, int msk);
+    void setOrdreBarriers(QString ordre);
+    void setCpt(uint8_t places);
+    void setRfid(uint8_t rfid[5]);
+    void getRfid(uint8_t rfid[5]);
+
+//Eclairage
+    void setConsigne();
+    void getPresence();
+    void getCellule();
+
+//Intersection
+    void getBoutonPieton();
+    void setMode();
+    void setOrdres();
 
 private:
     T_ZDC *_adrZdc;
@@ -72,9 +88,10 @@ private:
 
 public slots:
     void on_sigErreur();
+    void on_newData();
 
 signals:
-    //void sig_erreur(QString mess);
+    void sig_erreur(QString mess);
     void sig_update();
 };
 
