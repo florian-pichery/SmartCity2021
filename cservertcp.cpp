@@ -28,15 +28,18 @@ int CServerTcp::init()
 void CServerTcp::onNewConnectionClient()
 {
 
-    QTcpSocket *newClient = this->nextPendingConnection();
+
+    QTcpSocket *newClient;
+    newClient = nextPendingConnection();
 
     _gthc = new QThread();
     _client = new CGestionClient(newClient);
     //connect
     _client->moveToThread(_gthc);
     _gthc->start();//lance le thread
-    connect(newClient,&QTcpSocket::readyRead,_client,&CGestionClient::on_readyRead);
-    connect(newClient, SIGNAL(disconnected()), this, SLOT(onDisconnectedClient()));
+    connect(newClient, &QTcpSocket::disconnected, newClient, &QTcpSocket::deleteLater);
+    connect(newClient, &QTcpSocket::disconnected, this, &CServerTcp::onDisconnectedClient);
+
 
     qDebug() << "Nouvelle connexion : " << newClient;
     emit sig_info("new client");
@@ -48,13 +51,11 @@ void CServerTcp::onNewConnectionClient()
 void CServerTcp::onDisconnectedClient()
 {
     QTcpSocket *client = (QTcpSocket *)sender(); // Déterminer quel client ?
-    //emit sigEvenementServeur("DEC");
     listeClients.removeOne(client);
-    delete client;
-    //emit sigMaJClients(listeClients);
-    //detruire l'object _client correspondant avec son adresse ?
+    /*if (_client->isConnected() == QAbstractSocket::UnconnectedState) {
+        _client
+    }*/
     //detruire le thread correspondant
-
     //la deconnection provoque l'arret du programme
 }
 

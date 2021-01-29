@@ -14,10 +14,11 @@ class CGestionClient: public QObject
 public:
     CGestionClient(QObject *parent = nullptr, QTcpSocket *client = nullptr);
     ~CGestionClient();
+    bool isConnected();
 
 public slots :
     void on_readyRead();
-    void on_writeToClients(QString req);
+    void on_writeToClients(QByteArray req);
 
 
 signals :
@@ -27,7 +28,7 @@ signals :
 private:
 
     CModbusTcp *_modbus;
-    QTcpSocket *_client;
+    QTcpSocket *_sock;
 };
 
 #endif // CGESTIONCLIENT_H
