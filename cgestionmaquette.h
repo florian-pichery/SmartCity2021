@@ -16,7 +16,7 @@ class CGestionMaquette : public QObject
     Q_OBJECT
 
 public:
-    CGestionMaquette();
+    CGestionMaquette(CZdc *zdc);
     ~CGestionMaquette();
 
 private:

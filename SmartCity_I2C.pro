@@ -33,7 +33,8 @@ SOURCES += \
     ceclairage.cpp \
     czdc.cpp \
     ci2c.cpp \
-    cecran.cpp
+    cecran.cpp \
+    cconfig.cpp
 
 HEADERS += \
         cihmi2c.h \
@@ -43,7 +44,8 @@ HEADERS += \
     ceclairage.h \
     czdc.h \
     ci2c.h \
-    cecran.h
+    cecran.h \
+    cconfig.h
 
 FORMS += \
         cihmi2c.ui

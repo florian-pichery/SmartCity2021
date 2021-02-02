@@ -13,6 +13,7 @@ public:
 signals:
 
 public slots:
+    void on_OrderBarrier(uint8_t ordres);
 };
 
 #endif // CPARKING_H

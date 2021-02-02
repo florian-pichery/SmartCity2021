@@ -18,14 +18,6 @@ CZdc::~CZdc()
     detach();
 }
 
-
-void CZdc::setEtatBarriers(bool state, int msk)
-{
-    lock();
-        (state ? _adrZdc->parking.etats|=msk : _adrZdc->parking.etats &=~msk);
-    unlock();
-}
-
 void CZdc::clear()
 {
     // RAZ de toutes les informations
@@ -34,9 +26,90 @@ void CZdc::clear()
     unlock();
 }
 
-void CZdc::setOrdreBarriers(QString ordre)
+void CZdc::setBarriersState(bool state, int msk)
 {
+    lock();
+        (state ? _adrZdc->parking.etats|=msk : _adrZdc->parking.etats &=~msk);
+    unlock();
+}
+
+void CZdc::setBarriersOrder(uint8_t parkOrder)
+{
+    lock();
+
+    unlock();
+
+    emit sig_OrderBarrier(parkOrder & 0x0F);// Masque les acquittements des ordres
+}
+
+void CZdc::setCpt(uint8_t places)
+{
+    lock();
+        places = 8;
+    unlock();
+}
+
+void CZdc::setRfid(uint8_t rfid[5])
+{
+    lock();
+
+    unlock();
+
+    emit sig_RFID(rfid);
+}
+
+void CZdc::getRfid(uint8_t rfid[5])
+{
+    lock();
+
+    unlock();
+}
+
+void CZdc::setConsigne(uint8_t consigne)
+{
+    lock();
+
+    unlock();
+
+    emit sig_Consigne(consigne);
+}
+
+void CZdc::getPresence(bool presence)
+{
+    lock();
+
+    unlock();
 
 }
 
+void CZdc::getCellule(bool cellule)
+{
+    lock();
 
+    unlock();
+}
+
+void CZdc::getBoutonPieton(uint8_t boutonPieton)
+{
+    lock();
+
+    unlock();
+}
+
+void CZdc::setMode(uint8_t mode)
+{
+    lock();
+
+    unlock();
+
+    emit sig_Mode(mode);
+}
+
+void CZdc::setOrdres(uint8_t interOrdre)
+{
+    lock();
+
+    unlock();
+
+    emit sig_OrderInter(interOrdre);
+}

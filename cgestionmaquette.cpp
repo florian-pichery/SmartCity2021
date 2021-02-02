@@ -1,14 +1,16 @@
 #include "cgestionmaquette.h"
 
-CGestionMaquette::CGestionMaquette()
+CGestionMaquette::CGestionMaquette(CZdc *zdc)
 {
-    _zdc = new CZdc;
+    _zdc = zdc;
     _ecran = nullptr;
     _inter = nullptr;
     _park = nullptr;
     _eclair = nullptr;
 
-    _zdc->setEtatBarriers(true, BEM);
+
+
+    _zdc->setBarriersState(true, BEM);
 }
 
 CGestionMaquette::~CGestionMaquette()
