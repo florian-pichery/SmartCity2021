@@ -7,12 +7,13 @@
 
 #include "cmodbustcp.h"
 
+
 class CGestionClient: public QObject
 {
     Q_OBJECT
 
 public:
-    CGestionClient(QObject *parent = nullptr, QTcpSocket *client = nullptr);
+    CGestionClient( QTcpSocket *client = nullptr);
     ~CGestionClient();
     bool isConnected();
 
@@ -27,6 +28,7 @@ signals :
 
 private:
 
+    char ch[30];
     CModbusTcp *_modbus;
     QTcpSocket *_sock;
 };

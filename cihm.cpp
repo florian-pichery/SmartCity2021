@@ -1,5 +1,7 @@
+#include <QDebug>
 #include "cihm.h"
 #include "ui_cihm.h"
+
 
 CIhm::CIhm(QWidget *parent) :
     QMainWindow(parent),
@@ -23,10 +25,12 @@ CIhm::~CIhm()
 void CIhm::on_erreur(QString mess)
 {
     ui->teErreurs->append(mess);
+    qDebug() << mess ;
 }
 
 void CIhm::on_info(QString mess)
 {
     ui->teSuivi->append(mess);
+    qDebug() << mess ;
 }
 

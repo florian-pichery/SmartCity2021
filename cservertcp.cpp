@@ -1,7 +1,6 @@
 #include "cservertcp.h"
 
-CServerTcp::CServerTcp(QObject *parent, quint16 noPort) :
-    QTcpServer(parent)
+CServerTcp::CServerTcp(QObject *parent, quint16 noPort): QTcpServer (parent)
 {
     m_noPort = noPort;
     init();
@@ -10,10 +9,18 @@ CServerTcp::CServerTcp(QObject *parent, quint16 noPort) :
 CServerTcp::~CServerTcp()
 {
     // destruction optionnelle car déjà pris en charge par le serveur
-    for (int i=0 ; i<listeClients.size() ; i++) {
-        listeClients.at(i)->close();
-        delete listeClients.at(i);
+    for (int i=0 ; i<_listeClients.size() ; i++) {
+        if (_listeGestion.at(i)->isConnected()){
+            delete (_listeClients.at(i));
+            _listeThread.at(i)->quit();
+            _listeThread.at(i)->wait();
+        }
     } // for i
+
+    _listeClients.clear();
+    _listeGestion.clear();
+    _listeThread.clear();
+    sig_info("clients détruits");
 }
 
 int CServerTcp::init()
@@ -27,8 +34,6 @@ int CServerTcp::init()
 
 void CServerTcp::onNewConnectionClient()
 {
-
-
     QTcpSocket *newClient;
     newClient = nextPendingConnection();
 
@@ -37,25 +42,45 @@ void CServerTcp::onNewConnectionClient()
     //connect
     _client->moveToThread(_gthc);
     _gthc->start();//lance le thread
+
     connect(newClient, &QTcpSocket::disconnected, newClient, &QTcpSocket::deleteLater);
     connect(newClient, &QTcpSocket::disconnected, this, &CServerTcp::onDisconnectedClient);
+    connect(newClient, &QTcpSocket::disconnected, _client, &CGestionClient::deleteLater);
+    connect(_gthc, &QThread::finished, _client, &CGestionClient::deleteLater);
+
+    connect(_client, &CGestionClient::sig_info,this , &CServerTcp::on_info);
+    connect(_client, &CGestionClient::sig_erreur, this, &CServerTcp::on_erreur);
 
 
-    qDebug() << "Nouvelle connexion : " << newClient;
-    emit sig_info("new client");
-    listeClients.append(newClient);  // sauve l'adresse de l'objet dans la liste
-    //ici on peux creer émettre un signal pour créer un thread qui s'occupera du client
-
+    sprintf(ch,"CServeurTcp::onNewConnectionClient, Nouvelle connexion : %p",static_cast<void*>(newClient));
+    emit sig_info(ch);
+    _listeClients.append(newClient);  // sauve l'adresse de l'objet dans la liste
+    _listeGestion.append(_client);
+    _listeThread.append(_gthc);
 }
 
 void CServerTcp::onDisconnectedClient()
 {
-    QTcpSocket *client = (QTcpSocket *)sender(); // Déterminer quel client ?
-    listeClients.removeOne(client);
-    /*if (_client->isConnected() == QAbstractSocket::UnconnectedState) {
-        _client
-    }*/
-    //detruire le thread correspondant
-    //la deconnection provoque l'arret du programme
+    for (int i=0 ; i<_listeClients.size() ; i++) {
+        if (_listeGestion.at(i)->isConnected() == QAbstractSocket::UnconnectedState) {
+            //delete listeClient.at(i); // effacé par deleteLater()
+            _listeClients.removeAt(i);
+            _listeGestion.removeAt(i);
+            _listeThread.removeAt(i);
+            emit sig_info("CServeurTcp::on_disconnected : Effacement d'un client");
+            i=0;
+            continue;  // recommence la boucle avec i=0
+        } // if connected
+    } // for
+}
+
+void CServerTcp::on_erreur(QString mess)
+{
+    emit sig_erreur(mess);
+}
+
+void CServerTcp::on_info(QString mess)
+{
+    emit sig_info(mess);
 }
 
