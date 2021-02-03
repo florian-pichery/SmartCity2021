@@ -36,80 +36,103 @@ void CZdc::setBarriersState(bool state, int msk)
 void CZdc::setBarriersOrder(uint8_t parkOrder)
 {
     lock();
-
+        parkOrder = _adrZdc->parking.parkOrdre;
     unlock();
 
     emit sig_OrderBarrier(parkOrder & 0x0F);// Masque les acquittements des ordres
 }
 
-void CZdc::setCpt(uint8_t places)
+uint8_t CZdc::setCpt()
 {
+    uint8_t places;
     lock();
-        places = 8;
+        places = _adrZdc->parking.cptPlaces;
     unlock();
+    return places;
 }
 
 void CZdc::setRfid(uint8_t rfid[5])
 {
     lock();
-
+        rfid = _adrZdc->parking.rfid;
     unlock();
 
     emit sig_RFID(rfid);
 }
 
-void CZdc::getRfid(uint8_t rfid[5])
+void CZdc::setLigneSup(char liSup[17])
 {
+    lock();
+        liSup = _adrZdc->parking.affLigneSup;
+    unlock();
+}
+
+void CZdc::setLigneInf(char liInf[17])
+{
+    lock();
+        liInf = _adrZdc->parking.affLigneInf;
+    unlock();
+}
+
+uint8_t CZdc::getRfid()
+{
+    uint8_t rfid[5];
     lock();
 
     unlock();
+    return *rfid;// à faire checker par le prof pour cette méthode
 }
 
 void CZdc::setConsigne(uint8_t consigne)
 {
     lock();
-
+        consigne = _adrZdc->eclairage->consigne;
     unlock();
 
     emit sig_Consigne(consigne);
 }
 
-void CZdc::getPresence(bool presence)
+bool CZdc::getPresence()
 {
+    bool presence;
     lock();
-
+        presence = _adrZdc->eclairage->presence;
     unlock();
-
+    return presence;
 }
 
-void CZdc::getCellule(bool cellule)
+bool CZdc::getCellule()
 {
+    bool cellule;
     lock();
-
+        cellule = _adrZdc->eclairage->cellule;
     unlock();
+    return cellule;
 }
 
-void CZdc::getBoutonPieton(uint8_t boutonPieton)
+uint8_t CZdc::getBoutonPieton()
 {
+    uint8_t boutonPieton;
     lock();
-
+        boutonPieton = _adrZdc->intersection.boutonPieton;
     unlock();
+    return boutonPieton;
 }
 
-void CZdc::setMode(uint8_t mode)
+void CZdc::setMode(bool mode)
 {
     lock();
-
+        mode = _adrZdc->intersection.mode;
     unlock();
 
     emit sig_Mode(mode);
 }
 
-void CZdc::setOrdres(uint8_t interOrdre)
-{
-    lock();
+//void CZdc::setOrdres(uint8_t interOrdre)
+//{
+//    lock();
 
-    unlock();
+//    unlock();
 
-    emit sig_OrderInter(interOrdre);
-}
+//    emit sig_OrderInter(interOrdre);
+//}
