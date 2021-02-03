@@ -24,11 +24,7 @@ private:
     //CZdc *_zdc;
     //CBdd *_bdd;
     //CConfig *_config;
-
-//objets Server//
     CServerTcp *_serv;
-//    CGestionMaquette *_maquette;
-//    CZdc *_zdc;
 
 signals:
 

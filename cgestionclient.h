@@ -17,10 +17,11 @@ public:
     ~CGestionClient();
     bool isConnected();
 
-public slots :
+private slots :
     void on_readyRead();
     void on_writeToClients(QByteArray req);
-
+    void on_erreur(QString mess);
+    void on_info(QString mess);
 
 signals :
     void sig_erreur(QString mess);

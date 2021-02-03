@@ -39,12 +39,10 @@ signals:
     void sig_erreur(QString mess);
     void sig_info(QString mess);
 
-public slots:
-    void onNewConnectionClient();
-    void onDisconnectedClient();
-
 private slots:
 
+    void onNewConnectionClient();
+    void onDisconnectedClient();
     void on_erreur(QString mess);
     void on_info(QString mess);
 };

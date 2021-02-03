@@ -7,8 +7,8 @@ CGestionClient::CGestionClient( QTcpSocket *sock)
     connect(_sock,&QTcpSocket::readyRead,this,&CGestionClient::on_readyRead);
 
     _modbus = new CModbusTcp();
-
-    //connect
+    connect(_modbus, &CModbusTcp::sig_erreur, this, &CGestionClient::on_erreur);
+    connect(_modbus, &CModbusTcp::sig_info, this, &CGestionClient::on_info);
 
     //zdc
 
@@ -20,7 +20,6 @@ CGestionClient::~CGestionClient()
         _sock->close();
         delete _sock;
     }//if open
-
     delete _modbus;
 }
 
@@ -49,4 +48,14 @@ void CGestionClient::on_writeToClients(QByteArray rep)
        qDebug() << "ERREUR ENVOI";
        sig_erreur("ERREUR ENVOI");
     }
+}
+
+void CGestionClient::on_erreur(QString mess)
+{
+    emit sig_erreur(mess);
+}
+
+void CGestionClient::on_info(QString mess)
+{
+    emit sig_info(mess);
 }
