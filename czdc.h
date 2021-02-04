@@ -37,7 +37,8 @@ typedef struct parking{
                       // 3:OrdreBSD 2:OrdreBSM 1:OrdreBED 0:OrdreBEM
     uint8_t etats;// Barrière montée, descendue, en cours
     uint8_t cptPlaces;
-    uint8_t rfid[5];// RFID des clients
+    uint8_t rfidE[5];// RFID des clients
+    uint8_t rfidS[5];// RFID des clients
 } T_PARKING;
 
 typedef struct eclairage{
@@ -49,9 +50,9 @@ typedef struct eclairage{
 
 typedef struct intersection{
     uint8_t addr;// Adresse i²c de l'esclave
-    uint8_t boutonPieton; // 2 appels piétons
-    bool mode;// normal, orange clignotant
-    //uint8_t interOrdre;// bit 01 : voie 1 / bit 23 : voie 2 (00 : éteint / 01 : Vert / 02 : Orange / 03 : Rouge)
+    uint8_t boutonPieton; // 8 appels piétons // 4 par trame de voie (bit 7,6,5 en lecture)
+    uint8_t mode;// normal, orange clignotant, manuel (bit 2, LSB écriture)
+    uint8_t interOrdre;// MSB à 0 : voie 1 / MSB à 1 : voie 2 (0 : éteint / 1 : Vert / 2 : Orange / 3 : Rouge [bit 7,6,5 en écriture])
 } T_INTERSECTION;
 
 typedef struct zdc {
@@ -72,14 +73,17 @@ public:
 //Barrières
     void setBarriersState(bool state, int msk);
     void setBarriersOrder(uint8_t parkOrder);
-    void setRfid(uint8_t rfid[5]);
+    void setRfidE(uint8_t rfid[5]);
+    void setRfidS(uint8_t rfid[5]);
     void setLigneSup(char liSup[17]);
     void setLigneInf(char liInf[17]);
     uint8_t setCpt();
-    uint8_t getRfid();
+    QByteArray getRfidE();
+    QByteArray getRfidS();
 signals:
     void sig_OrderBarrier(uint8_t parkOrder);
-    void sig_RFID(uint8_t rfid[5]);
+    void sig_RFIDe(uint8_t rfid[5]);
+    void sig_RFIDs(uint8_t rfid[5]);
 //Fin barrières
 //Eclairage
     void setConsigne(uint8_t consigne);
@@ -90,11 +94,11 @@ signals:
 //Fin éclairage
 //Intersection
     uint8_t getBoutonPieton();
-    void setMode(bool mode);
-    //void setOrdres(uint8_t interOrdre); //pas de manu
+    void setMode(uint8_t mode);
+    void setOrdres(uint8_t interOrdre);
 signals:
     void sig_Mode(uint8_t mode);
-    //void sig_OrderInter(uint8_t order); //pas de manu
+    void sig_OrderInter(uint8_t order);
 //Fin intersection
 private:
     T_ZDC *_adrZdc;

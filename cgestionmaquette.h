@@ -29,8 +29,18 @@ private:
     QThread *_gthm;
 
 public slots:
-
-
+//Parking
+    void onOrderBarriers();
+    void onRFIDe();
+    void onRFIDs();
+//Fin parking
+//Eclairage
+    void onConsigne();
+//Fin eclairage
+//Intersection
+    void onMode();
+    void onOrderInter();
+//Fin inter
 
 signals:
 

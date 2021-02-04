@@ -51,13 +51,24 @@ uint8_t CZdc::setCpt()
     return places;
 }
 
-void CZdc::setRfid(uint8_t rfid[5])
+void CZdc::setRfidE(uint8_t rfid[5])
 {
     lock();
-        rfid = _adrZdc->parking.rfid;
+       for(int i = 0; i < 5; i++)
+         rfid[i] = _adrZdc->parking.rfidE[i];
     unlock();
 
-    emit sig_RFID(rfid);
+    emit sig_RFIDe(rfid);
+}
+
+void CZdc::setRfidS(uint8_t rfid[5])
+{
+    lock();
+       for(int i = 0; i < 5; i++)
+         rfid[i] = _adrZdc->parking.rfidS[i];
+    unlock();
+
+    emit sig_RFIDs(rfid);
 }
 
 void CZdc::setLigneSup(char liSup[17])
@@ -74,13 +85,24 @@ void CZdc::setLigneInf(char liInf[17])
     unlock();
 }
 
-uint8_t CZdc::getRfid()
+QByteArray CZdc::getRfidE()
 {
-    uint8_t rfid[5];
+    QByteArray rfid;
     lock();
-
+       for(int i = 0; i < 5; i++)
+            rfid[i] = _adrZdc->parking.rfidE[i];
     unlock();
-    return *rfid;// à faire checker par le prof pour cette méthode
+    return rfid;// à faire checker par le prof pour cette méthode
+}
+
+QByteArray CZdc::getRfidS()
+{
+    QByteArray rfid;
+    lock();
+       for(int i = 0; i < 5; i++)
+            rfid[i] = _adrZdc->parking.rfidS[i];
+    unlock();
+    return rfid;// à faire checker par le prof pour cette méthode
 }
 
 void CZdc::setConsigne(uint8_t consigne)
@@ -119,7 +141,7 @@ uint8_t CZdc::getBoutonPieton()
     return boutonPieton;
 }
 
-void CZdc::setMode(bool mode)
+void CZdc::setMode(uint8_t mode)
 {
     lock();
         mode = _adrZdc->intersection.mode;
@@ -128,11 +150,11 @@ void CZdc::setMode(bool mode)
     emit sig_Mode(mode);
 }
 
-//void CZdc::setOrdres(uint8_t interOrdre)
-//{
-//    lock();
+void CZdc::setOrdres(uint8_t interOrdre)
+{
+    lock();
 
-//    unlock();
+    unlock();
 
-//    emit sig_OrderInter(interOrdre);
-//}
+    emit sig_OrderInter(interOrdre);
+}
