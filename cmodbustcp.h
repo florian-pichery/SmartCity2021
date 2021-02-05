@@ -14,7 +14,6 @@ signals:
     void sig_erreur(QString mess);
     void sig_info(QString mess);
 
-public slots:
 };
 
 #endif // CMODBUSTCP_H

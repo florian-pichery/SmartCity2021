@@ -6,12 +6,13 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QDebug>
+#include <QList>
 #include <QThread>
 #include <stdio.h>
 
 #include "cgestionclient.h"
 
-class CServerTcp : public QTcpServer
+class CServerTcp : public QObject
 {
     Q_OBJECT
 
@@ -28,11 +29,13 @@ private:
     char ch[30];
 
     //objects
+    QTcpServer *_server;
     CGestionClient *_client;
     QThread *_gthc;//gestion Thread Client
+    QTcpSocket *_sock;
 
     //méthodes
-    int init();
+    //int init();
 
 
 signals:
@@ -42,7 +45,8 @@ signals:
 private slots:
 
     void onNewConnectionClient();
-    void onDisconnectedClient();
+    void onDisconnectedClient(QTcpSocket* s);
+
     void on_erreur(QString mess);
     void on_info(QString mess);
 };

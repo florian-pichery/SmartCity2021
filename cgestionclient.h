@@ -13,7 +13,7 @@ class CGestionClient: public QObject
     Q_OBJECT
 
 public:
-    CGestionClient( QTcpSocket *client = nullptr);
+    CGestionClient(QObject *parent = nullptr, QTcpSocket *sock = nullptr);
     ~CGestionClient();
     bool isConnected();
 
@@ -22,15 +22,17 @@ private slots :
     void on_writeToClients(QByteArray req);
     void on_erreur(QString mess);
     void on_info(QString mess);
+    void on_disconnected();
 
 signals :
     void sig_erreur(QString mess);
     void sig_info(QString mess);
+    void sig_socketDeconnected(QTcpSocket* s);
 
 private:
 
     char ch[30];
-    CModbusTcp *_modbus;
+    //CModbusTcp *_modbus;
     QTcpSocket *_sock;
 };
 

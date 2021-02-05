@@ -4,3 +4,8 @@ CModbusTcp::CModbusTcp(QObject *parent) : QObject(parent)
 {
 
 }
+
+CModbusTcp::~CModbusTcp()
+{
+
+}

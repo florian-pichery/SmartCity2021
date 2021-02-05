@@ -1,26 +1,31 @@
 #include "cgestionclient.h"
 
-CGestionClient::CGestionClient( QTcpSocket *sock)
+CGestionClient::CGestionClient(QObject *parent, QTcpSocket *sock) : QObject(parent)
 {
     //init
     _sock = sock;
     connect(_sock,&QTcpSocket::readyRead,this,&CGestionClient::on_readyRead);
+    connect(_sock, &QTcpSocket::disconnected,this,&CGestionClient::on_disconnected);
+    connect(_sock, static_cast<void(QAbstractSocket::*)(QAbstractSocket::SocketError)>(&QAbstractSocket::error),
+          [=](QAbstractSocket::SocketError socketError){
+               emit sig_info("Erreur socket : "+QString::number(socketError));
+          });
 
-    _modbus = new CModbusTcp();
+    /*_modbus = new CModbusTcp();
     connect(_modbus, &CModbusTcp::sig_erreur, this, &CGestionClient::on_erreur);
     connect(_modbus, &CModbusTcp::sig_info, this, &CGestionClient::on_info);
-
+    */
     //zdc
 
 }
 
 CGestionClient::~CGestionClient()
-{
+{/*
     if (_sock->isOpen()) {
         _sock->close();
-        delete _sock;
+        //delete _sock;
     }//if open
-    delete _modbus;
+    delete _modbus;*/
 }
 
 bool CGestionClient::isConnected()
@@ -58,4 +63,9 @@ void CGestionClient::on_erreur(QString mess)
 void CGestionClient::on_info(QString mess)
 {
     emit sig_info(mess);
+}
+
+void CGestionClient::on_disconnected()
+{
+    emit sig_socketDeconnected(static_cast<QTcpSocket*>(sender()));
 }
