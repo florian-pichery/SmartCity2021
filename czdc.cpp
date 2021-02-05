@@ -3,19 +3,46 @@
 
 CZdc::CZdc()
 {
+    CConfig cfg;
     setKey(KEY);
     if (!attach())
-        if (!create(sizeof(T_ZDC))) { // RW
+        if (!create(sizeof(T_ZDC)+sizeof(T_ECLAIRAGE)*static_cast<uint8_t>(cfg._nbEclair.toUInt()))) { // RW
             //emit sig_erreur("CZdc::CZdc Erreur de création de la SHM");
             qDebug() << "CZdc::CZdc Erreur de création de la SHM";
         } // if erreur
     _adrZdc = static_cast<T_ZDC *>(data());
+
+    setAddrPark(static_cast<uint8_t>(cfg._addrPark.toUInt()));
+    setAddrInter(static_cast<uint8_t>(cfg._addrInter.toUInt()));
+    setAddrEclair(static_cast<uint8_t>(cfg._addrEclair.toUInt()));
+
     //clear();  // init de toute la ZDC
 }
 
 CZdc::~CZdc()
 {
     detach();
+}
+
+void CZdc::setAddrPark(uint8_t addrP)
+{
+    lock();
+        _adrZdc->parking.addr = addrP;
+    unlock();
+}
+
+void CZdc::setAddrInter(uint8_t addrI)
+{
+    lock();
+        _adrZdc->intersection.addr = addrI;
+    unlock();
+}
+
+void CZdc::setAddrEclair(uint8_t addrE)
+{
+    lock();
+        _adrZdc->eclairage->addr = addrE;
+    unlock();
 }
 
 void CZdc::clear()
@@ -36,22 +63,40 @@ void CZdc::setBarriersState(bool state, int msk)
 void CZdc::setBarriersOrder(uint8_t parkOrder)
 {
     lock();
-        parkOrder = _adrZdc->parking.parkOrdre;
+        _adrZdc->parking.parkOrdre = parkOrder;
     unlock();
 
     emit sig_OrderBarrier(parkOrder & 0x0F);// Masque les acquittements des ordres
 }
 
-uint8_t CZdc::setCpt()
+void CZdc::setCpt(uint8_t places)
 {
-    uint8_t places;
     lock();
-        places = _adrZdc->parking.cptPlaces;
+        _adrZdc->parking.cptPlaces = places;
     unlock();
-    return places;
 }
 
-void CZdc::setRfidE(uint8_t rfid[5])
+void CZdc::setCptPlus(uint8_t places)
+{
+    lock();
+        places++;
+        _adrZdc->parking.cptPlaces = places;
+    unlock();
+
+    emit sig_Cpt(places);
+}
+
+void CZdc::setCptMoins(uint8_t places)
+{
+    lock();
+        places--;
+        _adrZdc->parking.cptPlaces = places;
+    unlock();
+
+    emit sig_Cpt(places);
+}
+
+void CZdc::setRfidE(QByteArray rfid)
 {
     lock();
        for(int i = 0; i < 5; i++)
@@ -61,7 +106,7 @@ void CZdc::setRfidE(uint8_t rfid[5])
     emit sig_RFIDe(rfid);
 }
 
-void CZdc::setRfidS(uint8_t rfid[5])
+void CZdc::setRfidS(QByteArray rfid)
 {
     lock();
        for(int i = 0; i < 5; i++)
@@ -71,18 +116,24 @@ void CZdc::setRfidS(uint8_t rfid[5])
     emit sig_RFIDs(rfid);
 }
 
-void CZdc::setLigneSup(char liSup[17])
+void CZdc::setLigneSup(QByteArray liSup)
 {
     lock();
-        liSup = _adrZdc->parking.affLigneSup;
+      for(int i = 0; i < 17; i++)
+        liSup[i] = _adrZdc->parking.affLigneSup[i];
     unlock();
+
+    emit sig_ligneSup(liSup);
 }
 
-void CZdc::setLigneInf(char liInf[17])
+void CZdc::setLigneInf(QByteArray liInf)
 {
     lock();
-        liInf = _adrZdc->parking.affLigneInf;
+      for(int i = 0; i < 17; i++)
+        liInf[i] = _adrZdc->parking.affLigneInf[i];
     unlock();
+
+    emit sig_ligneInf(liInf);
 }
 
 QByteArray CZdc::getRfidE()
@@ -153,7 +204,7 @@ void CZdc::setMode(uint8_t mode)
 void CZdc::setOrdres(uint8_t interOrdre)
 {
     lock();
-
+        interOrdre = _adrZdc->intersection.interOrdre;
     unlock();
 
     emit sig_OrderInter(interOrdre);

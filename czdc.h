@@ -5,18 +5,20 @@
 #include <QSharedMemory>
 #include <QDebug>
 #include <QByteArray>
-#include "cconfig.cpp"
+#include "cconfig.h"
 
 #define KEY "SmartCity 2021"
 
 //masque pour les états barrières
 
-#define BEM 1
-#define BED 2
-#define BSM 4
-#define BSD 8
-#define BAE 16
-#define BAS 32
+#define BED 1
+#define BEM 2
+#define BSD 4
+#define BSM 8
+#define QQE 16
+#define QQS 32
+#define BAE 64
+#define BAS 128
 
 
 //Structuration des données
@@ -70,20 +72,29 @@ public:
     CZdc();
     ~CZdc();
 
+    void setAddrPark(uint8_t addrP);
+    void setAddrInter(uint8_t addrI);
+    void setAddrEclair(uint8_t addrE);
+
 //Barrières
     void setBarriersState(bool state, int msk);
     void setBarriersOrder(uint8_t parkOrder);
-    void setRfidE(uint8_t rfid[5]);
-    void setRfidS(uint8_t rfid[5]);
-    void setLigneSup(char liSup[17]);
-    void setLigneInf(char liInf[17]);
-    uint8_t setCpt();
+    void setRfidE(QByteArray rfid);
+    void setRfidS(QByteArray rfid);
+    void setLigneSup(QByteArray liSup);
+    void setLigneInf(QByteArray liInf);
+    void setCpt(uint8_t places);
+    void setCptPlus(uint8_t places);
+    void setCptMoins(uint8_t places);
     QByteArray getRfidE();
     QByteArray getRfidS();
 signals:
     void sig_OrderBarrier(uint8_t parkOrder);
-    void sig_RFIDe(uint8_t rfid[5]);
-    void sig_RFIDs(uint8_t rfid[5]);
+    void sig_ligneSup(QByteArray liSup);
+    void sig_ligneInf(QByteArray liInf);
+    void sig_Cpt(uint8_t places);
+    void sig_RFIDe(QByteArray rfid);
+    void sig_RFIDs(QByteArray rfid);
 //Fin barrières
 //Eclairage
     void setConsigne(uint8_t consigne);
@@ -101,16 +112,15 @@ signals:
     void sig_OrderInter(uint8_t order);
 //Fin intersection
 private:
+    CConfig config;
     T_ZDC *_adrZdc;
     void clear();
 
 public slots:
-    void on_sigErreur();
-    void on_newData();
+    //void on_sigErreur(QString mess);
 
 signals:
-    void sig_erreur(QString mess);
-    void sig_update();
+    //void sig_erreur(QString mess);
 };
 
 #endif // CZDC_H
