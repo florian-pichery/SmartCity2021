@@ -19,6 +19,11 @@ public:
     CGestionMaquette(CZdc *zdc);
     ~CGestionMaquette();
 
+    void cyclePark();
+    void cycleEcran();
+    void cycleEclair();
+    void cycleInter();
+
 private:
 
     CZdc *_zdc;
@@ -43,7 +48,6 @@ public slots:
 //Fin inter
 
 signals:
-
 
 };
 

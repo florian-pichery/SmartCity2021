@@ -100,7 +100,7 @@ void CZdc::setRfidE(QByteArray rfid)
 {
     lock();
        for(int i = 0; i < 5; i++)
-         rfid[i] = _adrZdc->parking.rfidE[i];
+         _adrZdc->parking.rfidE[i] = rfid[i];
     unlock();
 
     emit sig_RFIDe(rfid);
@@ -110,7 +110,7 @@ void CZdc::setRfidS(QByteArray rfid)
 {
     lock();
        for(int i = 0; i < 5; i++)
-         rfid[i] = _adrZdc->parking.rfidS[i];
+         _adrZdc->parking.rfidS[i] = rfid[i];
     unlock();
 
     emit sig_RFIDs(rfid);
@@ -120,7 +120,7 @@ void CZdc::setLigneSup(QByteArray liSup)
 {
     lock();
       for(int i = 0; i < 17; i++)
-        liSup[i] = _adrZdc->parking.affLigneSup[i];
+        _adrZdc->parking.affLigneSup[i] = liSup[i];
     unlock();
 
     emit sig_ligneSup(liSup);
@@ -130,7 +130,7 @@ void CZdc::setLigneInf(QByteArray liInf)
 {
     lock();
       for(int i = 0; i < 17; i++)
-        liInf[i] = _adrZdc->parking.affLigneInf[i];
+        _adrZdc->parking.affLigneInf[i] = liInf[i];
     unlock();
 
     emit sig_ligneInf(liInf);
@@ -143,7 +143,7 @@ QByteArray CZdc::getRfidE()
        for(int i = 0; i < 5; i++)
             rfid[i] = _adrZdc->parking.rfidE[i];
     unlock();
-    return rfid;// à faire checker par le prof pour cette méthode
+    return rfid;
 }
 
 QByteArray CZdc::getRfidS()
@@ -153,13 +153,13 @@ QByteArray CZdc::getRfidS()
        for(int i = 0; i < 5; i++)
             rfid[i] = _adrZdc->parking.rfidS[i];
     unlock();
-    return rfid;// à faire checker par le prof pour cette méthode
+    return rfid;
 }
 
 void CZdc::setConsigne(uint8_t consigne)
 {
     lock();
-        consigne = _adrZdc->eclairage->consigne;
+        _adrZdc->eclairage->consigne = consigne;
     unlock();
 
     emit sig_Consigne(consigne);
@@ -195,7 +195,7 @@ uint8_t CZdc::getBoutonPieton()
 void CZdc::setMode(uint8_t mode)
 {
     lock();
-        mode = _adrZdc->intersection.mode;
+        _adrZdc->intersection.mode = mode;
     unlock();
 
     emit sig_Mode(mode);
@@ -204,7 +204,7 @@ void CZdc::setMode(uint8_t mode)
 void CZdc::setOrdres(uint8_t interOrdre)
 {
     lock();
-        interOrdre = _adrZdc->intersection.interOrdre;
+        _adrZdc->intersection.interOrdre = interOrdre;
     unlock();
 
     emit sig_OrderInter(interOrdre);
