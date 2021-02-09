@@ -7,17 +7,16 @@ CGestionMaquette::CGestionMaquette(CZdc *zdc)
     _inter = nullptr;
     _park = nullptr;
     _eclair = nullptr;
-    _gthm = new QThread;
-
-    CI2c::getInstance();
-
-    _zdc->setBarriersState(true, BEM);
 }
 
 CGestionMaquette::~CGestionMaquette()
 {
-    CI2c::freeInstance();
-    delete _gthm;
+
+}
+
+void CGestionMaquette::on_go()
+{
+
 }
 
 

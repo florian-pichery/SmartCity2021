@@ -10,6 +10,9 @@ class CParking : public QObject
 public:
     explicit CParking(QObject *parent = nullptr);
 
+private:
+    CI2c *_i2c;
+
 signals:
 
 public slots:

@@ -5,11 +5,11 @@
 #include <QThread>
 #include <QString>
 
+#include "czdc.h"
 #include "cparking.h"
 #include "cintersection.h"
 #include "ceclairage.h"
 #include "cecran.h"
-#include "czdc.h"
 
 class CGestionMaquette : public QObject
 {
@@ -19,10 +19,7 @@ public:
     CGestionMaquette(CZdc *zdc);
     ~CGestionMaquette();
 
-    void cyclePark();
-    void cycleEcran();
-    void cycleEclair();
-    void cycleInter();
+    void on_go();
 
 private:
 
@@ -31,7 +28,6 @@ private:
     CIntersection *_inter;
     CEclairage *_eclair;
     CEcran *_ecran;
-    QThread *_gthm;
 
 public slots:
 //Parking

@@ -103,7 +103,7 @@ void CZdc::setRfidE(QByteArray rfid)
          _adrZdc->parking.rfidE[i] = rfid[i];
     unlock();
 
-    emit sig_RFIDe(rfid);
+    emit sig_setRFIDe(rfid);
 }
 
 void CZdc::setRfidS(QByteArray rfid)
@@ -113,7 +113,7 @@ void CZdc::setRfidS(QByteArray rfid)
          _adrZdc->parking.rfidS[i] = rfid[i];
     unlock();
 
-    emit sig_RFIDs(rfid);
+    emit sig_setRFIDs(rfid);
 }
 
 void CZdc::setLigneSup(QByteArray liSup)
@@ -136,9 +136,8 @@ void CZdc::setLigneInf(QByteArray liInf)
     emit sig_ligneInf(liInf);
 }
 
-QByteArray CZdc::getRfidE()
+QByteArray CZdc::getRfidE(QByteArray rfid)
 {
-    QByteArray rfid;
     lock();
        for(int i = 0; i < 5; i++)
             rfid[i] = _adrZdc->parking.rfidE[i];
@@ -146,9 +145,8 @@ QByteArray CZdc::getRfidE()
     return rfid;
 }
 
-QByteArray CZdc::getRfidS()
+QByteArray CZdc::getRfidS(QByteArray rfid)
 {
-    QByteArray rfid;
     lock();
        for(int i = 0; i < 5; i++)
             rfid[i] = _adrZdc->parking.rfidS[i];
@@ -165,27 +163,24 @@ void CZdc::setConsigne(uint8_t consigne)
     emit sig_Consigne(consigne);
 }
 
-bool CZdc::getPresence()
+bool CZdc::getPresence(bool presence)
 {
-    bool presence;
     lock();
         presence = _adrZdc->eclairage->presence;
     unlock();
     return presence;
 }
 
-bool CZdc::getCellule()
+bool CZdc::getCellule(bool cellule)
 {
-    bool cellule;
     lock();
         cellule = _adrZdc->eclairage->cellule;
     unlock();
     return cellule;
 }
 
-uint8_t CZdc::getBoutonPieton()
+uint8_t CZdc::getBoutonPieton(uint8_t boutonPieton)
 {
-    uint8_t boutonPieton;
     lock();
         boutonPieton = _adrZdc->intersection.boutonPieton;
     unlock();

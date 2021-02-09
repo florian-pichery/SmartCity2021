@@ -86,25 +86,25 @@ public:
     void setCpt(uint8_t places);
     void setCptPlus(uint8_t places);
     void setCptMoins(uint8_t places);
-    QByteArray getRfidE();
-    QByteArray getRfidS();
+    QByteArray getRfidE(QByteArray rfid);
+    QByteArray getRfidS(QByteArray rfid);
 signals:
     void sig_OrderBarrier(uint8_t parkOrder);
     void sig_ligneSup(QByteArray liSup);
     void sig_ligneInf(QByteArray liInf);
     void sig_Cpt(uint8_t places);
-    void sig_RFIDe(QByteArray rfid);
-    void sig_RFIDs(QByteArray rfid);
+    void sig_setRFIDe(QByteArray rfid);
+    void sig_setRFIDs(QByteArray rfid);
 //Fin barrières
 //Eclairage
     void setConsigne(uint8_t consigne);
-    bool getPresence();
-    bool getCellule();
+    bool getPresence(bool presence);
+    bool getCellule(bool cellule);
 signals:
     void sig_Consigne(uint8_t consigne);
 //Fin éclairage
 //Intersection
-    uint8_t getBoutonPieton();
+    uint8_t getBoutonPieton(uint8_t boutonPieton);
     void setMode(uint8_t mode);
     void setOrdres(uint8_t interOrdre);
 signals:
