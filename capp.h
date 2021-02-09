@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QThread>
-#include "cservertcp.h"
+#include "cgererserveur.h"
 //#include "cgestionmaquette.h"
 //#include "czdc.h"
 //Cbdd
@@ -24,7 +24,7 @@ private:
     //CZdc *_zdc;
     //CBdd *_bdd;
     //CConfig *_config;
-    CServerTcp *_serv;
+    CGererServeur *_serv;
 
 signals:
 

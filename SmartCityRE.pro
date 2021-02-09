@@ -29,16 +29,18 @@ SOURCES += \
         main.cpp \
         cihm.cpp \
     capp.cpp \
-    cservertcp.cpp \
-    cgestionclient.cpp \
-    cmodbustcp.cpp
+    cmodbustcp.cpp \
+    cgererclient.cpp \
+    cmonserveurtcp.cpp \
+    cgererserveur.cpp
 
 HEADERS += \
         cihm.h \
     capp.h \
-    cservertcp.h \
-    cgestionclient.h \
-    cmodbustcp.h
+    cmodbustcp.h \
+    cgererclient.h \
+    cmonserveurtcp.h \
+    cgererserveur.h
 
 FORMS += \
         cihm.ui

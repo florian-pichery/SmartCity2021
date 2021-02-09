@@ -40,10 +40,10 @@ void CGestionClient::on_readyRead()
     bA = _sock->readAll();
     on_writeToClients("OK");
 
-    sprintf(ch,"Client : %p, %d caractères reçus",static_cast<void*>(_sock),bA.size());
-    emit sig_info(ch);
-    sprintf(ch,"Requete client : %s",bA.toStdString().c_str());
-    emit sig_info(ch);
+    sprintf(chaine,"Client : %p, %d caractères reçus",static_cast<void*>(_sock),bA.size());
+    emit sig_info(chaine);
+    sprintf(chaine,"Requete client : %s",bA.toStdString().c_str());
+    emit sig_info(chaine);
 }
 
 void CGestionClient::on_writeToClients(QByteArray rep)

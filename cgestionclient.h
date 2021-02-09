@@ -31,7 +31,7 @@ signals :
 
 private:
 
-    char ch[30];
+    char chaine[30];
     //CModbusTcp *_modbus;
     QTcpSocket *_sock;
 };

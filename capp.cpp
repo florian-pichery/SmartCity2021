@@ -2,9 +2,9 @@
 
 CApp::CApp(QObject *parent) : QObject(parent)
 {
-    _serv = new CServerTcp(this, PORT);
-    connect(_serv, &CServerTcp::sig_erreur, this, &CApp::on_erreur);
-    connect(_serv, &CServerTcp::sig_info, this, &CApp::on_info);
+    _serv = new CGererServeur(PORT);
+    connect(_serv, &CGererServeur::sig_erreur, this, &CApp::on_erreur);
+    connect(_serv, &CGererServeur::sig_info, this, &CApp::on_info);
 
 
     //_zdc = new CZdc();  // accès à la mémoire partagée commune
