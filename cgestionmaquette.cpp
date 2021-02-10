@@ -16,7 +16,10 @@ CGestionMaquette::~CGestionMaquette()
 
 void CGestionMaquette::on_go()
 {
+    //Lecture sur le parking
+    _parking
+    //Lecture sur l'intersection
+
+    //Lecture sur l'éclairage
 
 }
-
-

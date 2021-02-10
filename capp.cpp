@@ -8,7 +8,8 @@ CApp::CApp(QObject *parent) : QObject(parent)
     _maquette->moveToThread(_gthm);
     connect(this, &CApp::sig_go, _maquette, &CGestionMaquette::on_go);
     connect(_gthm, &QThread::finished, _maquette, &QObject::deleteLater);
-    emit sig_go();
+    _gthm->start();//Lance le Thread
+    emit sig_go();//Lance le travail du Thread
 }
 
 CApp::~CApp()
@@ -17,5 +18,3 @@ CApp::~CApp()
     _gthm->wait();
     delete _zdc;
 }
-
-
