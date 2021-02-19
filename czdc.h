@@ -59,8 +59,8 @@ typedef struct intersection{
 
 typedef struct zdc {
     T_PARKING parking;
-    T_ECLAIRAGE *eclairage;//possibilité d'ajouter un grand nombre de cartes d'éclairage
     T_INTERSECTION intersection;
+    T_ECLAIRAGE *eclairage;//possibilité d'ajouter un grand nombre de cartes d'éclairage
 } T_ZDC;
 
 // ZDC : Zone De Données Communes
@@ -95,8 +95,9 @@ signals:
     void sig_Cpt(uint8_t places);
     void sig_setRFIDe(QByteArray rfid);
     void sig_setRFIDs(QByteArray rfid);
-//Fin barrières
+//Fin barrières    
 //Eclairage
+public:
     void setConsigne(uint8_t consigne);
     bool getPresence(bool presence);
     bool getCellule(bool cellule);
@@ -104,6 +105,7 @@ signals:
     void sig_Consigne(uint8_t consigne);
 //Fin éclairage
 //Intersection
+public:
     uint8_t getBoutonPieton(uint8_t boutonPieton);
     void setMode(uint8_t mode);
     void setOrdres(uint8_t interOrdre);

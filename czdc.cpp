@@ -4,17 +4,21 @@
 CZdc::CZdc()
 {
     CConfig cfg;
+    int nb;
+    nb =sizeof(T_ZDC)+sizeof(T_ECLAIRAGE)*static_cast<uint8_t>(cfg._nbEclair.toUInt());
     setKey(KEY);
     if (!attach())
-        if (!create(sizeof(T_ZDC)+sizeof(T_ECLAIRAGE)*static_cast<uint8_t>(cfg._nbEclair.toUInt()))) { // RW
+        if (!create(nb)) { // RW
             //emit sig_erreur("CZdc::CZdc Erreur de création de la SHM");
             qDebug() << "CZdc::CZdc Erreur de création de la SHM";
         } // if erreur
     _adrZdc = static_cast<T_ZDC *>(data());
+    bzero(_adrZdc, nb);
+    _adrZdc->eclairage = (T_ECLAIRAGE *)(_adrZdc + 1);
 
-    setAddrPark(static_cast<uint8_t>(cfg._addrPark.toUInt()));
-    setAddrInter(static_cast<uint8_t>(cfg._addrInter.toUInt()));
-    setAddrEclair(static_cast<uint8_t>(cfg._addrEclair.toUInt()));
+    setAddrPark(static_cast<uint8_t>(cfg._addrPark.toUInt(nullptr,16)));
+    setAddrInter(static_cast<uint8_t>(cfg._addrInter.toUInt(nullptr,16)));
+    setAddrEclair(static_cast<uint8_t>(cfg._addrEclair.toUInt(nullptr,16)));
 
     //clear();  // init de toute la ZDC
 }
@@ -41,6 +45,7 @@ void CZdc::setAddrInter(uint8_t addrI)
 void CZdc::setAddrEclair(uint8_t addrE)
 {
     lock();
+        _adrZdc->eclairage = new T_ECLAIRAGE;
         _adrZdc->eclairage->addr = addrE;
     unlock();
 }
@@ -49,7 +54,8 @@ void CZdc::clear()
 {
     // RAZ de toutes les informations
     lock();
-        bzero(_adrZdc, sizeof(T_ZDC));
+        CConfig cfg;
+        bzero(_adrZdc, sizeof(T_ZDC)+sizeof(T_ECLAIRAGE)*static_cast<uint8_t>(cfg._nbEclair.toUInt()));// ràz de la bdd en fonction du nombre de cartes éclairage
     unlock();
 }
 

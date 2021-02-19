@@ -124,7 +124,68 @@
       <height>261</height>
      </rect>
     </property>
-    <layout class="QFormLayout" name="formLayout_2"/>
+    <layout class="QFormLayout" name="formLayout_2">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="pbRouge">
+       <property name="text">
+        <string>Force rouge</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="leRouge"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="pbOrange">
+       <property name="text">
+        <string>Force orange</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="leOrange"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QPushButton" name="pbVert">
+       <property name="text">
+        <string>Force vert</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="leVert"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QPushButton" name="pbModAuto">
+       <property name="text">
+        <string>Force mode auto</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="leAuto"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QPushButton" name="pbModOC">
+       <property name="text">
+        <string>Force mode OC</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="leOC"/>
+     </item>
+     <item row="5" column="0">
+      <widget class="QPushButton" name="pbModManu">
+       <property name="text">
+        <string>Force mode manu</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLineEdit" name="leManu"/>
+     </item>
+    </layout>
    </widget>
    <widget class="QWidget" name="formLayoutWidget_3">
     <property name="geometry">
@@ -135,7 +196,48 @@
       <height>261</height>
      </rect>
     </property>
-    <layout class="QFormLayout" name="formLayout_3"/>
+    <layout class="QFormLayout" name="formLayout_3">
+     <item row="0" column="0">
+      <widget class="QPushButton" name="pbBEM">
+       <property name="text">
+        <string>Force BEM</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="leBEM"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="pbBED">
+       <property name="text">
+        <string>Force BED</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="leBED"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QPushButton" name="pbBSM">
+       <property name="text">
+        <string>Force BSM</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QPushButton" name="pbBSD">
+       <property name="text">
+        <string>Force BSD</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="leBSM"/>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="leBSD"/>
+     </item>
+    </layout>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
@@ -150,7 +252,7 @@
      <string>Intersection</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="leAddrEclair">
     <property name="geometry">
      <rect>
       <x>100</x>
@@ -186,7 +288,7 @@
      <string>Adresse i²c :</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit_2">
+   <widget class="QLineEdit" name="leAddrInter">
     <property name="geometry">
      <rect>
       <x>350</x>
@@ -196,7 +298,7 @@
      </rect>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit_3">
+   <widget class="QLineEdit" name="leAddrPark">
     <property name="geometry">
      <rect>
       <x>580</x>
