@@ -30,7 +30,7 @@
      <string/>
     </property>
     <property name="pixmap">
-     <pixmap>../../Desktop/SMART CITY/Logo (1).png</pixmap>
+     <pixmap>../../Desktop/SMART CITY/LogoFondBlanc2.png</pixmap>
     </property>
     <property name="scaledContents">
      <bool>true</bool>

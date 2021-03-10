@@ -27,21 +27,22 @@ void CGererServeur::on_newConnection(qintptr sd)
 
     QThread *gthc = new QThread();  // création du thread
     gthc->setObjectName("servGcl_"+QString::number(sd));    //changer son nom pour le reconnaitre dans pstree
-    CGererClient *client = new CGererClient(sd, nullptr);  // il créera la socket de comm grace à sd
+    CGererClient *client = new CGererClient(sd, nullptr);  // le client créera la socket de comm grace au descripteur (sd)
 
     client->moveToThread(gthc);// déplacement vers le thread
 
+    //init signaux affichages
     connect(client, &CGererClient::sig_info, this, &CGererServeur::on_info);
     connect(client, &CGererClient::sig_erreur, this, &CGererServeur::on_erreur);
 
     connect(client, &CGererClient::sig_disconnected, this, &CGererServeur::on_disconnected); // provoque la destruction du client et du thread
     connect(this, &CGererServeur::sig_goGestionClient, client, &CGererClient::on_goGestionClient); // provoque création socket client
-    connect(gthc, &QThread::finished, client, &QObject::deleteLater); // The object will be deleted when control returns to the event loop
+    connect(gthc, &QThread::finished, client, &QObject::deleteLater); // L'objet qui gere le client se fais détruire si son thread se fini
 
     gthc->start(); // départ boucle des événements du thread.
     emit sig_goGestionClient(); // Départ de la gestion du client
 
-    // Mémorisation des objets créés
+    // Mémorisation des objets créés dans des listes
     _listeClient.append(client);
     _listeThread.append(gthc);
 }
@@ -58,10 +59,9 @@ void CGererServeur::on_disconnected()
             _listeThread.at(pos)->quit();  // demande au thread de se terminer
             _listeThread.at(pos)->wait();  // attends la fin de la boucle événements
             // effacement de la liste des objets dépendant du client
-            // _gcl s'effacera automatiquement avec le thread. C'est vérifié,
-            //    mettre un point d'arrêt dans ~CGestionClient pour le prouver !
+            // client s'effacera automatiquement avec le thread.
             _listeThread.removeAt(pos);
-            _listeClient.removeAt(pos);
+            _listeClient.removeAt(pos);//on enleve l'addresse des objects des listes qui les stockait
         } // if pos
         emit sig_info("CGererServeur::on_disconnected : Nb client restant : "+QString::number(_listeClient.size()));
     } // if 0

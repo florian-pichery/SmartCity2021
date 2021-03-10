@@ -7,6 +7,8 @@
 #include <QHostAddress>
 #include <stdio.h>
 
+#include <cmodbustcp.h>
+
 class CGererClient : public QObject
 {
     Q_OBJECT
@@ -17,6 +19,7 @@ public:
 
 private:
 
+    CModbusTcp *_modbus;
     QTcpSocket *_sock;
     QHostAddress _hostAddress;
     QHostAddress _localAddress;
@@ -24,6 +27,8 @@ private:
     qintptr _sd;
 
     char chaine[30];
+
+    void sendOrdre(int ordre);
 
 signals:
     void sig_disconnected();
