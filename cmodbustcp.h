@@ -15,11 +15,11 @@ public:
     ~CModbusTcp();
 
     int decoder();
-    bool verifier();
+    bool verifierCRC16();
     int on_trameClient(QByteArray trameClient);
+    void deleteTc();
 
 private:
-
     QString _data;
     QByteArray _tc;  // trame du client
     uint16_t calculCrc16();

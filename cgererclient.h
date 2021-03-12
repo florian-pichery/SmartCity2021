@@ -27,6 +27,7 @@ private:
     qintptr _sd;
 
     char chaine[30];
+    int part = 1;
 
     void sendOrdre(int ordre);
 

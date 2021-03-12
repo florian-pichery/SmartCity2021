@@ -18,6 +18,9 @@ CGererClient::~CGererClient()
 void CGererClient::on_goGestionClient()
 {
     _modbus = new CModbusTcp;
+    connect(_modbus, &CModbusTcp::sig_info, this, &CGererClient::on_info);
+    connect(_modbus, &CModbusTcp::sig_erreur, this, &CGererClient::on_erreur);
+
     _sock = new QTcpSocket();  // la socket est gérée par le thread
 
     // init des params du client et stockage dans variable commune
@@ -54,27 +57,48 @@ void CGererClient::on_readyRead()
     qint64 nb = client->bytesAvailable();// aquisition du nombre d'octets reçus
     QByteArray trameClient=client->readAll();// lecture de la trame qui nous est retourné en ASCII
     emit sig_info("IP Local="+_localAddress.toString()+" Port="+QString::number(_localPort));//affichage le l'ip et le port du serveur
-    emit sig_info(QString::number(nb)+" car reçus de IP="+_hostAddress.toString()+" Port="+QString::number(_peerPort)+" : "+trameClient);
+    emit sig_info(QString::number(nb)+" car reçus de IP="+_hostAddress.toString()+" Port="+QString::number(_peerPort)+" :" );
+    emit sig_info(trameClient);
         //affichage du nombre de d'octets reçus, de l'IP, du port de la source, et le contenu du message
     on_writeToClients("Bien reçu !\n"); // ACK (acquittement : informer à l'émmeteur de la bonne reception du message)
+
 
     int commande = _modbus->on_trameClient(trameClient);
     //retourne -1 si mal passé, 0 si trame non complète, 1 si c'est bon
     // _prot->on_trameClient envoie un signal correspondant à la trame reçue
-    if (commande == -1) // si erreur dans trame
-        emit sig_erreur("CGererClient::on_readyRead : Erreur dans le format de la trame.");
-    emit sig_info("Commande "+QString(commande)+" bien reçue");
+    emit sig_info("Commande "+QString::number(commande)+" bien reçue");
 
-    if (commande == 1){
-        bool verifier =_modbus->verifier();
+
+    switch(commande){
+
+    case -1:    //si mal passé
+        emit sig_erreur("CGererClient::on_readyRead : Erreur dans le format de la trame, requette supprimée");
+        on_writeToClients("format de requette incorrecte, requete supprimée");
+        _modbus->deleteTc();
+        break;
+
+    case 0:     //si trame non complète
+        part += 1;
+        on_writeToClients("attente de la "+QByteArray::number(part)+"ème partie de la requette");
+        emit sig_info("attente de la "+QByteArray::number(part)+"ème partie de la requette");
+        break;
+
+    case 1:     //trame complète
+        bool verifier =_modbus->verifierCRC16();
         if (verifier){
             //si le crc est correct
             int ordre = _modbus->decoder();
             sendOrdre(ordre);
         }//if(verifier)
-        else
-            on_writeToClients("CRC16 incorrect, requette supprimée");
-    }//if(commande)
+        else {
+            //si le crc est incorrect
+            emit sig_erreur("CGererClient::on_readyRead : CRC16 incorrect, requete suppriméee");
+            on_writeToClients("CRC16 incorrect, requete supprimée");
+            _modbus->deleteTc();
+        }//else(verifier)
+        break;
+
+    }//sw
 }
 
 void CGererClient::sendOrdre(int ordre)

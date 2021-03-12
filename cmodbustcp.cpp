@@ -19,21 +19,25 @@ int CModbusTcp::on_trameClient(QByteArray trameClient)
     //test et purge début trame
     int deb = _tc.indexOf(":",0); // recherche début trame
     if (deb == -1) { // si pas de car de début
-        _tc.clear();
-        emit sig_erreur("CProtocleClient::on_trameClient : Pas de caractère de début de trame");
         return -1;
     } // if pas de car de debut
-    _tc.remove(0, deb+1);  // on enlève tout avant le : au cas ou
 
     // test et purge fin de trame
     int fin = _tc.indexOf(":",1);
     if (fin == -1) return 0; // on attend la suite
     _tc.remove(fin, _tc.size()-fin);  // au cas ou, on enlève tout après la fin
+    _tc.remove(0, deb+1);  // on enlève tout avant le : au cas ou
 
+    emit sig_info("voici la trame au complet : "+_tc);
     return 1;
 }
 
-bool CModbusTcp::verifier()
+void CModbusTcp::deleteTc()
+{
+    _tc.clear();
+}
+
+bool CModbusTcp::verifierCRC16()
 {
     uint16_t crc16 = static_cast<uint16_t>((_tc[_tc.size()-3]<<8) + _tc[_tc.size()-2]);
         //on récupere le Crc de la trame
@@ -41,11 +45,8 @@ bool CModbusTcp::verifier()
         //on calcule le crc de la trame
     if (crc16 == crc16Calc) //on les compares
         return true;
-    else {
-        _tc.clear();
-        emit sig_erreur("CModbusTcp::verifier() : Erreur de CRC16");
+    else
         return 0;
-    }
 }
 
 uint16_t CModbusTcp::calculCrc16()
@@ -82,6 +83,7 @@ int CModbusTcp::decoder()
 {
     //décodage de "_data" pour traduire un ordre
     //cet odre sera afilié a un nombre et retourné par la fonction, dans on ready read
+    deleteTc();
     return 0;
 }
 
