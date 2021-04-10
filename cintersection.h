@@ -49,7 +49,7 @@ class CIntersection : public QObject
 {
     Q_OBJECT
 public:
-    explicit CIntersection(CZdc *zdc);
+    explicit CIntersection(CZdc *zdc, QObject *parent);
     ~CIntersection();
 
 private:

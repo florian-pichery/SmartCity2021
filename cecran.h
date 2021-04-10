@@ -69,7 +69,7 @@ class CEcran : public QObject
 {
     Q_OBJECT
 public:
-    explicit CEcran(CZdc *zdc);
+    explicit CEcran(CZdc *zdc, QObject *parent);
     ~CEcran();
     void begin(int rows = 2, int charsize = LCD_5x8DOTS);
     void clear();

@@ -20,7 +20,7 @@ class CParking : public QObject
 {
     Q_OBJECT
 public:
-    explicit CParking(CZdc *zdc);
+    explicit CParking(CZdc *zdc, QObject *parent);
     ~CParking();
 
 private:

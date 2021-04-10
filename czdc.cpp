@@ -63,8 +63,7 @@ void CZdc::setAddrInter(int addrI)
 void CZdc::setAddrEclair(int addrE)
 {
     lock();
-        _adrZdc->eclairage = new T_ECLAIRAGE;
-        _adrZdc->eclairage->addr = addrE;
+        _adrZdc->eclairage[0].addr = addrE;
     unlock();
 }
 
@@ -90,10 +89,10 @@ int CZdc::getAddrEclair()
 {
     int addr;
     lock();
-        addr = _adrZdc->eclairage->addr;
+        addr = _adrZdc->eclairage[0].addr;
     unlock();
     return addr;
-}//à voir
+}
 
 void CZdc::clear()
 {
@@ -104,23 +103,21 @@ void CZdc::clear()
     unlock();
 }
 
-void CZdc::setBarriersState(uint8_t parkState)
+void CZdc::setEtatsBarrieres(uint8_t parkState)
 {
     lock();
         _adrZdc->parking.etats = parkState;
     unlock();
 }
 
-void CZdc::setBarriersOrder(uint8_t parkOrder)
+void CZdc::setOrdreBarrieres(uint8_t parkOrder)
 {
     lock();
         _adrZdc->parking.parkOrdre = parkOrder;
     unlock();
-
-    emit sig_OrderBarrier(parkOrder & 0x0F);// Masque les acquittements des ordres
 }
 
-uint8_t CZdc::getBarriersOrder()
+uint8_t CZdc::getOrdreBarrieres()
 {
     uint8_t order;
     lock();
@@ -152,8 +149,6 @@ void CZdc::setCptPlus()
          places++;
         _adrZdc->parking.cptPlaces = places;
     unlock();
-
-    emit sig_Cpt(places);
 }
 
 void CZdc::setCptMoins()
@@ -163,8 +158,6 @@ void CZdc::setCptMoins()
         places--;
         _adrZdc->parking.cptPlaces = places;
     unlock();
-
-    emit sig_Cpt(places);
 }
 
 void CZdc::setRfidE(QByteArray rfid)
@@ -173,8 +166,6 @@ void CZdc::setRfidE(QByteArray rfid)
        for(int i = 0; i < 5; i++)
          _adrZdc->parking.rfidE[i] = rfid[i];
     unlock();
-
-    emit sig_setRFIDe(rfid);
 }
 
 void CZdc::setRfidS(QByteArray rfid)
@@ -183,28 +174,20 @@ void CZdc::setRfidS(QByteArray rfid)
        for(int i = 0; i < 5; i++)
          _adrZdc->parking.rfidS[i] = rfid[i];
     unlock();
-
-    emit sig_setRFIDs(rfid);
 }
 
-void CZdc::setLigneSup(QByteArray liSup)
+void CZdc::setLigneSup(QString liSup)
 {
     lock();
-      for(int i = 0; i < 17; i++)
-        _adrZdc->parking.affLigneSup[i] = liSup[i];
+        _adrZdc->parking.affLigneSup = liSup;
     unlock();
-
-    emit sig_ligneSup(liSup);
 }
 
-void CZdc::setLigneInf(QByteArray liInf)
+void CZdc::setLigneInf(QString liInf)
 {
     lock();
-      for(int i = 0; i < 17; i++)
-        _adrZdc->parking.affLigneInf[i] = liInf[i];
+        _adrZdc->parking.affLigneInf = liInf;
     unlock();
-
-    emit sig_ligneInf(liInf);
 }
 
 QByteArray CZdc::getRfidE()
@@ -227,70 +210,66 @@ QByteArray CZdc::getRfidS()
     return rfid;
 }
 
-void CZdc::setConsigneEclair(uint8_t consigne)
+void CZdc::setConsigneEclair(uint8_t noCarte, uint8_t consigne)
 {
     lock();
-        _adrZdc->eclairage->consigne = consigne;
+        _adrZdc->eclairage[noCarte].consigne = consigne;
     unlock();
-
-    emit sig_ConsigneEclair(consigne);
 }
 
-void CZdc::setLampFonct(uint8_t nb)
-{
-    lock();
-        _adrZdc->eclairage->lampFonct = nb;
-    unlock();
-
-    emit sig_ConsigneEclair(nb);
-}
-
-uint8_t CZdc::getLampFonct()
-{
-    uint8_t nb;
-    lock();
-        nb = _adrZdc->eclairage->lampFonct;
-    unlock();
-    return nb;
-}
-
-uint8_t CZdc::getConsigneEclair()
+uint8_t CZdc::getConsigneEclair(uint8_t noCarte)
 {
     uint8_t consigne;
     lock();
-        consigne = _adrZdc->eclairage->consigne;
+        consigne = _adrZdc->eclairage[noCarte].consigne;
     unlock();
     return consigne;
 }
 
-void CZdc::setPresence(bool presence)
+void CZdc::setLampFonct(uint8_t noCarte, uint8_t nb)
 {
     lock();
-        _adrZdc->eclairage->presence = presence;
+        _adrZdc->eclairage[noCarte].lampFonct = nb;
     unlock();
 }
 
-bool CZdc::getPresence()
+uint8_t CZdc::getLampFonct(uint8_t noCarte)
+{
+    uint8_t nb;
+    lock();
+        nb = _adrZdc->eclairage[noCarte].lampFonct;
+    unlock();
+    return nb;
+}
+
+void CZdc::setPresence(uint8_t noCarte, bool presence)
+{
+    lock();
+        _adrZdc->eclairage[noCarte].presence = presence;
+    unlock();
+}
+
+bool CZdc::getPresence(uint8_t noCarte)
 {
     bool presence;
     lock();
-        presence = _adrZdc->eclairage->presence;
+        presence = _adrZdc->eclairage[noCarte].presence;
     unlock();
     return presence;
 }
 
-void CZdc::setCellule(bool cellule)
+void CZdc::setCellule(uint8_t noCarte, bool cellule)
 {
     lock();
-        _adrZdc->eclairage->cellule = cellule;
+        _adrZdc->eclairage[noCarte].cellule = cellule;
     unlock();
 }
 
-bool CZdc::getCellule()
+bool CZdc::getCellule(uint8_t noCarte)
 {
     bool cellule;
     lock();
-        cellule = _adrZdc->eclairage->cellule;
+        cellule = _adrZdc->eclairage[noCarte].cellule;
     unlock();
     return cellule;
 }
@@ -316,8 +295,6 @@ void CZdc::setModeVoies(uint8_t mode)
     lock();
         _adrZdc->intersection.mode = mode;
     unlock();
-
-    emit sig_ModeVoies(mode);
 }
 
 uint8_t CZdc::getModeVoies()
@@ -334,8 +311,6 @@ void CZdc::setOrdresFeu1(uint8_t interOrdre)
     lock();
         _adrZdc->intersection.interOrdre1 = interOrdre;
     unlock();
-
-    emit sig_OrderInter1(interOrdre);
 }
 
 uint8_t CZdc::getOrdresFeu1()
@@ -368,8 +343,6 @@ void CZdc::setOrdresFeu2(uint8_t interOrdre)
     lock();
         _adrZdc->intersection.interOrdre2 = interOrdre;
     unlock();
-
-    emit sig_OrderInter2(interOrdre);
 }
 
 uint8_t CZdc::getOrdresFeu2()

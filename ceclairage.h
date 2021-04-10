@@ -6,16 +6,23 @@
 #include "czdc.h"
 #include "ci2c.h"
 
+#define ORDRE_RECU 128
+
 typedef struct{     //LSB vers MSB
     uint8_t
         bitPresence : 1, bitJN : 1, bitLamps : 6;
 }T_LAMP;
 
+typedef union{
+    T_LAMP partie;
+    unsigned char octet;
+}U_LAMP;
+
 class CEclairage : public QObject
 {
     Q_OBJECT
 public:
-    explicit CEclairage(CZdc *zdc);
+    explicit CEclairage(CZdc *zdc = nullptr, QObject *parent = nullptr);
     ~CEclairage();
 
 private:

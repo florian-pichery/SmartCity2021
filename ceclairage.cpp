@@ -1,16 +1,19 @@
 #include "ceclairage.h"
 
-CEclairage::CEclairage(CZdc *zdc) : QObject(zdc)
+CEclairage::CEclairage(CZdc *zdc, QObject *parent) : QObject(parent)
 {
     _zdc = zdc;
     _i2c = CI2c::getInstance(this, '1');
     connect(this, &CEclairage::sigEclair, this, &CEclairage::on_sigEclair);
     //Initialisation des variables concernant l'éclairage
-    _zdc->setPresence(false);
-    _zdc->setCellule(false);
-    _zdc->setLampFonct(63);//6 lampadaires fonctionnants
-    _zdc->setConsigneEclair(0); //Éteint par défaut
-    //Fin Init
+    int nb = _zdc->getNbEclairage();
+    for(uint8_t i = 0; i < nb; i++){
+        _zdc->setPresence(i,false);
+        _zdc->setCellule(i,false);
+        _zdc->setLampFonct(i,63);//6 lampadaires fonctionnants
+        _zdc->setConsigneEclair(i,0); //Éteint par défaut
+    }//for
+   //Fin Init
 }
 
 CEclairage::~CEclairage()
@@ -20,22 +23,19 @@ CEclairage::~CEclairage()
 
 void CEclairage::on_sigEclair(int addr, int nb, int addr_base)
 {
-    if (addr > addr_base+nb-1){
+    if (addr > (addr_base+nb-1)){
         emit sigParking();
         return;
     }//if addr
 
+    U_LAMP octet;
+    _i2c->lire(static_cast<unsigned char>(addr), &octet.octet, 1); // Lecture
 
-    unsigned char eclairage[1];
-    _i2c->lire(static_cast<unsigned char>(addr), eclairage, 1); // Lecture
-    T_LAMP *lamp;
-    lamp = reinterpret_cast<T_LAMP *>(&eclairage[0]);
+    uint8_t indice = static_cast<uint8_t>(addr-addr_base);
 
-    emit sigInter();
-
-    _zdc->setCellule(lamp->bitJN);
-    _zdc->setPresence(lamp->bitPresence);
-    _zdc->setLampFonct(lamp->bitLamps);
+    _zdc->setCellule(indice, octet.partie.bitJN);
+    _zdc->setPresence(indice, octet.partie.bitPresence);
+    _zdc->setLampFonct(indice, octet.partie.bitLamps);
 
 //    //Test I2C avec Ninnin à voir
 
@@ -45,12 +45,15 @@ void CEclairage::on_sigEclair(int addr, int nb, int addr_base)
 //    _i2c->ecrire(addr, &ordre, 1);
 //    _zdc->setConsigne(ordre);
 
-    if(_zdc->getConsigneEclair() >= 128){
-        unsigned char ordre;
-        ordre = _zdc->getConsigneEclair();
+    unsigned char ordre = _zdc->getConsigneEclair(indice);
 
+    if(ordre > ORDRE_RECU){
+        ordre -= ORDRE_RECU;
         _i2c->ecrire(static_cast<unsigned char>(addr), &ordre, 1);
-        _zdc->setConsigneEclair(0);
+        _zdc->setConsigneEclair(indice, ordre);
     }
+
+    addr = addr + 1;
+
     emit sigEclair(addr, nb, addr_base);
 }

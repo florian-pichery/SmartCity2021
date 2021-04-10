@@ -1,13 +1,13 @@
 #include "cparking.h"
 
-CParking::CParking(CZdc *zdc) : QObject(zdc)
+CParking::CParking(CZdc *zdc, QObject *parent) : QObject(parent)
 {
     _zdc = zdc;
     _i2c = CI2c::getInstance(nullptr, 1);
     //Init
-    _zdc->setBarriersOrder(0);//0 = BED et BSD / 1 = BEM et BSD
+    _zdc->setOrdreBarrieres(0);//0 = BED et BSD / 1 = BEM et BSD
                               //2 = BED ET BSM / 3 = BEM ET BSM
-    _zdc->setBarriersState(0);
+    _zdc->setEtatsBarrieres(0);
     _zdc->setCpt(8);//8 places par défaut
     //Fin Init
 }
@@ -28,7 +28,7 @@ void CParking::onPark()
     _i2c->lire(addr, parking, 11); // Lecture
     T_PARK_STATE *parkState;
     parkState = reinterpret_cast<T_PARK_STATE *>(&parking[0]);
-    _zdc->setBarriersState(parkState->bitsStates);
+    _zdc->setEtatsBarrieres(parkState->bitsStates);
 
     RFIDe = QByteArray(reinterpret_cast<char *>(parking+1), 5); //Conversion de unsigned char * vers QByteArray
     _zdc->setRfidE(RFIDe);
@@ -38,28 +38,28 @@ void CParking::onPark()
 
     emit sigEcran(static_cast<QString>(_zdc->getCpt()));
 
-    uint8_t order = _zdc->getBarriersOrder();
+    uint8_t order = _zdc->getOrdreBarrieres();
     if(order > 128){
         order = order - 128;
         switch(order){
         case BAR_SORTIE_DES:
             _i2c->ecrire(static_cast<unsigned char>(_zdc->getAddrPark()), &order, 1);
-            _zdc->setBarriersOrder(order);
+            _zdc->setOrdreBarrieres(order);
             _zdc->setCptPlus();
             emit sigEcran(static_cast<QString>(_zdc->getCpt()));
             break;
 
        case BAR_ENTREE_DES:
             _i2c->ecrire(static_cast<unsigned char>(_zdc->getAddrPark()), &order, 1);
-            _zdc->setBarriersOrder(order);
+            _zdc->setOrdreBarrieres(order);
             _zdc->setCptMoins();
             emit sigEcran(static_cast<QString>(_zdc->getCpt()));
             break;
 
         default:
-            order = _zdc->getBarriersOrder();
+            order = _zdc->getOrdreBarrieres();
             _i2c->ecrire(static_cast<unsigned char>(_zdc->getAddrPark()), &order, 1);
-            _zdc->setBarriersOrder(order);
+            _zdc->setOrdreBarrieres(order);
             emit sigEcran(static_cast<QString>(_zdc->getCpt()));
             break;
         }//SW

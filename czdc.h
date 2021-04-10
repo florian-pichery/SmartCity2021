@@ -8,61 +8,52 @@
 
 #include "cconfig.h"
 
-
 #define KEY "SmartCity 2021"
-
-//masque pour les états barrières
-
-#define BED 1
-#define BEM 2
-#define BSD 4
-#define BSM 8
-#define QQE 16
-#define QQS 32
-#define BAE 64
-#define BAS 128
-
 
 //Structuration des données
 
-typedef enum couleurs {
-  ETEINT,
-  ROUGE,
-  VERT
-} T_COULEURS;
+/* Raccourcis des états barrières
+  BSM = Barrière de Sortie Montée
+  BSD = Barrière de Sortie Descente ou Descendue (état)
+  BEM = Barrière de l'Entrée Montée
+  BED = Barrière de l'Entrée Descente ou Descendue (état)
+*/
 
 typedef struct parking{
     int addr;// Adresse i²c de l'esclave
-    char affLigneSup[17];
-    char affLigneInf[17];
-    uint8_t cptPlaces;
-    T_COULEURS couleurs;// Couleurs de l'écran
-    uint8_t parkOrdre;// 7:ACK_BSD 6:ACK_BSM 5:ACK_BED 4:ACK_BEM
-                      // 3:OrdreBSD 2:OrdreBSM 1:OrdreBED 0:OrdreBEM
-    uint8_t etats;// 7:ButtUrgExit 6:ButtUrgEntr 5:PersEntr 4: PersExit
-                  // 3:BSM 2:BSD 1:BEM 0: BED
-    uint8_t rfidE[5];// RFID des clients
-    uint8_t rfidS[5];// RFID des clients
+    QString affLigneSup; //Ligne supérieure de l'écran
+    QString affLigneInf; //Ligne inférieure de l'écran
+    uint8_t cptPlaces; //Compteur de places (interne à la maquette)
+    uint8_t parkOrdre;// Bit 7:ACK_ORDRE / Bits 6,5,4:INUTILISES
+                      // Bit 3:OrdreBSD / Bit 2:OrdreBSM / Bit 1:OrdreBED / Bit 0:OrdreBEM
+    uint8_t etats;// Bit 7:ButtUrgExit / Bit 6:ButtUrgEntr / Bit 5:PersEntr / Bit 4: PersExit
+                  // Bit 3:BSM / Bit 2:BSD / Bit 1:BEM / Bit 0:BED
+    uint8_t rfidE[5];// RFID du client entrant
+    uint8_t rfidS[5];// RFID du client sortant
 } T_PARKING;
 
 typedef struct eclairage{
     int addr;// Adresse i²c de l'esclave
-    uint8_t nbEclair;
-    uint8_t consigne; // 0% / 50% / 100%
-    bool presence;// Soit présent soit absent
-    bool cellule;// Soit jour soit nuit
-    uint8_t lampFonct; //Indique lampadaires fonctionnels
+    uint8_t nbEclair; //Nombre de cartes d'éclairages
+    uint8_t consigne; // Sur les deux bits de poids faible : 00 = 0% / 01 = 50% / 10 = 100% //
+    bool presence; // Soit présent (0) soit absent (1) pour détecter les pb de capteurs
+    bool cellule; // Soit jour (0) soit nuit (1) pour détecter les pb de capteurs
+    uint8_t lampFonct; //Indique lampadaires fonctionnels (De 0 à 6)
 } T_ECLAIRAGE;
 
 typedef struct intersection{
     int addr;// Adresse i²c de l'esclave
-    uint8_t mode;// normal, orange clignotant, manuel (bit 2, LSB écriture)
+    uint8_t mode;// Sur les deux bits de poids faible (1 et 0) : 00 = Orange clignotant / 01 = Automatique / 10 = Manuel //
     //Voie 1
-    uint8_t boutonPieton1; // 8 appels piétons // 4 par trame de voie (bit 7,6,5 en lecture)
-    uint8_t interOrdre1;// MSB à 0 : voie 1 / MSB à 1 : voie 2 (0 : éteint / 1 : Vert / 2 : Orange / 3 : Rouge [bit 7,6,5 en écriture])
+    uint8_t boutonPieton1; /* 4 par trame de voie (bit 7,6,5 en lecture)
+                           =>100 : 4 boutons appuyés / 011 : 3 boutons appuyés
+                             010 : 2 boutons appuyés / 001 : 1 bouton appuyé / 000 : Rien */
+    uint8_t interOrdre1; //(00 : éteint / 01 : Vert / 10 : Orange / 11 : Rouge [bits 3 et 2 en écriture])
     //Voie 2
-    uint8_t boutonPieton2; // 8 appels piétons // 4 par trame de voie (bit 7,6,5 en lecture)
-    uint8_t interOrdre2;// MSB à 0 : voie 1 / MSB à 1 : voie 2 (0 : éteint / 1 : Vert / 2 : Orange / 3 : Rouge [bit 7,6,5 en écriture])
+    uint8_t boutonPieton2; /* 4 par trame de voie (bit 7,6,5 en lecture)
+                           =>100 : 4 boutons appuyés / 011 : 3 boutons appuyés
+                             010 : 2 boutons appuyés / 001 : 1 bouton appuyé / 000 : Rien */
+    uint8_t interOrdre2;//(00 : éteint / 01 : Vert / 10 : Orange / 11 : Rouge [bits 5 et 4 en écriture])
 } T_INTERSECTION;
 
 typedef struct zdc {
@@ -79,8 +70,8 @@ class CZdc : public QSharedMemory
 public:
     CZdc();
     ~CZdc();
-
-    void setNbEclairage(uint8_t nb);
+//INIT I²C
+    void setNbEclairage(uint8_t nb);//FAIRE LES COMMENTAIRES POUR SEB ET PUSH MON CODE CE SOIR (GITHUB)
     uint8_t getNbEclairage();
 
     void setAddrPark(int addrP);
@@ -88,61 +79,55 @@ public:
     void setAddrEclair(int addrE);
     int getAddrPark();
     int getAddrInter();
-    int getAddrEclair();
+    int getAddrEclair(); 
+//Fin INIT I²C
 
-//Barrières
-    void setBarriersState(uint8_t parkState);
-    void setBarriersOrder(uint8_t parkOrder);
-    uint8_t getBarriersOrder();
-    void setRfidE(QByteArray rfid);
-    void setRfidS(QByteArray rfid);
-    void setLigneSup(QByteArray liSup);
-    void setLigneInf(QByteArray liInf);
-    void setCpt(uint8_t places);
-    uint8_t getCpt();
-    void setCptPlus();
-    void setCptMoins();
+//Parking
+    void setEtatsBarrieres(uint8_t parkState);/* Définition de l'état des barrières par CParking:
+                                             Bit 7:ButtUrgExit / Bit 6:ButtUrgEntr / Bit 5:PersEntr / Bit 4: PersExit
+                                             Bit 3:BSM / Bit 2:BSD / Bit 1:BEM / Bit 0:BED */
+    uint8_t getEtatsBarrieres();
+    void setOrdreBarrieres(uint8_t parkOrder);/* Définition de l'ordre : Quand un ordre des clients est reçu le bit ACK_ORDRE passe à 1
+                                                -> 128 + Bit 3:BSM / Bit 2:BSD / Bit 1:BEM / Bit 0:BED */
+    uint8_t getOrdreBarrieres();
+    void setRfidE(QByteArray rfid);// Ecriture du RFID entrant par CParking
+    void setRfidS(QByteArray rfid);// Ecriture du RFID sortant par CParking
     QByteArray getRfidE();
     QByteArray getRfidS();
-signals:
-    void sig_OrderBarrier(uint8_t parkOrder);
-    void sig_ligneSup(QByteArray liSup);
-    void sig_ligneInf(QByteArray liInf);
-    void sig_Cpt(uint8_t places);
-    void sig_setRFIDe(QByteArray rfid);
-    void sig_setRFIDs(QByteArray rfid);
-//Fin barrières
+    void setLigneSup(QString liSup);// Ecriture de la première ligne de l'écran par CParking
+    void setLigneInf(QString liInf);// Ecriture de la deuxième ligne de l'écran par CParking
+    void setCpt(uint8_t places);// Définition du nombre de places dispo par CParking (Par défaut 8)
+    uint8_t getCpt();
+    void setCptPlus();// Incrémentation du nombre de places par CParking
+    void setCptMoins();// Décrémentation du nombre de places par CParking
+//Fin parking
 //Eclairage
 public:
-    void setConsigneEclair(uint8_t consigne);//0 = 0% // 1 = 50% // 2 = 100%
-    uint8_t getConsigneEclair();
-    void setLampFonct(uint8_t nb);
-    uint8_t getLampFonct();
-    void setPresence(bool presence);
-    bool getPresence();
-    void setCellule(bool cellule);
-    bool getCellule();
-signals:
-    void sig_ConsigneEclair(uint8_t consigne);
-    void sig_LampFonct(uint8_t nb);
+    void setConsigneEclair(uint8_t noCarte, uint8_t consigne);/* Définition de la consigne de l'éclairage sur les deux bits de poids faible : 00 = 0% / 01 = 50% / 10 = 100%
+                                                              en mentionnant le numéro de la carte dans la mémoire de la ZDC : première carte = 0 // deuxième carte = 1...*/
+    uint8_t getConsigneEclair(uint8_t noCarte);
+    void setLampFonct(uint8_t noCarte, uint8_t nb);// Définition du nombre d'éclairages sur une carte d'éclairage par CEclairage
+    uint8_t getLampFonct(uint8_t noCarte);
+    void setPresence(uint8_t noCarte, bool presence);// Présence définie par CEclairage
+    bool getPresence(uint8_t noCarte);
+    void setCellule(uint8_t noCarte, bool cellule);// Jour/Nuit défini par CEclairage
+    bool getCellule(uint8_t noCarte);
 //Fin éclairage
 //Intersection
 public:
-    void setModeVoies(uint8_t mode);
+    void setModeVoies(uint8_t mode);/* Définition du mode de l'éclairage
+        sur les deux bits de poids faible (1 et 0) : 00 = Orange clignotant / 01 = Automatique / 10 = Manuel*/
     uint8_t getModeVoies();
-    void setBoutonPietonVoie1(uint8_t bp);
+    /* Voie 1 */
+    void setBoutonPietonVoie1(uint8_t bp);// Définition du nombre de boutons piétons cliqués défini par CIntersection
     uint8_t getBoutonPietonVoie1();
-    void setOrdresFeu1(uint8_t interOrdre);
+    void setOrdresFeu1(uint8_t interOrdre);// Définition de l'ordre (en mode manuel) (00 : éteint / 01 : Vert / 10 : Orange / 11 : Rouge)
     uint8_t getOrdresFeu1();
-
-    void setBoutonPietonVoie2(uint8_t bp);
+    /* Voie 2 */
+    void setBoutonPietonVoie2(uint8_t bp);// Définition du nombre de boutons piétons cliqués défini par CIntersection
     uint8_t getBoutonPietonVoie2();
-    void setOrdresFeu2(uint8_t interOrdre);
+    void setOrdresFeu2(uint8_t interOrdre);// Définition de l'ordre (en mode manuel) (00 : éteint / 01 : Vert / 10 : Orange / 11 : Rouge)
     uint8_t getOrdresFeu2();
-signals:
-    void sig_ModeVoies(uint8_t mode);
-    void sig_OrderInter1(uint8_t order);
-    void sig_OrderInter2(uint8_t order);
 //Fin intersection
 private:
     CConfig config;

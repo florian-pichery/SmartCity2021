@@ -1,6 +1,6 @@
 #include "cecran.h"
 
-CEcran::CEcran(CZdc *zdc) : QObject(zdc)
+CEcran::CEcran(CZdc *zdc, QObject *parent) : QObject(parent)
 {
     _i2c = CI2c::getInstance(this, '1'); // new objet de la classe Ci2c
     connect(_i2c, &CI2c::sigErreur, this, &CEcran::onErreur);

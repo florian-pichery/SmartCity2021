@@ -1,6 +1,6 @@
 #include "cintersection.h"
 
-CIntersection::CIntersection(CZdc *zdc) :  QObject(zdc)
+CIntersection::CIntersection(CZdc *zdc, QObject *parent) :  QObject(parent)
 {
     _zdc = zdc;
     _i2c = CI2c::getInstance(this, '1');
