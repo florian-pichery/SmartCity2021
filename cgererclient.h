@@ -7,18 +7,20 @@
 #include <QHostAddress>
 #include <stdio.h>
 
-#include <cmodbustcp.h>
+#include "cmodbustcp.h"
+#include "czdc.h"
 
 class CGererClient : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit CGererClient(qintptr sd = 0,QObject *parent = nullptr);
+    explicit CGererClient(qintptr sd = 0, CZdc *zdc = nullptr,QObject *parent = nullptr);
     ~CGererClient();
 
 private:
 
+    CZdc *_zdc;
     CModbusTcp *_modbus;
     QTcpSocket *_sock;
     QHostAddress _hostAddress;

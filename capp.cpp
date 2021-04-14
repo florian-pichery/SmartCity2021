@@ -12,15 +12,18 @@ CApp::CApp(QObject *parent) : QObject(parent)
     _gthm->start();
     emit sig_go();
 
+    _serv = new CGererServeur(PORT, _zdc);
+    connect(_serv, &CGererServeur::sig_erreur, this, &CApp::on_erreur);
+    connect(_serv, &CGererServeur::sig_info, this, &CApp::on_info);
 }
 
 CApp::~CApp()
 {
+    delete _serv;
     _gthm->quit();
     _gthm->wait();
     delete _zdc;
 }
-
 
 //POUR L'IHM
 
@@ -41,57 +44,60 @@ void CApp::setAddrPark(uint8_t addrPark)
 
 /*Partie éclairage à refaire*/
 
-//void CApp::setConsigne(uint8_t consigne)
-//{
-//    _zdc->setConsigneEclair(consigne);
+/*
+void CApp::setConsigne(uint8_t consigne)
+{
+    _zdc->setConsigneEclair(consigne);
 
-//    consigne = _zdc->getConsigneEclair();
+    consigne = _zdc->getConsigneEclair();
 
-//    switch(consigne){
-//    case 0:
-//        emit sig_msg_consigne(" 0%");
-//        break;
-//    case 1:
-//        emit sig_msg_consigne(" 50%");
-//        break;
-//    case 2:
-//        emit sig_msg_consigne(" 100%");
-//        break;
-//    default:
-//        emit sig_msg_consigne("Erreur valeur");
-//        break;
-//    }
-//}
+    switch(consigne){
+    case 0:
+        emit sig_msg_consigne(" 0%");
+        break;
+    case 1:
+        emit sig_msg_consigne(" 50%");
+        break;
+    case 2:
+        emit sig_msg_consigne(" 100%");
+        break;
+    default:
+        emit sig_msg_consigne("Erreur valeur");
+        break;
+    }
+}*/
 
-//void CApp::setCellule(bool cellule)
-//{
-//    _zdc->setCellule(cellule);
+/*
+void CApp::setCellule(bool cellule)
+{
+    //_zdc->setCellule(cellule);
 
-//    cellule = _zdc->getCellule();
+    //cellule = _zdc->getCellule();
 
-//    if(cellule == true){
-//        emit sig_msg_cellule(" 1 (Jour)");
-//    }
+    if(cellule == true){
+        emit sig_msg_cellule(" 1 (Jour)");
+    }
 
-//    if(cellule == false){
-//        emit sig_msg_cellule(" 0 (Nuit)");
-//    }
-//}
+    if(cellule == false){
+        emit sig_msg_cellule(" 0 (Nuit)");
+    }
+}*/
 
-//void CApp::setPresence(bool presence)
-//{
-//    _zdc->setPresence(presence);
+/*
+void CApp::setPresence(bool presence)
+{
+    S_zdc->setPresence(presence);
 
-//    presence = _zdc->getPresence();
+    presence = _zdc->getPresence();
 
-//    if(presence == true){
-//        emit sig_msg_presence(" 1 (Présence)");
-//    }
+    if(presence == true){
+        emit sig_msg_presence(" 1 (Présence)");
+    }
 
-//    if(presence == false){
-//        emit sig_msg_presence(" 0 (RAS)");
-//    }
-//}
+    if(presence == false){
+        emit sig_msg_presence(" 0 (RAS)");
+    }
+}*/
 
 void CApp::setInterOrdre(uint8_t interOrdre)
 {
@@ -147,4 +153,14 @@ void CApp::setMode(uint8_t mode)
         emit sig_msg_mode("Erreur valeur");
         break;
     }
+}
+
+void CApp::on_erreur(QString mess)
+{
+    emit sig_erreur(mess);  // remontée des erreurs à l'IHM
+}
+
+void CApp::on_info(QString mess)
+{
+    emit sig_info(mess);  // remontée des erreurs à l'IHM
 }

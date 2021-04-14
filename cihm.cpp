@@ -124,7 +124,7 @@ void CIhm::on_cb_0_clicked(bool checked)
 {
     if(checked == true){
 
-        _app->setConsigne(0); //appel de la fonction dans CApp
+        //_app->setConsigne(0); //appel de la fonction dans CApp
 
        ui->cb_50->setEnabled(false);//Quand cb_0 coché, cb_50 pas cochable.
        ui->cb_100->setEnabled(false);//La même chose pour cb_100.
@@ -146,7 +146,7 @@ void CIhm::on_cb_50_clicked(bool checked)
 {
     if(checked == true){
 
-        _app->setConsigne(1);
+        //_app->setConsigne(1);
 
        ui->cb_0->setEnabled(false);
        ui->cb_100->setEnabled(false);
@@ -169,7 +169,7 @@ void CIhm::on_cb_100_clicked(bool checked)
 {
     if(checked == true){
 
-        _app->setConsigne(2);
+        //_app->setConsigne(2);
 
        ui->cb_0->setEnabled(false);
        ui->cb_50->setEnabled(false);
@@ -192,11 +192,11 @@ void CIhm::on_cb_jour_clicked(bool checked)
 Le 0% est forcé par défaut et ne peut être enlevé qu'à la condition que ça ne soit plus le jour*/
 {
     if(checked == true){
-        _app->setCellule(true);
+        //_app->setCellule(true);
 
        ui->cb_0->setChecked(true);
        ui->cb_0->setEnabled(false);
-       _app->setConsigne(0);
+       //_app->setConsigne(0);
 
        ui->cb_50->setEnabled(false);
        ui->cb_100->setEnabled(false);
@@ -233,7 +233,7 @@ Le 0% est forcé par défaut et ne peut être enlevé qu'à la condition que ça
 void CIhm::on_cb_nuit_clicked(bool checked)
 {
     if(checked == true){
-        _app->setCellule(false);
+        //_app->setCellule(false);
 
        ui->cb_jour->setEnabled(false);
     }else{
@@ -252,7 +252,7 @@ void CIhm::on_cb_nuit_clicked(bool checked)
 void CIhm::on_cb_presence_clicked(bool checked)
 {
     if(checked == true){
-        _app->setPresence(true);
+        //_app->setPresence(true);
 
        ui->cb_absence->setEnabled(false);
     }else{
@@ -271,7 +271,7 @@ void CIhm::on_cb_presence_clicked(bool checked)
 void CIhm::on_cb_absence_clicked(bool checked)
 {
     if(checked == true){
-        _app->setPresence(false);
+        //_app->setPresence(false);
 
        ui->cb_presence->setEnabled(false);
     }else{
@@ -294,7 +294,7 @@ void CIhm::on_cb_absence_clicked(bool checked)
 void CIhm::on_cb_red_clicked(bool checked)
 {
     if(checked == true){
-        _app->setInterOrdre(0);
+        //_app->setInterOrdre(0);
 
        ui->cb_orange->setEnabled(false);
        ui->cb_green->setEnabled(false);
@@ -315,7 +315,7 @@ void CIhm::on_cb_red_clicked(bool checked)
 void CIhm::on_cb_red2_clicked(bool checked)//Continuer la deuxième voie
 {
     if(checked == true){
-        _app->setInterOrdre(128);
+        //_app->setInterOrdre(128);
 
        ui->cb_orange2->setEnabled(false);
        ui->cb_green2->setEnabled(false);
@@ -337,7 +337,7 @@ void CIhm::on_cb_red2_clicked(bool checked)//Continuer la deuxième voie
 void CIhm::on_cb_orange_clicked(bool checked)
 {
     if(checked == true){
-        _app->setInterOrdre(1);
+        //_app->setInterOrdre(1);
 
        ui->cb_red->setEnabled(false);
        ui->cb_green->setEnabled(false);
@@ -358,7 +358,7 @@ void CIhm::on_cb_orange_clicked(bool checked)
 void CIhm::on_cb_orange2_clicked(bool checked)
 {
     if(checked == true){
-        _app->setInterOrdre(129);
+        //_app->setInterOrdre(129);
 
        ui->cb_red2->setEnabled(false);
        ui->cb_green2->setEnabled(false);
@@ -379,7 +379,7 @@ void CIhm::on_cb_orange2_clicked(bool checked)
 void CIhm::on_cb_green_clicked(bool checked)
 {
     if(checked == true){
-        _app->setInterOrdre(2);
+        //_app->setInterOrdre(2);
 
        ui->cb_red->setEnabled(false);
        ui->cb_orange->setEnabled(false);
@@ -400,7 +400,7 @@ void CIhm::on_cb_green_clicked(bool checked)
 void CIhm::on_cb_green2_clicked(bool checked)
 {
     if(checked == true){
-        _app->setInterOrdre(130);
+        //_app->setInterOrdre(130);
 
        ui->cb_red2->setEnabled(false);
        ui->cb_orange2->setEnabled(false);
@@ -424,7 +424,7 @@ void CIhm::on_cb_green2_clicked(bool checked)
 void CIhm::on_cb_auto_clicked(bool checked)
 {
     if(checked == true){
-        _app->setMode(0);//définir le mode sur 0 : Auto sur voie 1
+        //_app->setMode(0);//définir le mode sur 0 : Auto sur voie 1
 
         QTimer *red = new QTimer(), *orange = new QTimer(), *green = new QTimer();//Création des 3 timers
 
@@ -435,7 +435,7 @@ void CIhm::on_cb_auto_clicked(bool checked)
         while (red) {//Quand le timer est sur rouge, alors ça envoie l'ordre rouge sur la voie 1
             ui->cb_red->setEnabled(false);
             ui->cb_red->isChecked();
-            _app->setInterOrdre(0);
+            //_app->setInterOrdre(0);
             ui->cb_orange->setEnabled(false);
             ui->cb_green->setEnabled(false);
         }
@@ -444,7 +444,7 @@ void CIhm::on_cb_auto_clicked(bool checked)
             ui->cb_red->setEnabled(false);
             ui->cb_orange->setEnabled(false);
             ui->cb_orange->isChecked();
-            _app->setInterOrdre(1);
+            //_app->setInterOrdre(1);
             ui->cb_green->setEnabled(false);
         }
 
@@ -453,7 +453,7 @@ void CIhm::on_cb_auto_clicked(bool checked)
             ui->cb_orange->setEnabled(false);
             ui->cb_green->setEnabled(false);
             ui->cb_green->isChecked();
-            _app->setInterOrdre(2);
+            //_app->setInterOrdre(2);
         }
         do{//Cycle du feu rouge automatique
             red->start();

@@ -10,25 +10,25 @@
 
 #include "cgererclient.h"
 #include "cmonserveurtcp.h"
+#include "czdc.h"
 
 class CGererServeur : public QObject
 {
     Q_OBJECT
 public:
-    explicit CGererServeur( quint16 noPort = 2222, QObject *parent = nullptr);
+    explicit CGererServeur( quint16 noPort = 2222, CZdc *zdc = nullptr, QObject *parent = nullptr);
     ~CGererServeur();
 
 private:
     //objects
     CMonServeurTcp *_serv;
-
+    CZdc *_zdc;
     //Variables
         //listes
         QList<CGererClient *> _listeClient;
         QList<QThread *> _listeThread;
 
     quint16 m_noPort;
-    char chaine[30];
 
 signals:
     void sig_goGestionClient();

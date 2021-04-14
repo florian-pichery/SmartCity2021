@@ -1,9 +1,10 @@
 #include "cgererclient.h"
 #include "cgererclient.h"
 
-CGererClient::CGererClient(qintptr sd, QObject *parent) : QObject(parent)
+CGererClient::CGererClient(qintptr sd, CZdc *zdc, QObject *parent) : QObject(parent)
 {
     _sd = sd;
+    _zdc = zdc;
 }
 
 CGererClient::~CGererClient()
@@ -91,15 +92,15 @@ void CGererClient::on_readyRead()
         //si le MBAP header + CRC sont bon
         int ordre = _modbus->decoder();
         QByteArray reponse;
-        QByteArray val;
+        QByteArray valeursMots;
         switch (_modbus->get_functionCode()) {
         case 1://Lecture
-            val = read(ordre);
-            reponse = _modbus->reponseLecture(val);
+            valeursMots = read(ordre);//retourne un QbyteArray de la partie data d'un réponse à une lecture
+            reponse = _modbus->reponseLecture(valeursMots);//retourne la trame à envoyer au client
             break;
         case 2://Ecriture
-            bool exec = write(ordre);
-            reponse = _modbus->reponseEcriture(exec);
+            bool exec = write(ordre);//retourne si ça s'est bien executé
+            reponse = _modbus->reponseEcriture(exec);//retourne la trame à envoyer au client
             break;
         }
         on_writeToClients(reponse);
@@ -114,7 +115,17 @@ QByteArray CGererClient::read(int ordre)
 {
     QByteArray data = "";
     switch (ordre) {
-    //case :
+
+    case 3://Parking
+        //getters
+        data = "6666";//data = getters
+        break;
+    case 4://RFID
+        break;
+    case 6://éclairage
+        break;
+    case 8://Intersection
+        break;
     default :
         on_erreur("CGererClient::read : erreur de décodage");
         break;
@@ -124,17 +135,24 @@ QByteArray CGererClient::read(int ordre)
 
 bool CGererClient::write(int ordre)
 {
+    //quand on set la valeur on rajoute 128 en plus
     bool REturn = false;
 
     switch(ordre){
-    case 1://authentification
+
+    case 1://Ecran
+        break;
+    case 2://Parking
+        break;
+    case 5://éclairage
+        break;
+    case 7://Intersection
+        break;
+    case 9://authentification
         emit sig_info("Requette d'authentification.");
         REturn = _modbus->verificationMdp();
         break;
-    case 2://suite
-        //setter
-        //return si ça c'est bien passé
-        break;
+
     default :
         on_erreur("CGererClient::write : Erreur de décodage");
         break;
@@ -144,7 +162,7 @@ bool CGererClient::write(int ordre)
 
 void CGererClient::on_writeToClients(QByteArray rep)
 {
-    qDebug() <<"méssage :" << rep;
+    qDebug() <<"envoie message ->" << rep;
     qint64 nb = _sock->write(rep);
     if (nb == -1){
         emit sig_erreur("Erreur d'envoi");

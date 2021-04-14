@@ -1,5 +1,6 @@
 #include "cmodbustcp.h"
 #include "cmodbustcp.h"
+#include "cmodbustcp.h"
 
 CModbusTcp::CModbusTcp(QObject *parent) : QObject(parent)
 {
@@ -66,7 +67,7 @@ bool CModbusTcp::verifier()
     //qDebug () << "taille trame = " << _tc.size() << ", trame : "<< _tc ;
     if (crc16 != crc16Calc){
         qDebug() << "CRC16 mauvais";
-        qDebug () << "crc = " << crc16 << " crc calculé = "<< crc16Calc ;
+        qDebug() << "crc = " << crc16 << " crc calculé = "<< crc16Calc ;
         return 0;
     }//test CRC
 
@@ -88,7 +89,7 @@ bool CModbusTcp::verifier()
     uint Uint_lenght = valueOf(lenght);
     if (static_cast<int>(Uint_lenght) != _tc.size()+2+4+4+4+4) {
         qDebug() << "taille mauvaise";
-        qDebug() << Uint_lenght << " taille" << _tc.size()+2+4+4+4+4 ;
+        qDebug() << "taille récupérée -> "<<Uint_lenght << "   taille calculée ->" << _tc.size()+2+4+4+4+4 ;
         return 0;
     }//test taille
 
@@ -117,6 +118,16 @@ int CModbusTcp::decoder()
 {
     //décodage de "_tc" pour traduire un ordre
     //cet odre sera afilié a un nombre et retourné par la fonction, dans on ready read
+
+    //return 1 //Ecriture ecran
+    //return 2 //Ecriture parking
+    //return 3 //Lecture parking
+    //return 4 //Lecture RFID
+    //return 5;//Ecriture éclairage
+    //return 6;//Lecture éclairage
+    //return 7 //Ecriture inter
+    //return 8 //Lecture inter
+    //return 9;//Ecriture authentification
     switch (_mode)
     {
     case 1 ://si parking
@@ -132,48 +143,171 @@ int CModbusTcp::decoder()
         return decodeAuthentification();
 
     }//switch
-    return -1;
+    return 0;
 }
 
 int CModbusTcp::decodeParking()
 {
-
-}
-
-int CModbusTcp::decodeIntersection()
-{
+    _Addr1Word = takeCharacter(4);
+    uint Uint_Addr1Word = valueOf(_Addr1Word);
+    _nbrOfWord = takeCharacter(4);
+    QByteArray nbrOfBytes;
+    uint8_t ordre;
     switch (_fonction) {
     case 16:
-        _Addr1Word = takeCharacter(4);
-        if (_Addr1Word != "0000"){
-            qDebug() << "erreur 1er mot";
+        nbrOfBytes = takeCharacter(2);
+
+        switch(Uint_Addr1Word){
+        case 128:
+            if (_nbrOfWord != "0010"){
+                qDebug() << "erreur nombre de mots";
+                return false;
+            }
+            if (nbrOfBytes != "20"){
+                qDebug() << "erreur nombre d'octets";
+                return false;
+            }//if
+            return 1;//Ecriture ecran
+
+        case 160:
+            if (_nbrOfWord != "0001"){
+                qDebug() << "erreur nombre de mots";
+                return false;
+            }
+            if (nbrOfBytes != "02"){
+                qDebug() << "erreur nombre d'octets";
+                return false;
+            }//if
+            ordre = static_cast<uint8_t>(valueOf(takeCharacter(static_cast<int>(valueOf(nbrOfBytes)))));
+            return 2;//Ecriture parking
+
+        default:
+            qDebug() << "erreur 1er mot" << Uint_Addr1Word;
             return false;
-        }//if
-        return true;
+        }
+
     case 03:
         [[clang::fallthrough]];
     case 04:
-        _Addr1Word = takeCharacter(4);
-        uint Uint_Addr1Word = valueOf(_Addr1Word);
-        if (Uint_Addr1Word < 64 || Uint_Addr1Word > 128){
-            qDebug() << "erreur 1er mot";
-            return 0;
-        }//if
-        _nbrOfWord = takeCharacter(4);
-        uint Uint_nbrOfWord = valueOf(_nbrOfWord);
-        if (Uint_nbrOfWord==0 || Uint_nbrOfWord >= 129-Uint_Addr1Word){
-            qDebug() << "erreur nombre de mots";
-            return 0;
-        }//if
-        return 2;//lecture intersection
+        switch(Uint_Addr1Word){
+        case 161:
 
+            if (_nbrOfWord != "0001"){
+                qDebug() << "erreur nombre de mots";
+                return false;
+            }
+            if (_tc != ""){
+                qDebug() << "erreur caractères restants";
+                return false;
+            }
+            return 3;//Lecture parking
+
+        case 162:
+            if (_nbrOfWord != "0006"){
+                qDebug() << "erreur nombre de mots";
+                return false;
+            }
+            if (_tc != ""){
+                qDebug() << "erreur caractères restants";
+                return false;
+            }
+            return 4;//Lecture RFID
+
+        default:
+            qDebug() << "erreur 1er mot" << Uint_Addr1Word;
+            return false;
+        }
     }
     return false;
 }
 
 int CModbusTcp::decodeEclairage()
 {
+    _Addr1Word = takeCharacter(4);
+    _nbrOfWord = takeCharacter(4);
+    QByteArray nbrOfBytes;
 
+    switch (_fonction) {
+    case 16:
+
+        if (_Addr1Word != "0000"){
+            qDebug() << "erreur 1er mot";
+            return false;
+        }//if
+        if (_nbrOfWord != "0040"){
+            qDebug() << "erreur nombre de mots";
+            return false;
+        }//if
+        nbrOfBytes = takeCharacter(2);
+        if (nbrOfBytes != "80"){
+            qDebug() << "erreur nombre d'octets";
+            return false;
+        }//if
+        return 5;//écriture éclairage
+
+    case 03:
+        [[clang::fallthrough]];
+    case 04:
+        if (_Addr1Word != "0040"){
+            qDebug() << "erreur 1er mot";
+            return false;
+        }//if
+        if (_nbrOfWord != "0040"){
+            qDebug() << "erreur nombre de mots";
+            return false;
+        }//if
+        if (_tc != ""){
+            qDebug() << "erreur caractères restants";
+            return false;
+        }
+        return 6;//lecture éclairage
+    }
+    return false;
+}
+
+int CModbusTcp::decodeIntersection()
+{
+    _Addr1Word = takeCharacter(4);
+    _nbrOfWord = takeCharacter(4);
+    QByteArray nbrOfBytes;
+
+    switch (_fonction) {
+    case 16:
+
+        if (_Addr1Word != "00AA"){
+            qDebug() << "erreur 1er mot";
+            return false;
+        }//if
+        if (_nbrOfWord != "0001"){
+            qDebug() << "erreur nombre de mots";
+            return false;
+        }//if
+        nbrOfBytes = takeCharacter(2);
+        if (nbrOfBytes != "02"){
+            qDebug() << "erreur nombre d'octets";
+            return false;
+        }//if
+        return 7;//ecriture inter
+
+    case 03:
+        [[clang::fallthrough]];
+    case 04:
+        if (_Addr1Word != "00AB"){
+            qDebug() << "erreur 1er mot";
+            return false;
+        }//if
+        if (_nbrOfWord != "0001"){
+            qDebug() << "erreur nombre de mots";
+            return false;
+        }//if
+        if (_tc != ""){
+            qDebug() << "erreur caractères restants";
+            return false;
+        }
+        return 8;//lecture inter
+
+    }
+    return false;
 }
 
 int CModbusTcp::decodeAuthentification()
@@ -197,11 +331,8 @@ int CModbusTcp::decodeAuthentification()
         qDebug() << "erreur nombre d'octets";
         return 0;
     }//if
-
-    //requette d'authentification répérée
-    return 1;//authentification
+    return 9;//Ecriture authentification
 }
-
 
 QByteArray CModbusTcp::reponseEcriture(bool exec)
 {
@@ -224,34 +355,19 @@ QByteArray CModbusTcp::reponseEcriture(bool exec)
         break;
     }
 
-    bool si03 = false;
-    switch (_fonction) {//fonction
-
-    case 3:
-        data += "03";
-        si03 = true;
-        [[clang::fallthrough]];
-    case 4:
-        if (!si03) data += "04";
-        break;
-
-    case 16:
-        data += "10";
-        data += _Addr1Word;
-        if (exec) data += _nbrOfWord;
-        else data += "0000";
-        uint crc16Calc = calculCrc16(data);
-        QString crcCalcString = QString::number( crc16Calc, 16 ).toUpper();
-        QByteArray crcCalcArray = crcCalcString.toLatin1();
-        //qDebug () << "crc16Calc : " << crc16Calc;qDebug () << "crc16Hex : " <<crcCalcString;qDebug () << "taille trame = " << crcCalcArray.size() << ", trame : "<< crcCalcArray ;
-        data += crcCalcArray;
-        break;
-
-    }
+    data += "10";
+    data += _Addr1Word;
+    if (exec) data += _nbrOfWord;
+    else data += "0000";
+    uint16_t crc16Calc = calculCrc16(data);
+    QString crcCalcString = QString::number( crc16Calc, 16 ).toUpper();
+    QByteArray crcCalcArray = crcCalcString.toLatin1();
+    //qDebug () << "crc16Calc : " << crc16Calc;qDebug () << "crc16Hex : "
+    //<<crcCalcString;qDebug () << "taille trame = " << crcCalcArray.size() << ", trame : "<< crcCalcArray ;
+    data += crcCalcArray;
 
     _reponse += data;
     _reponse += ":";
-    qDebug() << _reponse;
     return _reponse;
 }
 
@@ -263,8 +379,45 @@ QByteArray CModbusTcp::reponseLecture(QByteArray val)
     _reponse += ":";
     QByteArray data = "00010000";
 
+    uint16_t lenght = sizeof (data)+4+1+2+2+sizeof (val)+2+2;
+    QString lenghtString = QString::number( lenght, 16 ).toUpper();
+    QByteArray lenghtArray = lenghtString.toLatin1();
+    if (lenghtArray.size() == 2)data+= "00";
+    if (lenghtArray.size() == 3)data+= "0";
+    data+=lenghtArray;
 
-        return _reponse;
+    switch (_mode) {//Unit identifier
+    case 1://si parking
+        data += "P";
+        break;
+    case 2://si eclairage
+        data += "E";
+        break;
+    case 3://si intersection
+        data += "I";
+        break;
+    case 4://si authentification
+        data += "A";
+        break;
+    }
+    data += "03";
+    uint16_t nbrOfByte= static_cast<uint16_t>(valueOf(_nbrOfWord)*2);
+    QString nbrOfByteString = QString::number( nbrOfByte, 16 ).toUpper();
+    QByteArray nbrOfByteArray = nbrOfByteString.toLatin1();
+    if (nbrOfByteArray.size() == 1) data+="0";
+    data +=nbrOfByteArray;
+    data += val;
+
+    uint16_t crc16Calc = calculCrc16(data);
+    QString crcCalcString = QString::number( crc16Calc, 16 ).toUpper();
+    QByteArray crcCalcArray = crcCalcString.toLatin1();
+    //qDebug () << "crc16Calc : " << crc16Calc;qDebug () << "crc16Hex : "
+    //<<crcCalcString;qDebug () << "taille trame = " << crcCalcArray.size() << ", trame : "<< crcCalcArray ;
+    data += crcCalcArray;
+
+    _reponse += data;
+    _reponse +=":";
+    return _reponse;
 }
 
 bool CModbusTcp::verificationMdp()

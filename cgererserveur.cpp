@@ -1,7 +1,8 @@
 #include "cgererserveur.h"
 
-CGererServeur::CGererServeur(quint16 noPort, QObject *parent) : QObject(parent)
+CGererServeur::CGererServeur(quint16 noPort, CZdc *zdc, QObject *parent) : QObject(parent)
 {
+    _zdc = zdc;
     m_noPort = noPort;
     _serv = new CMonServeurTcp();
     connect(_serv, &CMonServeurTcp::sig_sdClient, this, &CGererServeur::on_newConnection);
@@ -26,7 +27,7 @@ void CGererServeur::on_newConnection(qintptr sd)
 
     QThread *gthc = new QThread();  // création du thread
     gthc->setObjectName("servGcl_"+QString::number(sd));    //changer son nom pour le reconnaitre dans pstree
-    CGererClient *client = new CGererClient(sd, nullptr);  // le client créera la socket de comm grace au descripteur (sd)
+    CGererClient *client = new CGererClient(sd, _zdc ,nullptr);  // le client créera la socket de comm grace au descripteur (sd)
 
     client->moveToThread(gthc);// déplacement vers le thread
 

@@ -7,6 +7,9 @@
 #include "cgestionmaquette.h"
 #include "czdc.h"
 #include "cconfig.h"
+#include "cgererserveur.h"
+
+#define PORT 2222//confs
 
 class CApp : public QObject
 {
@@ -44,6 +47,7 @@ private:
     CGestionMaquette *_maquette;
     CConfig *_config;
     QThread *_gthm;
+    CGererServeur *_serv;
 
 signals:
     void sig_go();
@@ -64,6 +68,15 @@ signals:
     void sig_msg_RFIDI(QString msg_RFIDI);
     void sig_msg_RFIDO(QString msg_RFIDO);
     //Fin parking
+
+    void sig_erreur(QString mess);
+    void sig_info(QString mess);
+
+private slots:
+
+    void on_erreur(QString mess);
+    void on_info(QString mess);
+
 };
 
 #endif // CAPP_H
