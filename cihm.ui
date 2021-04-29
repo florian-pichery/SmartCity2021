@@ -127,7 +127,7 @@
      <number>2</number>
     </property>
     <property name="placeholderText">
-     <string>50</string>
+     <string>53</string>
     </property>
     <property name="clearButtonEnabled">
      <bool>false</bool>
@@ -187,7 +187,7 @@
      <rect>
       <x>70</x>
       <y>140</y>
-      <width>121</width>
+      <width>131</width>
       <height>22</height>
      </rect>
     </property>
@@ -288,7 +288,7 @@
      <rect>
       <x>410</x>
       <y>100</y>
-      <width>111</width>
+      <width>71</width>
       <height>22</height>
      </rect>
     </property>
@@ -363,9 +363,9 @@
    <widget class="QCheckBox" name="cb_green2">
     <property name="geometry">
      <rect>
-      <x>560</x>
+      <x>580</x>
       <y>140</y>
-      <width>91</width>
+      <width>71</width>
       <height>22</height>
      </rect>
     </property>
@@ -407,7 +407,7 @@
      <rect>
       <x>410</x>
       <y>190</y>
-      <width>171</width>
+      <width>161</width>
       <height>22</height>
      </rect>
     </property>
@@ -433,7 +433,7 @@
      <rect>
       <x>410</x>
       <y>230</y>
-      <width>251</width>
+      <width>181</width>
       <height>22</height>
      </rect>
     </property>
@@ -493,7 +493,7 @@
       <x>500</x>
       <y>120</y>
       <width>51</width>
-      <height>18</height>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
@@ -568,6 +568,90 @@
       <widget class="QTextEdit" name="teErreurs"/>
      </item>
     </layout>
+   </widget>
+   <widget class="QCheckBox" name="cbMontEnt">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>110</y>
+      <width>131</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Forcer montée</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="cbDescEnt">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>140</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Forcer descente</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_14">
+    <property name="geometry">
+     <rect>
+      <x>770</x>
+      <y>160</y>
+      <width>51</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Entrée</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_15">
+    <property name="geometry">
+     <rect>
+      <x>900</x>
+      <y>170</y>
+      <width>41</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Sortie</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="cbMontSor">
+    <property name="geometry">
+     <rect>
+      <x>860</x>
+      <y>190</y>
+      <width>131</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="text">
+     <string>Forcer montée</string>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="cbDescSor">
+    <property name="geometry">
+     <rect>
+      <x>850</x>
+      <y>220</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::RightToLeft</enum>
+    </property>
+    <property name="text">
+     <string>Forcer descente</string>
+    </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>

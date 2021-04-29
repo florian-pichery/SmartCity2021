@@ -96,6 +96,8 @@ public:
     QByteArray getRfidS();
     void setLigneSup(QString liSup);// Ecriture de la première ligne de l'écran par CParking
     void setLigneInf(QString liInf);// Ecriture de la deuxième ligne de l'écran par CParking
+    QString getLigneSup();
+    QString getLigneInf();
     void setCpt(uint8_t places);// Définition du nombre de places dispo par CParking (Par défaut 8)
     uint8_t getCpt();
     void setCptPlus();// Incrémentation du nombre de places par CParking

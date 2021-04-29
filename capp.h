@@ -22,8 +22,11 @@ public:
 
 //Adressage
     void setAddrEclair(uint8_t addrEclair);
+    uint8_t getAddrEclair();
     void setAddrInter(uint8_t addrInter);
+    uint8_t getAddrInter();
     void setAddrPark(uint8_t addrPark);
+    uint8_t getAddrPark();
 //Fin Adressage
 
 //Eclairage
@@ -33,7 +36,8 @@ public:
 //Fin Eclairage
 
 //Intersection
-     void setInterOrdre(uint8_t interOrdre);
+     void setInterOrdre1(uint8_t interOrdre);
+     void setInterOrdre2(uint8_t interOrdre);
      void setMode(uint8_t mode);
 //Fin Intersection
 
@@ -53,20 +57,18 @@ signals:
     void sig_go();
     /*POUR L'IHM*/
     //Éclairage
-    void sig_msg_consigne(QString msg_consigne);
-    void sig_msg_cellule(QString msg_cellule);
-    void sig_msg_presence(QString msg_presence);
+    void sig_msgConsigne(QString msg_consigne);
+    void sig_msgCellule(QString msg_cellule);
+    void sig_msgPresence(QString msg_presence);
     //Fin éclairage
     //Intersection
-    void sig_msg_interOrdre1(QString msg_interOrdre1);
-    void sig_msg_interOrdre2(QString msg_interOrdre2);
-    void sig_msg_mode(QString msg_mode);
+    void sig_msgInterOrdre1(QString msg_interOrdre1);
+    void sig_msgInterOrdre2(QString msg_interOrdre2);
+    void sig_msgMode(QString msg_mode);
     //Fin intersection
     //Parking
-    void sig_msg_parkOrdreI(QString msg_parkOrdreI);
-    void sig_msg_parkOrdreO(QString msg_parkOrdreO);
-    void sig_msg_RFIDI(QString msg_RFIDI);
-    void sig_msg_RFIDO(QString msg_RFIDO);
+    void sig_msgParkOrdreE(QString msg_parkOrdreE);
+    void sig_msgParkOrdreS(QString msg_parkOrdreS);
     //Fin parking
 
     void sig_erreur(QString mess);

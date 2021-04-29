@@ -25,11 +25,12 @@ private:
     CApp *_app;
 
 public slots:
-    void on_sigMsg_Consigne(QString msg_consigne);
-    void on_sigMsg_Cellule(QString msg_cellule);
-    void on_sigMsg_Presence(QString msg_presence);
-    void on_sigMsg_interOrdre1(QString msg_interOrdre1);
-    void on_sigMsg_interOrdre2(QString msg_interOrdre2);
+    void on_sigMsgConsigne(QString msg_consigne);
+    void on_sigMsgCellule(QString msg_cellule);
+    void on_sigMsgPresence(QString msg_presence);
+    void on_sigMsginterOrdre1(QString msg_interOrdre1);
+    void on_sigMsginterOrdre2(QString msg_interOrdre2);
+    void on_sigMsgMode(QString msg_mode);
 
 
 private slots:
@@ -56,15 +57,13 @@ private slots:
     void on_cb_auto_clicked(bool checked);
 //Fin Intersection
 //Parking
-//    void on_pbBEM_clicked();
-//    void on_pbBED_clicked();
-//    void on_pbBSM_clicked();
-//    void on_pbBSD_clicked();
 //Fin Parking
 
     void on_erreur(QString mess);
     void on_info(QString mess);
 
+    void on_cb_cligno_clicked(bool checked);
+    void on_cb_manuel_clicked(bool checked);
 };
 
 #endif // CIHMI2C_H

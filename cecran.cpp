@@ -2,6 +2,7 @@
 
 CEcran::CEcran(CZdc *zdc, QObject *parent) : QObject(parent)
 {
+    _zdc = zdc;
     _i2c = CI2c::getInstance(this, '1'); // new objet de la classe Ci2c
     connect(_i2c, &CI2c::sigErreur, this, &CEcran::onErreur);
     begin();
@@ -259,10 +260,11 @@ void CEcran::onEcran(QString nb)
         break;
     }//SW color
     setCursor(1, 0);
-    ecrire("PLACES LIBRES:");
+    QString sup = _zdc->getLigneSup();//Lecture de la première ligne dans la ZDC
+    ecrire(sup);
     setCursor(7, 1);
-    ecrire(nb);//Nb de places
-    //emit sigEcran();
+    QString inf = _zdc->getLigneInf();//Lecture de la deuxième ligne dans la ZDC
+    ecrire(inf);
 
-    //emit sigInter();
+    emit sigInter();
 }

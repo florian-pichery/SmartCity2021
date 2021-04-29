@@ -32,6 +32,11 @@ void CApp::setAddrEclair(uint8_t addrEclair)
     _zdc->setAddrEclair(addrEclair);
 }
 
+uint8_t CApp::getAddrEclair()
+{
+    uint8_t addr;
+}
+
 void CApp::setAddrInter(uint8_t addrInter)
 {
     _zdc->setAddrInter(addrInter);
@@ -42,64 +47,62 @@ void CApp::setAddrPark(uint8_t addrPark)
     _zdc->setAddrPark(addrPark);
 }
 
-/*Partie éclairage à refaire*/
 
-/*
 void CApp::setConsigne(uint8_t consigne)
 {
-    _zdc->setConsigneEclair(consigne);
+    _zdc->setConsigneEclair(0, consigne);
 
-    consigne = _zdc->getConsigneEclair();
+    consigne = _zdc->getConsigneEclair(0);
 
     switch(consigne){
     case 0:
-        emit sig_msg_consigne(" 0%");
+        emit sig_msgConsigne(" 0%");
         break;
     case 1:
-        emit sig_msg_consigne(" 50%");
+        emit sig_msgConsigne(" 50%");
         break;
     case 2:
-        emit sig_msg_consigne(" 100%");
+        emit sig_msgConsigne(" 100%");
         break;
     default:
-        emit sig_msg_consigne("Erreur valeur");
+        emit sig_msgConsigne("Erreur valeur");
         break;
     }
-}*/
+}
 
-/*
+
 void CApp::setCellule(bool cellule)
 {
-    //_zdc->setCellule(cellule);
+    _zdc->setCellule(0, cellule);
 
-    //cellule = _zdc->getCellule();
+    cellule = _zdc->getCellule(0);
 
     if(cellule == true){
-        emit sig_msg_cellule(" 1 (Jour)");
+        emit sig_msgCellule(" 1 (Jour)");
     }
 
     if(cellule == false){
-        emit sig_msg_cellule(" 0 (Nuit)");
+        emit sig_msgCellule(" 0 (Nuit)");
     }
-}*/
+}
 
-/*
+
 void CApp::setPresence(bool presence)
 {
-    S_zdc->setPresence(presence);
+    _zdc->setPresence(0 , presence);
 
-    presence = _zdc->getPresence();
+    presence = _zdc->getPresence(0);
 
     if(presence == true){
-        emit sig_msg_presence(" 1 (Présence)");
+        emit sig_msgPresence(" 1 (Présence)");
     }
 
     if(presence == false){
-        emit sig_msg_presence(" 0 (RAS)");
+        emit sig_msgPresence(" 0 (RAS)");
     }
-}*/
+}
 
-void CApp::setInterOrdre(uint8_t interOrdre)
+void CApp::setInterOrdre1(uint8_t interOrdre)
 {
     _zdc->setOrdresFeu1(interOrdre);
 
@@ -107,29 +110,40 @@ void CApp::setInterOrdre(uint8_t interOrdre)
 
     switch(interOrdre){
     case 0:
-        emit sig_msg_interOrdre1(" rouge");
+        emit sig_msgInterOrdre1(" rouge");
         break;
     case 1:
-        emit sig_msg_interOrdre1(" orange");
+        emit sig_msgInterOrdre1(" orange");
         break;
     case 2:
-        emit sig_msg_interOrdre1(" vert");
-        break;
-    //voie 2
-    case 128:
-        emit sig_msg_interOrdre2(" rouge");
-        break;
-    case 129:
-        emit sig_msg_interOrdre2(" orange");
-        break;
-    case 130:
-        emit sig_msg_interOrdre2(" vert");
+        emit sig_msgInterOrdre1(" vert");
         break;
     default:
-        emit sig_msg_interOrdre1("Erreur valeur");
-        emit sig_msg_interOrdre2("Erreur valeur");
+        emit sig_msgInterOrdre1("Erreur valeur");
         break;
     }
+}
+
+void CApp::setInterOrdre2(uint8_t interOrdre)
+{
+    _zdc->setOrdresFeu2(interOrdre);
+
+    interOrdre = _zdc->getOrdresFeu2();
+
+        switch(interOrdre){
+        case 0:
+            emit sig_msgInterOrdre2(" rouge");
+            break;
+        case 1:
+            emit sig_msgInterOrdre2(" orange");
+            break;
+        case 2:
+            emit sig_msgInterOrdre2(" vert");
+            break;
+        default:
+            emit sig_msgInterOrdre2("Erreur valeur");
+            break;
+        }
 }
 
 void CApp::setMode(uint8_t mode)
@@ -141,16 +155,16 @@ void CApp::setMode(uint8_t mode)
     switch (mode){
     //Voie 1
     case 0:
-        emit sig_msg_mode(" auto");
+        emit sig_msgMode(" auto");
         break;
     case 1:
-        emit sig_msg_mode(" clignotant");
+        emit sig_msgMode(" clignotant");
         break;
     case 2:
-        emit sig_msg_mode(" manuel");
+        emit sig_msgMode(" manuel");
         break;
     default:
-        emit sig_msg_mode("Erreur valeur");
+        emit sig_msgMode("Erreur valeur");
         break;
     }
 }

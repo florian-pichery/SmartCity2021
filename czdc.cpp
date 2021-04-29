@@ -176,20 +176,6 @@ void CZdc::setRfidS(QByteArray rfid)
     unlock();
 }
 
-void CZdc::setLigneSup(QString liSup)
-{
-    lock();
-        _adrZdc->parking.affLigneSup = liSup;
-    unlock();
-}
-
-void CZdc::setLigneInf(QString liInf)
-{
-    lock();
-        _adrZdc->parking.affLigneInf = liInf;
-    unlock();
-}
-
 QByteArray CZdc::getRfidE()
 {
     QByteArray rfid;
@@ -208,6 +194,38 @@ QByteArray CZdc::getRfidS()
             rfid[i] = _adrZdc->parking.rfidS[i];
     unlock();
     return rfid;
+}
+
+void CZdc::setLigneSup(QString liSup)
+{
+    lock();
+        _adrZdc->parking.affLigneSup = liSup;
+    unlock();
+}
+
+void CZdc::setLigneInf(QString liInf)
+{
+    lock();
+        _adrZdc->parking.affLigneInf = liInf;
+    unlock();
+}
+
+QString CZdc::getLigneSup()
+{
+    QString sup;
+    lock();
+        sup = _adrZdc->parking.affLigneSup;
+    unlock();
+    return sup;
+}
+
+QString CZdc::getLigneInf()
+{
+    QString inf;
+    lock();
+        inf = _adrZdc->parking.affLigneInf;
+    unlock();
+    return inf;
 }
 
 void CZdc::setConsigneEclair(uint8_t noCarte, uint8_t consigne)
