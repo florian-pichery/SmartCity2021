@@ -15,7 +15,7 @@ class CGererClient : public QObject
     Q_OBJECT
 
 public:
-    explicit CGererClient(qintptr sd = 0, CZdc *zdc = nullptr,QObject *parent = nullptr);
+    explicit CGererClient(qintptr sd = 0,QObject *parent = nullptr);
     ~CGererClient();
 
 private:

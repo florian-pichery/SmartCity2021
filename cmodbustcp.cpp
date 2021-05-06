@@ -35,6 +35,11 @@ int CModbusTcp::get_functionCode()
     return 0;
 }
 
+QByteArray CModbusTcp::get_tc()
+{
+    return _tc;
+}
+
 int CModbusTcp::on_trameClient(QByteArray trameClient)
 {
     //les trames au complet contiendrons :data-crc16:
@@ -152,7 +157,7 @@ int CModbusTcp::decodeParking()
     uint Uint_Addr1Word = valueOf(_Addr1Word);
     _nbrOfWord = takeCharacter(4);
     QByteArray nbrOfBytes;
-    uint8_t ordre;
+    uint16_t ordre;
     switch (_fonction) {
     case 16:
         nbrOfBytes = takeCharacter(2);
@@ -178,7 +183,7 @@ int CModbusTcp::decodeParking()
                 qDebug() << "erreur nombre d'octets";
                 return false;
             }//if
-            ordre = static_cast<uint8_t>(valueOf(takeCharacter(static_cast<int>(valueOf(nbrOfBytes)))));
+            //ordre = static_cast<uint8_t>(valueOf(takeCharacter(static_cast<int>(valueOf(nbrOfBytes)))));
             return 2;//Ecriture parking
 
         default:
@@ -467,7 +472,7 @@ uint CModbusTcp::valueOf(QByteArray ByteArray)
     return uintByteArray;
 }
 
-uint16_t CModbusTcp::calculCrc16(QByteArray ByteArray)// bon
+uint16_t CModbusTcp::calculCrc16(QByteArray ByteArray)
 {
     uint8_t nbDec;
     uint8_t yaun;

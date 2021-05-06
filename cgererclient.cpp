@@ -1,10 +1,10 @@
 #include "cgererclient.h"
 #include "cgererclient.h"
 
-CGererClient::CGererClient(qintptr sd, CZdc *zdc, QObject *parent) : QObject(parent)
+CGererClient::CGererClient(qintptr sd, QObject *parent) : QObject(parent)
 {
     _sd = sd;
-    _zdc = zdc;
+    _zdc = new CZdc;
 }
 
 CGererClient::~CGererClient()
@@ -90,6 +90,7 @@ void CGererClient::on_readyRead()
             break;
         }//if(!verifier)
         //si le MBAP header + CRC sont bon
+        emit sig_info("Trame verifiée.");
         int ordre = _modbus->decoder();
         QByteArray reponse;
         QByteArray valeursMots;
@@ -137,16 +138,69 @@ bool CGererClient::write(int ordre)
 {
     //quand on set la valeur on rajoute 128 en plus
     bool REturn = false;
+    uint value[8];
+    uint bit[8];
+    QByteArray tc = _modbus->get_tc();
+
+    if (ordre == 2 || ordre == 7){
+
+        QByteArray valueWordToForce = tc;
+        QString stringByteArray = QString::fromStdString(valueWordToForce.data());
+        value[0] = stringByteArray.toUInt(nullptr,16);
+        bit[0] = value[0]%2;
+        //qDebug() << bit[0];
+
+        for (int i=0; i!=7; i++) {
+            value[i+1] = (value[i]-bit[i])/2;
+            bit[i+1] = value[i+1]%2;
+            //qDebug() << bit[i+1];
+        }
+
+    }
 
     switch(ordre){
 
     case 1://Ecran
+        REturn = 1;
+
+        if(tc.size() == 32){
+
+            //_zdc->setLigneSup(QString::fromStdString(tc.left(16).data()));
+            //_zdc->setLigneInf(QString::fromStdString(tc.right(16).data()));
+        }else REturn = 0;
+
         break;
     case 2://Parking
+        REturn = true;
+        if (bit[0] == 1 && bit[1] == 0) _zdc->setOrdreBarrieres(128);
+        if (bit[1] == 1 && bit[0] == 0) _zdc->setOrdreBarrieres(128);
+        if (bit[2] == 1 && bit[3] == 0) _zdc->setOrdreBarrieres(128);
+        if (bit[3] == 1 && bit[2] == 0) _zdc->setOrdreBarrieres(128);
+        if ( (bit[3] == 1 && bit[2] == 1) || (bit[3] == 1 && bit[2] == 1) ) REturn = false;
         break;
     case 5://éclairage
         break;
     case 7://Intersection
+        REturn = true;
+        if (bit[0] == 0 && bit[1] == 0) _zdc->setModeVoies(128);//orange clignotant
+        if (bit[0] == 1 && bit[1] == 0) _zdc->setModeVoies(128+1);//auto
+        if (bit[0] == 0 && bit[1] == 1) {//manuel
+            _zdc->setModeVoies(128+2);
+            //voie 1
+            if (bit[2] == 0 && bit[3] == 0) _zdc->setOrdresFeu1(128);//eteint
+            if (bit[2] == 1 && bit[3] == 0) _zdc->setOrdresFeu1(128+1);//vert
+            if (bit[2] == 0 && bit[3] == 1) _zdc->setOrdresFeu1(128+2);//orange
+            if (bit[2] == 1 && bit[3] == 1) _zdc->setOrdresFeu1(128+3);//rouge
+
+            //voie 2
+            if (bit[4] == 0 && bit[5] == 0) _zdc->setOrdresFeu1(128);//eteint
+            if (bit[4] == 1 && bit[5] == 0) _zdc->setOrdresFeu1(128+1);//vert
+            if (bit[4] == 0 && bit[5] == 1) _zdc->setOrdresFeu1(128+2);//orange
+            if (bit[4] == 1 && bit[5] == 1) _zdc->setOrdresFeu1(128+3);//rouge
+            uint8_t oui =_zdc->getOrdresFeu1();
+            qDebug() <<"oui ="<< oui;
+        }
+
         break;
     case 9://authentification
         emit sig_info("Requette d'authentification.");

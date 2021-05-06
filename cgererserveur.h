@@ -16,13 +16,12 @@ class CGererServeur : public QObject
 {
     Q_OBJECT
 public:
-    explicit CGererServeur( quint16 noPort = 2222, CZdc *zdc = nullptr, QObject *parent = nullptr);
+    explicit CGererServeur( quint16 noPort = 2222, QObject *parent = nullptr);
     ~CGererServeur();
 
 private:
     //objects
     CMonServeurTcp *_serv;
-    CZdc *_zdc;
     //Variables
         //listes
         QList<CGererClient *> _listeClient;

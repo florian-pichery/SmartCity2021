@@ -23,6 +23,7 @@ public:
     bool verificationMdp();
     void deleteTc();
     int get_functionCode();
+    QByteArray get_tc();
 
     QByteArray _Addr1Word;
     QByteArray _nbrOfWord;
