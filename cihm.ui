@@ -456,7 +456,7 @@
      <rect>
       <x>710</x>
       <y>90</y>
-      <width>291</width>
+      <width>461</width>
       <height>171</height>
      </rect>
     </property>
@@ -466,7 +466,7 @@
      <rect>
       <x>710</x>
       <y>260</y>
-      <width>291</width>
+      <width>461</width>
       <height>111</height>
      </rect>
     </property>
@@ -573,7 +573,7 @@
     <property name="geometry">
      <rect>
       <x>720</x>
-      <y>110</y>
+      <y>100</y>
       <width>131</width>
       <height>21</height>
      </rect>
@@ -586,7 +586,7 @@
     <property name="geometry">
      <rect>
       <x>720</x>
-      <y>140</y>
+      <y>120</y>
       <width>141</width>
       <height>21</height>
      </rect>
@@ -599,7 +599,7 @@
     <property name="geometry">
      <rect>
       <x>770</x>
-      <y>160</y>
+      <y>140</y>
       <width>51</width>
       <height>22</height>
      </rect>
@@ -611,8 +611,8 @@
    <widget class="QLabel" name="label_15">
     <property name="geometry">
      <rect>
-      <x>900</x>
-      <y>170</y>
+      <x>770</x>
+      <y>180</y>
       <width>41</width>
       <height>22</height>
      </rect>
@@ -624,14 +624,14 @@
    <widget class="QCheckBox" name="cbMontSor">
     <property name="geometry">
      <rect>
-      <x>860</x>
-      <y>190</y>
+      <x>720</x>
+      <y>200</y>
       <width>131</width>
       <height>21</height>
      </rect>
     </property>
     <property name="layoutDirection">
-     <enum>Qt::RightToLeft</enum>
+     <enum>Qt::LeftToRight</enum>
     </property>
     <property name="text">
      <string>Forcer montée</string>
@@ -640,14 +640,14 @@
    <widget class="QCheckBox" name="cbDescSor">
     <property name="geometry">
      <rect>
-      <x>850</x>
+      <x>720</x>
       <y>220</y>
       <width>141</width>
       <height>21</height>
      </rect>
     </property>
     <property name="layoutDirection">
-     <enum>Qt::RightToLeft</enum>
+     <enum>Qt::LeftToRight</enum>
     </property>
     <property name="text">
      <string>Forcer descente</string>

@@ -13,7 +13,18 @@ CZdc::CZdc()
             qDebug() << "CZdc::CZdc Erreur de création de la SHM";
         } // if erreur
     _adrZdc = static_cast<T_ZDC *>(data());
-    bzero(_adrZdc, static_cast<size_t>(nb));
+    // init de toute la ZDC
+}
+
+CZdc::~CZdc()
+{
+    detach();
+}
+
+void CZdc::init()
+{
+    CConfig cfg;
+    clear();
     _adrZdc->eclairage = reinterpret_cast<T_ECLAIRAGE *>(_adrZdc + 1);
 
     setAddrPark(cfg._addrPark.toInt(nullptr,16));
@@ -21,13 +32,13 @@ CZdc::CZdc()
     setAddrEclair(cfg._addrEclair.toInt(nullptr,16));
 
     setNbEclairage(static_cast<unsigned char>(cfg._nbEclair.toUInt(nullptr, 10)));
+    setCpt(8);
+    QString nb = QString::number(getCpt());
+    QString sup;
+    sup = "PLACES LIBRES:";
+    setLigneInf(nb);
+    setLigneSup(sup);
 
-    //clear();  // init de toute la ZDC
-}
-
-CZdc::~CZdc()
-{
-    detach();
 }
 
 void CZdc::setNbEclairage(uint8_t nb)
@@ -196,17 +207,21 @@ QByteArray CZdc::getRfidS()
     return rfid;
 }
 
-void CZdc::setLigneSup(QString liSup)
+void CZdc::setLigneSup(QString &liSup)
 {
+    int nb = liSup.size();
     lock();
-        _adrZdc->parking.affLigneSup = liSup;
+        bzero(_adrZdc->parking.affLigneSup, sizeof(_adrZdc->parking.affLigneSup));
+        memcpy(_adrZdc->parking.affLigneSup, liSup.left(16).toStdString().c_str(),(nb>16?16:nb));
     unlock();
 }
 
-void CZdc::setLigneInf(QString liInf)
+void CZdc::setLigneInf(QString &liInf)
 {
+    int nb = liInf.size();
     lock();
-        _adrZdc->parking.affLigneInf = liInf;
+        bzero(_adrZdc->parking.affLigneInf, sizeof(_adrZdc->parking.affLigneInf));
+        memcpy(_adrZdc->parking.affLigneInf, liInf.left(16).toStdString().c_str(),(nb>16?16:nb));
     unlock();
 }
 

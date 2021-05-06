@@ -17,7 +17,7 @@ class CGestionMaquette : public QObject
     Q_OBJECT
 
 public:
-    CGestionMaquette(CZdc *zdc);
+    CGestionMaquette();
     ~CGestionMaquette();
 
     void on_go();

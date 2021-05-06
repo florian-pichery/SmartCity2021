@@ -21,8 +21,8 @@
 
 typedef struct parking{
     int addr;// Adresse i²c de l'esclave
-    QString affLigneSup; //Ligne supérieure de l'écran
-    QString affLigneInf; //Ligne inférieure de l'écran
+    char affLigneSup[16]; //Ligne supérieure de l'écran
+    char affLigneInf[16]; //Ligne inférieure de l'écran
     uint8_t cptPlaces; //Compteur de places (interne à la maquette)
     uint8_t parkOrdre;// Bit 7:ACK_ORDRE / Bits 6,5,4:INUTILISES
                       // Bit 3:OrdreBSD / Bit 2:OrdreBSM / Bit 1:OrdreBED / Bit 0:OrdreBEM
@@ -70,8 +70,10 @@ class CZdc : public QSharedMemory
 public:
     CZdc();
     ~CZdc();
+
+    void init();
 //INIT I²C
-    void setNbEclairage(uint8_t nb);//FAIRE LES COMMENTAIRES POUR SEB ET PUSH MON CODE CE SOIR (GITHUB)
+    void setNbEclairage(uint8_t nb);
     uint8_t getNbEclairage();
 
     void setAddrPark(int addrP);
@@ -94,8 +96,8 @@ public:
     void setRfidS(QByteArray rfid);// Ecriture du RFID sortant par CParking
     QByteArray getRfidE();
     QByteArray getRfidS();
-    void setLigneSup(QString liSup);// Ecriture de la première ligne de l'écran par CParking
-    void setLigneInf(QString liInf);// Ecriture de la deuxième ligne de l'écran par CParking
+    void setLigneSup(QString &liSup);// Ecriture de la première ligne de l'écran par CParking
+    void setLigneInf(QString &liInf);// Ecriture de la deuxième ligne de l'écran par CParking
     QString getLigneSup();
     QString getLigneInf();
     void setCpt(uint8_t places);// Définition du nombre de places dispo par CParking (Par défaut 8)
@@ -135,12 +137,6 @@ private:
     CConfig config;
     T_ZDC *_adrZdc;
     void clear();
-
-public slots:
-    //void on_sigErreur(QString mess);
-
-signals:
-    //void sig_erreur(QString mess);
 };
 
 #endif // CZDC_H

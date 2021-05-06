@@ -44,6 +44,9 @@ public:
 //Parking
     void setParkOrdre(uint8_t parkOrdre);
     void setRFID(QByteArray rfid);
+    int getCpt();
+    void setCptPlus();
+    void setCptMoins();
 //Fin Parking
 
 private:

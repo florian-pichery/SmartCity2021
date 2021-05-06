@@ -3,16 +3,17 @@
 CApp::CApp(QObject *parent) : QObject(parent)
 {
     _zdc = new CZdc();
+    _zdc->init();
     CConfig cfg;
     _gthm = new QThread();
-    _maquette = new CGestionMaquette(_zdc);
+    _maquette = new CGestionMaquette();
     _maquette->moveToThread(_gthm);
     connect(this, &CApp::sig_go, _maquette, &CGestionMaquette::on_go);
     connect(_gthm, &QThread::finished, _maquette, &QObject::deleteLater);
     _gthm->start();
     emit sig_go();
 
-    _serv = new CGererServeur(PORT, _zdc);
+    _serv = new CGererServeur(PORT);
     connect(_serv, &CGererServeur::sig_erreur, this, &CApp::on_erreur);
     connect(_serv, &CGererServeur::sig_info, this, &CApp::on_info);
 }
@@ -35,6 +36,8 @@ void CApp::setAddrEclair(uint8_t addrEclair)
 uint8_t CApp::getAddrEclair()
 {
     uint8_t addr;
+    addr = static_cast<uint8_t>(_zdc->getAddrEclair());
+    return addr;
 }
 
 void CApp::setAddrInter(uint8_t addrInter)
@@ -167,6 +170,23 @@ void CApp::setMode(uint8_t mode)
         emit sig_msgMode("Erreur valeur");
         break;
     }
+}
+
+int CApp::getCpt()
+{
+    int val;
+    val = _zdc->getCpt();
+    return val;
+}
+
+void CApp::setCptPlus()
+{
+    _zdc->setCptPlus();
+}
+
+void CApp::setCptMoins()
+{
+    _zdc->setCptMoins();
 }
 
 void CApp::on_erreur(QString mess)
