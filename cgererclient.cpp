@@ -141,6 +141,7 @@ bool CGererClient::write(int ordre)
     uint value[8];
     uint bit[8];
     QByteArray tc = _modbus->get_tc();
+    QString ligne;
 
     if (ordre == 2 || ordre == 7){
 
@@ -164,9 +165,12 @@ bool CGererClient::write(int ordre)
         REturn = 1;
 
         if(tc.size() == 32){
-
-            //_zdc->setLigneSup(QString::fromStdString(tc.left(16).data()));
-            //_zdc->setLigneInf(QString::fromStdString(tc.right(16).data()));
+            ligne = QString(tc.left(16));
+            _zdc->setLigneSup(ligne);
+            qDebug() << ligne;
+            ligne = QString(tc.right(16));
+            _zdc->setLigneInf(ligne);
+            qDebug() << ligne;
         }else REturn = 0;
 
         break;

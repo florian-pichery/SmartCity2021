@@ -259,10 +259,10 @@ void CEcran::onEcran(QString nb)
         setColor(RED);
         break;
     }//SW color
-    setCursor(1, 0);
+    setCursor(0, 0);
     QString sup = _zdc->getLigneSup();//Lecture de la première ligne dans la ZDC
     ecrire(sup);
-    setCursor(7, 1);
+    setCursor(0, 1);
     QString inf = _zdc->getLigneInf();//Lecture de la deuxième ligne dans la ZDC
     ecrire(inf);
 
