@@ -8,6 +8,8 @@ CIntersection::CIntersection(CZdc *zdc, QObject *parent) :  QObject(parent)
     _zdc->setModeVoies(1);//Mode auto par défaut
     _zdc->setOrdresFeu1(0);//Éteint
     _zdc->setOrdresFeu2(0);//Éteint
+
+    _zdc->setModeVoies(128);
     //Fin Init
 }
 
@@ -37,6 +39,7 @@ void CIntersection::onInter()
     //WRITE
 
     uint8_t mode = _zdc->getModeVoies();
+    mode += ACK;
 
     if(mode > ORDRE_RECU){
         unsigned char ordre;

@@ -53,18 +53,17 @@ void CApp::setAddrPark(uint8_t addrPark)
 
 void CApp::setConsigne(uint8_t consigne)
 {
-    _zdc->setConsigneEclair(0, consigne);
-
+    _zdc->setConsigneEclair(0, consigne + ACK);
     consigne = _zdc->getConsigneEclair(0);
 
     switch(consigne){
-    case 0:
+    case 128:
         emit sig_msgConsigne(" 0%");
         break;
-    case 1:
+    case 129:
         emit sig_msgConsigne(" 50%");
         break;
-    case 2:
+    case 130:
         emit sig_msgConsigne(" 100%");
         break;
     default:
@@ -151,9 +150,10 @@ void CApp::setInterOrdre2(uint8_t interOrdre)
 
 void CApp::setMode(uint8_t mode)
 {
-    _zdc->setModeVoies(mode);
+    _zdc->setModeVoies(mode+ACK);
 
     mode = _zdc->getModeVoies();
+    mode -= ACK;
 
     switch (mode){
     //Voie 1

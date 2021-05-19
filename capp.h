@@ -10,6 +10,7 @@
 #include "cgererserveur.h"
 
 #define PORT 2222//confs
+#define ACK 128
 
 class CApp : public QObject
 {
