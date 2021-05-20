@@ -39,6 +39,7 @@ void CZdc::init()
     setLigneInf(nb);
     setLigneSup(sup);
 
+
 }
 
 void CZdc::setNbEclairage(uint8_t nb)
@@ -118,7 +119,16 @@ void CZdc::setEtatsBarrieres(uint8_t parkState)
 {
     lock();
         _adrZdc->parking.etats = parkState;
+        unlock();
+}
+
+uint8_t CZdc::getEtatsBarrieres()
+{
+    uint8_t parkState;
+    lock();
+        parkState = _adrZdc->parking.etats;
     unlock();
+    return parkState;
 }
 
 void CZdc::setOrdreBarrieres(uint8_t parkOrder)
@@ -192,7 +202,7 @@ QByteArray CZdc::getRfidE()
     QByteArray rfid;
     lock();
        for(int i = 0; i < 5; i++)
-            rfid[i] = _adrZdc->parking.rfidE[i];
+            rfid += _adrZdc->parking.rfidE[i];
     unlock();
     return rfid;
 }

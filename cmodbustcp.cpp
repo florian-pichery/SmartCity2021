@@ -40,6 +40,16 @@ QByteArray CModbusTcp::get_tc()
     return _tc;
 }
 
+uint8_t CModbusTcp::get_Addr1WordInt()
+{
+    return static_cast<uint8_t>(_Addr1WordInt);
+}
+
+uint8_t CModbusTcp::get_nbrOfWords()
+{
+    return static_cast<uint8_t>(valueOf(_nbrOfWord));
+}
+
 int CModbusTcp::on_trameClient(QByteArray trameClient)
 {
     //les trames au complet contiendrons :data-crc16:
@@ -75,18 +85,16 @@ bool CModbusTcp::verifier()
         qDebug() << "crc = " << crc16 << " crc calculé = "<< crc16Calc ;
         return 0;
     }//test CRC
-
     QByteArray transIdent = takeCharacter(4);
     uint Uint_transIdent = valueOf(transIdent);
     if (Uint_transIdent != 1) {
         qDebug() << "Transaction Identifier mauvais";
         return 0;
     }//test transaction IDENT
-
     QByteArray protIdent = takeCharacter(4);
     uint Uint_protIdent = valueOf(protIdent);
     if (Uint_protIdent != 0) {
-        qDebug() << "Protocol identifier mauvais";
+        qDebug() << "Protocol identifier mauvais"<<protIdent;
         return 0;
     }//test Protocol identifier
 
@@ -157,7 +165,6 @@ int CModbusTcp::decodeParking()
     uint Uint_Addr1Word = valueOf(_Addr1Word);
     _nbrOfWord = takeCharacter(4);
     QByteArray nbrOfBytes;
-    uint16_t ordre;
     switch (_fonction) {
     case 16:
         nbrOfBytes = takeCharacter(2);
@@ -183,7 +190,6 @@ int CModbusTcp::decodeParking()
                 qDebug() << "erreur nombre d'octets";
                 return false;
             }//if
-            //ordre = static_cast<uint8_t>(valueOf(takeCharacter(static_cast<int>(valueOf(nbrOfBytes)))));
             return 2;//Ecriture parking
 
         default:
@@ -229,22 +235,25 @@ int CModbusTcp::decodeParking()
 int CModbusTcp::decodeEclairage()
 {
     _Addr1Word = takeCharacter(4);
+    _Addr1WordInt = static_cast<int>(valueOf(_Addr1Word));
     _nbrOfWord = takeCharacter(4);
+    int nbrOfWordInt = static_cast<int>(valueOf(_Addr1Word));
     QByteArray nbrOfBytes;
-
+    int nbrOfBytesInt;
+    //a modifier
     switch (_fonction) {
     case 16:
 
-        if (_Addr1Word != "0000"){
+        if (_Addr1WordInt >= 32){
             qDebug() << "erreur 1er mot";
             return false;
         }//if
-        if (_nbrOfWord != "0040"){
+        if (nbrOfWordInt+_Addr1WordInt > 32){
             qDebug() << "erreur nombre de mots";
             return false;
         }//if
-        nbrOfBytes = takeCharacter(2);
-        if (nbrOfBytes != "80"){
+        nbrOfBytesInt = static_cast<int>(valueOf(takeCharacter(2)));
+        if (nbrOfBytesInt != nbrOfWordInt*2 || _tc.size() != nbrOfBytesInt){
             qDebug() << "erreur nombre d'octets";
             return false;
         }//if
@@ -253,11 +262,11 @@ int CModbusTcp::decodeEclairage()
     case 03:
         [[clang::fallthrough]];
     case 04:
-        if (_Addr1Word != "0040"){
+        if ( 31 > _Addr1WordInt && _Addr1WordInt > 64){
             qDebug() << "erreur 1er mot";
             return false;
         }//if
-        if (_nbrOfWord != "0040"){
+        if (nbrOfWordInt+_Addr1WordInt-32 > 32){
             qDebug() << "erreur nombre de mots";
             return false;
         }//if
@@ -369,6 +378,9 @@ QByteArray CModbusTcp::reponseEcriture(bool exec)
     QByteArray crcCalcArray = crcCalcString.toLatin1();
     //qDebug () << "crc16Calc : " << crc16Calc;qDebug () << "crc16Hex : "
     //<<crcCalcString;qDebug () << "taille trame = " << crcCalcArray.size() << ", trame : "<< crcCalcArray ;
+    if (crcCalcArray.size() == 1) data += "000";
+    if (crcCalcArray.size() == 2) data += "00";
+    if (crcCalcArray.size() == 3) data += "0";
     data += crcCalcArray;
 
     _reponse += data;
@@ -380,11 +392,10 @@ QByteArray CModbusTcp::reponseLecture(QByteArray val)
 {
 
     _reponse ="";
-    if (val=="")return _reponse;
     _reponse += ":";
     QByteArray data = "00010000";
 
-    uint16_t lenght = sizeof (data)+4+1+2+2+sizeof (val)+2+2;
+    uint16_t lenght = sizeof (data)+4+1+2+2+sizeof (val)+4+2;
     QString lenghtString = QString::number( lenght, 16 ).toUpper();
     QByteArray lenghtArray = lenghtString.toLatin1();
     if (lenghtArray.size() == 2)data+= "00";
@@ -417,7 +428,10 @@ QByteArray CModbusTcp::reponseLecture(QByteArray val)
     QString crcCalcString = QString::number( crc16Calc, 16 ).toUpper();
     QByteArray crcCalcArray = crcCalcString.toLatin1();
     //qDebug () << "crc16Calc : " << crc16Calc;qDebug () << "crc16Hex : "
-    //<<crcCalcString;qDebug () << "taille trame = " << crcCalcArray.size() << ", trame : "<< crcCalcArray ;
+    qDebug () << "taille crc = " << crcCalcArray.size() << ", crc : "<< crcCalcArray ;
+    if (crcCalcArray.size() == 1) data += "000";
+    if (crcCalcArray.size() == 2) data += "00";
+    if (crcCalcArray.size() == 3) data += "0";
     data += crcCalcArray;
 
     _reponse += data;
@@ -427,11 +441,11 @@ QByteArray CModbusTcp::reponseLecture(QByteArray val)
 
 bool CModbusTcp::verificationMdp()
 {
-    qDebug() << _tc;
+    //qDebug() << _tc;
     QByteArray PREidentifiant = takeCharacter(32);
     QByteArray identifiant;
     QByteArray host = "root";//getter sur la base de donnée
-    qDebug() << identifiant << "pRE : " << PREidentifiant << " host:" <<host;
+    //qDebug() << identifiant << " : " << PREidentifiant << " host:" <<host;
     for (int i = 1;identifiant != host || PREidentifiant.left(1) != " " ; i++) {
         if (i == 32){
             return false;
@@ -439,7 +453,7 @@ bool CModbusTcp::verificationMdp()
 
         identifiant += PREidentifiant.left(1);
         PREidentifiant = PREidentifiant.right(PREidentifiant.size()-1);
-        qDebug() << identifiant << "pRE : " << PREidentifiant;
+        //qDebug() << identifiant << " : " << PREidentifiant;
     }
     QByteArray PREmotDePasse = takeCharacter(32);
     QByteArray motDePasse;
@@ -452,7 +466,7 @@ bool CModbusTcp::verificationMdp()
         }
         motDePasse += PREmotDePasse.left(1);
         PREmotDePasse = PREmotDePasse.right(PREmotDePasse.size()-1);
-        qDebug() << motDePasse << "pRE : " << PREmotDePasse;
+        //qDebug() << motDePasse << " : " << PREmotDePasse;
     }
 
     return true;

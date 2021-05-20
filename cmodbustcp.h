@@ -19,11 +19,14 @@ public:
     int decoder();
     QByteArray reponseEcriture(bool exec);
     QByteArray reponseLecture(QByteArray val);
-
     bool verificationMdp();
     void deleteTc();
     int get_functionCode();
     QByteArray get_tc();
+    uint8_t get_Addr1WordInt();
+    uint8_t get_nbrOfWords();
+
+    uint valueOf(QByteArray ByteArray);
 
     QByteArray _Addr1Word;
     QByteArray _nbrOfWord;
@@ -34,6 +37,7 @@ private:
     QByteArray _reponse;
     int _fonction;
     int _mode = 0;
+    int _Addr1WordInt;
 
     int decodeParking();
     int decodeIntersection();
@@ -41,7 +45,7 @@ private:
     int decodeAuthentification();
     uint16_t calculCrc16(QByteArray ByteArray);
     QByteArray takeCharacter(int nbOfBytes);
-    uint valueOf(QByteArray ByteArray);
+
 
 signals:
     void sig_erreur(QString mess);

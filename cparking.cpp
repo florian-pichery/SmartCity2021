@@ -30,10 +30,37 @@ void CParking::onPark()
     parkState = reinterpret_cast<T_PARK_STATE *>(&parking[0]);
     _zdc->setEtatsBarrieres(parkState->bitsStates);
 
-    RFIDe = QByteArray(reinterpret_cast<char *>(parking+1), 5); //Conversion de unsigned char * vers QByteArray
+    //RFIDe = QByteArray(reinterpret_cast<char *>(parking+1), 5); //Conversion de unsigned char * vers QByteArray
+    QString s;
+        QString result = "";
+        int rev = 5;
+        // Print String in Reverse order....
+        for ( int i = 0; i<rev; i++)
+            {
+               s = QString("%1").arg(parking[i],0,16);
+
+               if(s == "0"){
+                  s="00";
+                 }
+             result.append(s);
+
+             }
+        //qDebug()<< result;
     _zdc->setRfidE(RFIDe);
 
-    RFIDs = QByteArray(reinterpret_cast<char *>(parking+6), 5); //Conversion de unsigned char * vers QByteArray
+    //RFIDs = QByteArray(reinterpret_cast<char *>(parking+6), 5); //Conversion de unsigned char * vers QByteArray
+        result = "";
+        // Print String in Reverse order....
+        for ( int i = 0; i<rev; i++)
+            {
+               s = QString("%1").arg(parking[i],0,16);
+
+               if(s == "0"){
+                  s="00";
+                 }
+             result.append(s);
+
+             }
     _zdc->setRfidS(RFIDs);
 
     emit sigEcran(static_cast<QString>(_zdc->getCpt()));
