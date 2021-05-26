@@ -280,8 +280,8 @@ bool CGererClient::write(int ordre)
         // 1ère addr =0, 32eme addr = 31
         for (uint8_t i=0; (tc.size()/2)>i && nbrEclair > i && nbrEclair >= Addr1wordInt+1 + i ;i++) {
             int caracterTakedInt;
-            caracterTaked = tc.left(2);
-            tc = tc.right(tc.size()-2);
+            caracterTaked = tc.left(4);
+            tc = tc.right(tc.size()-4);
             caracterTakedInt = static_cast<int>(_modbus->valueOf(caracterTaked));
             switch (caracterTakedInt) {
             case 0:
