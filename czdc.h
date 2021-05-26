@@ -45,14 +45,16 @@ typedef struct intersection{
     int addr;// Adresse i²c de l'esclave
     uint8_t mode;// Sur les deux bits de poids faible (1 et 0) : 00 = Orange clignotant / 01 = Automatique / 10 = Manuel //
     //Voie 1
-    uint8_t boutonPieton1; /* 4 par trame de voie (bit 7,6,5 en lecture)
+    uint8_t boutonPieton1; /* 4 par trame de voie (bit 6,5,4 en lecture)
                            =>100 : 4 boutons appuyés / 011 : 3 boutons appuyés
                              010 : 2 boutons appuyés / 001 : 1 bouton appuyé / 000 : Rien */
+    uint8_t interEtat1; // 00 : éteint / 01 : Vert / 10 : Orange / 11 : Rouge [bits 3 et 2 en lecture])
     uint8_t interOrdre1; //(00 : éteint / 01 : Vert / 10 : Orange / 11 : Rouge [bits 3 et 2 en écriture])
     //Voie 2
-    uint8_t boutonPieton2; /* 4 par trame de voie (bit 7,6,5 en lecture)
+    uint8_t boutonPieton2; /* 4 par trame de voie (bit 6,5,4 en lecture)
                            =>100 : 4 boutons appuyés / 011 : 3 boutons appuyés
                              010 : 2 boutons appuyés / 001 : 1 bouton appuyé / 000 : Rien */
+    uint8_t interEtat2;// 00 : éteint / 01 : Vert / 10 : Orange / 11 : Rouge [bits 3 et 2 en lecture])
     uint8_t interOrdre2;//(00 : éteint / 01 : Vert / 10 : Orange / 11 : Rouge [bits 5 et 4 en écriture])
 } T_INTERSECTION;
 
@@ -127,11 +129,16 @@ public:
     uint8_t getBoutonPietonVoie1();
     void setOrdresFeu1(uint8_t interOrdre);// Définition de l'ordre (en mode manuel) (00 : éteint / 01 : Vert / 10 : Orange / 11 : Rouge)
     uint8_t getOrdresFeu1();
+    void setInterEtat1(uint8_t etat);
+    uint8_t getInterEtat1();
     /* Voie 2 */
     void setBoutonPietonVoie2(uint8_t bp);// Définition du nombre de boutons piétons cliqués défini par CIntersection
     uint8_t getBoutonPietonVoie2();
     void setOrdresFeu2(uint8_t interOrdre);// Définition de l'ordre (en mode manuel) (00 : éteint / 01 : Vert / 10 : Orange / 11 : Rouge)
     uint8_t getOrdresFeu2();
+    void setInterEtat2(uint8_t etat);
+    uint8_t getInterEtat2();
+
 //Fin intersection
 private:
     CConfig config;

@@ -25,8 +25,7 @@ void CEclairage::on_sigEclair(int addr, int nb, int addr_base)
 {
     if (addr > (addr_base+nb-1)){
         sleep(3);
-        emit sigRestart();
-        //emit sigParking();
+        emit sigParking();
         return;
     }//if addr
 

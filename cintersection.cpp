@@ -6,10 +6,8 @@ CIntersection::CIntersection(CZdc *zdc, QObject *parent) :  QObject(parent)
     _i2c = CI2c::getInstance(this, '1');
     //Init
     _zdc->setModeVoies(1);//Mode auto par défaut
-    _zdc->setOrdresFeu1(0);//Éteint
-    _zdc->setOrdresFeu2(0);//Éteint
-
-    _zdc->setModeVoies(128);
+    _zdc->setOrdresFeu1(3);//Rouge
+    _zdc->setOrdresFeu2(1);//Vert
     //Fin Init
 }
 
@@ -29,54 +27,41 @@ void CIntersection::onInter()
     U_READ octet;
     octet.octet = inter[0];//1er octet
     _zdc->setModeVoies(octet.partie.bitMode);
-    _zdc->setOrdresFeu1(octet.partie.bitCouleurs);
+    _zdc->setInterEtat1(octet.partie.bitCouleurs);
     _zdc->setBoutonPietonVoie1(octet.partie.bitBoutons);
 
     octet.octet = inter[1];//2ème octet
-    _zdc->setOrdresFeu2(octet.partie.bitCouleurs);
+    _zdc->setInterEtat2(octet.partie.bitCouleurs);
     _zdc->setBoutonPietonVoie2(octet.partie.bitBoutons);
 
     //WRITE
-
     uint8_t mode = _zdc->getModeVoies();
-    mode += ACK;
+    uint8_t couleur1 = _zdc->getOrdresFeu1();
+    uint8_t couleur2 = _zdc->getOrdresFeu2();
+    mode |= ACK; // Version de test
+    couleur1 |= ACK; //Test
+    couleur2 |= ACK; //Test
+    U_WRITE uw;
+    uw.octet = 0;
 
-    if(mode > ORDRE_RECU){
-        unsigned char ordre;
-        T_WRITE *write;
-        write = reinterpret_cast<T_WRITE *>(&ordre);
-        write->bitMode = _zdc->getModeVoies() - 128;
+    if(mode != MODE_MANUEL){
+        uw.partie.bitMode = mode - ACK;
+        _i2c->ecrire(addr, &uw.octet, 1);
+        _zdc->setModeVoies(uw.octet);
+    }//IF mode =/ manuel
 
-        _i2c->ecrire(addr, &ordre, 1);
-        _zdc->setModeVoies(ordre);
-    }//IF ordre reçu
-
-    if(mode == MODE_MANUEL){
-        if(_zdc->getOrdresFeu1() > 128){ //getOrdres1 : pour différencier les ordres pouvant être envoyés
-        unsigned char ordre;
-            T_WRITE *write;
-            write = reinterpret_cast<T_WRITE *>(&ordre);
-            write->bitMode = _zdc->getModeVoies() - 128;
-            write->bitCouleurs1 = _zdc->getOrdresFeu1() - 128;
-
-            _i2c->ecrire(addr, &ordre, 1);
-
-            _zdc->setModeVoies(ordre - write->bitCouleurs1);
-            _zdc->setOrdresFeu1(ordre - write->bitMode);
-        }//IF manu voie1
-        if(_zdc->getOrdresFeu2() > 128){
-            unsigned char ordre;
-            T_WRITE *write;
-            write = reinterpret_cast<T_WRITE *>(&ordre);
-            write->bitMode = _zdc->getModeVoies() - 128;
-            write->bitCouleurs2 = _zdc->getOrdresFeu2() - 128;
-
-            _i2c->ecrire(addr, &ordre, 1);
-
-            _zdc->setModeVoies(ordre - write->bitCouleurs2);
-            _zdc->setOrdresFeu2(ordre - write->bitMode);
-        }//IF  manu voie2
-
+    else{
+        uw.partie.bitMode = mode - ACK;
+        if(couleur1 >= ACK){
+            uw.partie.bitCouleurs1 = couleur1 - ACK;
+        }//IF changement couleur voie1
+        if(couleur2 > ACK){
+            uw.partie.bitCouleurs2 = couleur2 - ACK;
+        }//IF changement couleur voie2
+        _i2c->ecrire(addr, &uw.octet, 1);
+        _zdc->setModeVoies(uw.octet - uw.partie.bitCouleurs2);
+        _zdc->setOrdresFeu1(uw.octet - (uw.partie.bitMode + uw.partie.bitCouleurs2));
+        _zdc->setOrdresFeu2(uw.octet - (uw.partie.bitMode + uw.partie.bitCouleurs1));
     }//IF Mode manuel
 
     emit sigRestart();

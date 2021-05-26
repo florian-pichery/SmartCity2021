@@ -6,7 +6,7 @@ CParking::CParking(CZdc *zdc, QObject *parent) : QObject(parent)
     _i2c = CI2c::getInstance(nullptr, 1);
     //Init
     _zdc->setOrdreBarrieres(0);//0 = BED et BSD / 1 = BEM et BSD
-                              //2 = BED ET BSM / 3 = BEM ET BSM
+    //2 = BED ET BSM / 3 = BEM ET BSM
     _zdc->setEtatsBarrieres(0);
     _zdc->setCpt(8);//8 places par défaut
     //Fin Init
@@ -32,41 +32,40 @@ void CParking::onPark()
 
     //RFIDe = QByteArray(reinterpret_cast<char *>(parking+1), 5); //Conversion de unsigned char * vers QByteArray
     QString s;
-        QString result = "";
-        int rev = 5;
-        // Print String in Reverse order....
-        for ( int i = 0; i<rev; i++)
-            {
-               s = QString("%1").arg(parking[i],0,16);
+    QString result = "";
+    int rev = 5;
+    // Print String in Reverse order....
+    for ( int i = 0; i<rev; i++)
+    {
+        s = QString("%1").arg(parking[i],0,16);
 
-               if(s == "0"){
-                  s="00";
-                 }
-             result.append(s);
-
-             }
-        //qDebug()<< result;
+        if(s == "0"){
+            s="00";
+        }
+        result.append(s);
+    }
+    RFIDe = result.toLatin1();
     _zdc->setRfidE(RFIDe);
 
-    //RFIDs = QByteArray(reinterpret_cast<char *>(parking+6), 5); //Conversion de unsigned char * vers QByteArray
-        result = "";
-        // Print String in Reverse order....
-        for ( int i = 0; i<rev; i++)
-            {
-               s = QString("%1").arg(parking[i],0,16);
 
-               if(s == "0"){
-                  s="00";
-                 }
-             result.append(s);
+    result = "";
+    // Print String in Reverse order....
+    for ( int i = 0; i<rev; i++)
+    {
+        s = QString("%1").arg(parking[i],0,16);
 
-             }
+        if(s == "0"){
+            s="00";
+        }
+        result.append(s);
+    }
+    RFIDs = result.toLatin1();
     _zdc->setRfidS(RFIDs);
 
     emit sigEcran(static_cast<QString>(_zdc->getCpt()));
 
     uint8_t order = _zdc->getOrdreBarrieres();
-    if(order > 128){
+    if(order >= 128){
         order = order - 128;
         switch(order){
         case BAR_SORTIE_DES:
@@ -76,7 +75,7 @@ void CParking::onPark()
             emit sigEcran(static_cast<QString>(_zdc->getCpt()));
             break;
 
-       case BAR_ENTREE_DES:
+        case BAR_ENTREE_DES:
             _i2c->ecrire(static_cast<unsigned char>(_zdc->getAddrPark()), &order, 1);
             _zdc->setOrdreBarrieres(order);
             _zdc->setCptMoins();
