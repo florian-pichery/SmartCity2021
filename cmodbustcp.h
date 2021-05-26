@@ -21,31 +21,32 @@ public:
     QByteArray reponseLecture(QByteArray val);
     bool verificationMdp();
     void deleteTc();
-    int get_functionCode();
-    QByteArray get_tc();
-    uint8_t get_Addr1WordInt();
-    uint8_t get_nbrOfWords();
 
     uint valueOf(QByteArray ByteArray);
 
-    QByteArray _Addr1Word;
-    QByteArray _nbrOfWord;
+    QByteArray get_tc();
+    uint8_t get_Addr1WordInt();
+    uint8_t get_nbrOfWords();
+    int get_functionCode();
+
+
 
 private:
-
-    QByteArray _tc;  // trame du client
-    QByteArray _reponse;
-    int _fonction;
-    int _mode = 0;
-    int _Addr1WordInt;
-
     int decodeParking();
     int decodeIntersection();
     int decodeEclairage();
     int decodeAuthentification();
+
     uint16_t calculCrc16(QByteArray ByteArray);
     QByteArray takeCharacter(int nbOfBytes);
 
+    QByteArray _tc;  // trame du client
+    QByteArray _reponse;
+    QByteArray _Addr1Word;
+    QByteArray _nbrOfWord;
+    int _Addr1WordInt;
+    int _fonction;
+    int _mode = 0;
 
 signals:
     void sig_erreur(QString mess);

@@ -28,7 +28,6 @@ private:
     quint16 _peerPort, _localPort;
     qintptr _sd;
 
-    char chaine[30];
     int part = 1;
 
     bool write(int ordre);

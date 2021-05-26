@@ -146,7 +146,7 @@ QByteArray CGererClient::read(int ordre)
         if (dataCalcArray.size() == 1) data += "000";
         if (dataCalcArray.size() == 2) data += "00";
         if (dataCalcArray.size() == 3) data += "0";
-        data = dataCalcArray;
+        data += dataCalcArray;
     }
         break;
     case 4://RFID
@@ -187,7 +187,6 @@ QByteArray CGererClient::read(int ordre)
             if (dataCalcArray.size() == 2) data += "00";
             if (dataCalcArray.size() == 3) data += "0";
             data += dataCalcArray;
-            qDebug() << data;
             dataInt = 0;
         }
     }
@@ -221,7 +220,7 @@ QByteArray CGererClient::read(int ordre)
         if (dataCalcArray.size() == 1) data += "000";
         if (dataCalcArray.size() == 2) data += "00";
         if (dataCalcArray.size() == 3) data += "0";
-        data = dataCalcArray;
+        data += dataCalcArray;
     }
         break;
     default :
@@ -234,7 +233,6 @@ QByteArray CGererClient::read(int ordre)
 
 bool CGererClient::write(int ordre)
 {
-    //quand on set la valeur on rajoute 128 en plus
     bool REturn = true;
     uint8_t Addr1wordInt;
     QByteArray tc = _modbus->get_tc();
@@ -242,26 +240,23 @@ bool CGererClient::write(int ordre)
     QString ligne;
     uint8_t nbrEclair;
     uint value[8];
-    uint bit[8];
-    if (ordre == 2 || ordre == 7){
+    bool bit[8];
 
+    if (ordre == 2 || ordre == 7){
         QByteArray valueWordToForce = tc;
         QString stringByteArray = QString::fromStdString(valueWordToForce.data());
         value[0] = stringByteArray.toUInt(nullptr,16);
+        //permet de décomposer la partie valeur donc dans l'exemple = "00B2" en valeur entière = 178(10)
         bit[0] = value[0]%2;
-        //qDebug() << bit[0];
-
         for (int i=0; i!=7; i++) {
             value[i+1] = (value[i]-bit[i])/2;
             bit[i+1] = value[i+1]%2;
-            //qDebug() << bit[i+1];
-        }
-
+        }// permet de transformer cette valeur en bits grâce a des divisions euclidiènnes
     }
 
     switch(ordre){
 
-    case 1://Ecran
+    case 1://EcranS
         if(tc.size() == 32){
             ligne = QString(tc.left(16));
             _zdc->setLigneSup(ligne);
@@ -321,10 +316,10 @@ bool CGererClient::write(int ordre)
             }
             if (bit[7] == 1){
                 //voie 2
-                if (bit[4] == 0 && bit[5] == 0) _zdc->setOrdresFeu1(128);//eteint
-                if (bit[4] == 1 && bit[5] == 0) _zdc->setOrdresFeu1(128+1);//vert
-                if (bit[4] == 0 && bit[5] == 1) _zdc->setOrdresFeu1(128+2);//orange
-                if (bit[4] == 1 && bit[5] == 1) _zdc->setOrdresFeu1(128+3);//rouge
+                if (bit[4] == 0 && bit[5] == 0) _zdc->setOrdresFeu2(128);//eteint
+                if (bit[4] == 1 && bit[5] == 0) _zdc->setOrdresFeu2(128+1);//vert
+                if (bit[4] == 0 && bit[5] == 1) _zdc->setOrdresFeu2(128+2);//orange
+                if (bit[4] == 1 && bit[5] == 1) _zdc->setOrdresFeu2(128+3);//rouge
             }
 
         }

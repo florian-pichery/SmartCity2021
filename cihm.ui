@@ -2,17 +2,12 @@
 <ui version="4.0">
  <class>CIhm</class>
  <widget class="QMainWindow" name="CIhm">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1600</width>
-    <height>900</height>
-   </rect>
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
   </property>
   <property name="minimumSize">
    <size>
-    <width>1600</width>
+    <width>1400</width>
     <height>900</height>
    </size>
   </property>

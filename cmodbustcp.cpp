@@ -130,7 +130,7 @@ bool CModbusTcp::verifier()
 int CModbusTcp::decoder()
 {
     //décodage de "_tc" pour traduire un ordre
-    //cet odre sera afilié a un nombre et retourné par la fonction, dans on ready read
+    //cet odre sera affilié a un nombre et retourné par la fonction, dans on ready read
 
     //return 1 //Ecriture ecran
     //return 2 //Ecriture parking
@@ -281,8 +281,8 @@ int CModbusTcp::decodeEclairage()
 
 int CModbusTcp::decodeIntersection()
 {
-    _Addr1Word = takeCharacter(4);
-    _nbrOfWord = takeCharacter(4);
+    _Addr1Word = takeCharacter(4);//recupere l'adresse du premier mot
+    _nbrOfWord = takeCharacter(4);//recupere le nombres de mots
     QByteArray nbrOfBytes;
 
     switch (_fonction) {
@@ -296,7 +296,7 @@ int CModbusTcp::decodeIntersection()
             qDebug() << "erreur nombre de mots";
             return false;
         }//if
-        nbrOfBytes = takeCharacter(2);
+        nbrOfBytes = takeCharacter(2);//recupere le nombre d'octets
         if (nbrOfBytes != "02"){
             qDebug() << "erreur nombre d'octets";
             return false;
@@ -352,8 +352,8 @@ QByteArray CModbusTcp::reponseEcriture(bool exec)
 {
     _reponse ="";
     _reponse += ":";
+        //MBAP header
     QByteArray data = "00010000001D";
-
     switch (_mode) {//Unit identifier
     case 1://si parking
         data += "P";
@@ -368,23 +368,20 @@ QByteArray CModbusTcp::reponseEcriture(bool exec)
         data += "A";
         break;
     }
-
+        //fonction code
     data += "10";
-    data += _Addr1Word;
-    if (exec) data += _nbrOfWord;
-    else data += "0000";
-    uint16_t crc16Calc = calculCrc16(data);
-    QString crcCalcString = QString::number( crc16Calc, 16 ).toUpper();
-    QByteArray crcCalcArray = crcCalcString.toLatin1();
-    //qDebug () << "crc16Calc : " << crc16Calc;qDebug () << "crc16Hex : "
-    //<<crcCalcString;qDebug () << "taille trame = " << crcCalcArray.size() << ", trame : "<< crcCalcArray ;
-    if (crcCalcArray.size() == 1) data += "000";
-    if (crcCalcArray.size() == 2) data += "00";
-    if (crcCalcArray.size() == 3) data += "0";
-    data += crcCalcArray;
+        //data
+    data += _Addr1Word;//adresse du premier mot forcé
+    if (exec) data += _nbrOfWord;//nombre de mots forcés si tout s'est bien passé
+    else data += "0000";//sinon rien
+    uint16_t crc16Calc = calculCrc16(data);//calcul du CRC16
+    QString crcCalcString = QString::number( crc16Calc, 16 ).toUpper();//conversion hexadécimale
+    QByteArray crcCalcArray = crcCalcString.toLatin1();//convertion QByteArray
+
+    data += crcCalcArray;//ajout du CRC16 dans la trame
 
     _reponse += data;
-    _reponse += ":";
+    _reponse += ":";//encapsulation dans les '::'
     return _reponse;
 }
 
@@ -428,7 +425,7 @@ QByteArray CModbusTcp::reponseLecture(QByteArray val)
     QString crcCalcString = QString::number( crc16Calc, 16 ).toUpper();
     QByteArray crcCalcArray = crcCalcString.toLatin1();
     //qDebug () << "crc16Calc : " << crc16Calc;qDebug () << "crc16Hex : "
-    qDebug () << "taille crc = " << crcCalcArray.size() << ", crc : "<< crcCalcArray ;
+    //qDebug () << "taille crc = " << crcCalcArray.size() << ", crc : "<< crcCalcArray ;
     if (crcCalcArray.size() == 1) data += "000";
     if (crcCalcArray.size() == 2) data += "00";
     if (crcCalcArray.size() == 3) data += "0";
@@ -474,8 +471,8 @@ bool CModbusTcp::verificationMdp()
 
 QByteArray CModbusTcp::takeCharacter(int nbOfBytes)
 {
-    QByteArray byteArrayTaked = _tc.left(nbOfBytes);
-    _tc = _tc.right(_tc.size()-nbOfBytes);
+    QByteArray byteArrayTaked = _tc.left(nbOfBytes); //on récupère les nbrOfBytes premiers caractère de la variable commune _tc
+    _tc = _tc.right(_tc.size()-nbOfBytes); //on enleve ces caractères a la variable commune
     return byteArrayTaked;//retourne les nbOfBytes premiers caractères de _tc
 }
 
