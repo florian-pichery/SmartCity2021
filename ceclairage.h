@@ -32,7 +32,7 @@ private:
 signals:
     void sigEclair(int addr, int nb, int addr_base);
     void sigParking();
-    void sigRestart();
+    void sigInter();
 
 public slots:
     void on_sigEclair(int addr, int nb, int addr_base);

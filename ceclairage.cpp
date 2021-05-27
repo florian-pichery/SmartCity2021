@@ -24,7 +24,6 @@ CEclairage::~CEclairage()
 void CEclairage::on_sigEclair(int addr, int nb, int addr_base)
 {
     if (addr > (addr_base+nb-1)){
-        sleep(3);
         emit sigParking();
         return;
     }//if addr
@@ -48,7 +47,7 @@ void CEclairage::on_sigEclair(int addr, int nb, int addr_base)
 
     unsigned char ordre = _zdc->getConsigneEclair(indice);
 
-    if(ordre >= ORDRE_RECU){
+    if(ordre > ORDRE_RECU){
         ordre -= ORDRE_RECU;
         _i2c->ecrire(static_cast<unsigned char>(addr), &ordre, 1);
         _zdc->setConsigneEclair(indice, ordre);

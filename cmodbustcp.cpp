@@ -237,7 +237,7 @@ int CModbusTcp::decodeEclairage()
     _Addr1Word = takeCharacter(4);
     _Addr1WordInt = static_cast<int>(valueOf(_Addr1Word));
     _nbrOfWord = takeCharacter(4);
-    int nbrOfWordInt = static_cast<int>(valueOf(_Addr1Word));
+    int nbrOfWordInt = static_cast<int>(valueOf(_nbrOfWord));
     QByteArray nbrOfBytes;
     int nbrOfBytesInt;
     //a modifier
@@ -253,7 +253,7 @@ int CModbusTcp::decodeEclairage()
             return false;
         }//if
         nbrOfBytesInt = static_cast<int>(valueOf(takeCharacter(2)));
-        if (nbrOfBytesInt != nbrOfWordInt*2 || _tc.size() != nbrOfBytesInt){
+        if (nbrOfBytesInt != nbrOfWordInt*2 || _tc.size()/2 != nbrOfBytesInt){
             qDebug() << "erreur nombre d'octets";
             return false;
         }//if
@@ -392,7 +392,7 @@ QByteArray CModbusTcp::reponseLecture(QByteArray val)
     _reponse += ":";
     QByteArray data = "00010000";
 
-    uint16_t lenght = sizeof (data)+4+1+2+2+sizeof (val)+4+2;
+    uint16_t lenght = 2+4+4+4+1+2+2+val.size()+4;//8+4+1+2+2+4+4+2
     QString lenghtString = QString::number( lenght, 16 ).toUpper();
     QByteArray lenghtArray = lenghtString.toLatin1();
     if (lenghtArray.size() == 2)data+= "00";
