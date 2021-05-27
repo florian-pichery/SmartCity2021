@@ -63,6 +63,7 @@ void CGererClient::on_readyRead()
     emit sig_info(QString::number(nb)+" caractères reçus de IP="+_hostAddress.toString()+" Port="+QString::number(_peerPort)+" :" );
     //affichage du nombre de d'octets reçus, de l'IP, du port de la source, et le contenu du message
     emit sig_info("trame reçue -> " + trameClient);
+    qDebug()<<"trame reçue -> "<< trameClient;
     //on_writeToClients("Bien reçu !\n"); // ACK (acquittement : informer à l'émmeteur de la bonne reception du message)
     int commande = _modbus->on_trameClient(trameClient);//retourne -1 si mal passé, 0 si trame non complète, 1 si c'est bon
 
@@ -151,8 +152,8 @@ QByteArray CGererClient::read(int ordre)
         break;
     case 4://RFID
     {
-        QByteArray rfidE = "ff23430154";//_zdc->getRfidE();
-        QByteArray rfidS = "AC34549001";//_zdc->getRfidS();
+        QByteArray rfidE = _zdc->getRfidE();
+        QByteArray rfidS = _zdc->getRfidS();
         data += "00";
         data+= rfidE.toUpper();
         data += "00";
@@ -162,7 +163,7 @@ QByteArray CGererClient::read(int ordre)
     case 6://éclairage
     {
         Addr1wordInt = Addr1wordInt-32;
-        nbrEclair = 32;//_zdc->getNbEclairage();
+        nbrEclair = _zdc->getNbEclairage();
         for (uint8_t i=0; i<nbrOfWordsInt && nbrEclair > i && nbrEclair >= Addr1wordInt+1 + i ;i++) {
             if (!_zdc->getPresence(i+Addr1wordInt)) dataInt+=1;
             if (!_zdc->getCellule(i+Addr1wordInt)) dataInt+=2;

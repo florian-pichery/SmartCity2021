@@ -60,13 +60,19 @@ int CModbusTcp::on_trameClient(QByteArray trameClient)
     if (deb == -1) { // si pas de car de début
         return -1;
     } // if pas de car de debut
-
+    int u [_tc.size()];
+    int fin = -1;
     // test et purge fin de trame
-    int fin = _tc.indexOf(":",1);
+    for (int i = 0; i != _tc.size(); i++) {
+        u[i] = _tc.indexOf(":", i);
+        qDebug()<< u[i];
+        if (u[i] > u[i-1])
+            fin  = u[i];
+    }
+
     if (fin == -1) return 0; // on attend la suite
     _tc.remove(fin, _tc.size()-fin);  // au cas ou, on enlève tout après la fin
     _tc.remove(0, deb+1);  // on enlève tout avant le : au cas ou
-
     //emit sig_info("voici la trame au complet : "+_tc);
     return 1;
 }
@@ -82,6 +88,7 @@ bool CModbusTcp::verifier()
     //qDebug () << "taille trame = " << _tc.size() << ", trame : "<< _tc ;
     if (crc16 != crc16Calc){
         qDebug() << "CRC16 mauvais";
+        qDebug() << crc16array;
         qDebug() << "crc = " << crc16 << " crc calculé = "<< crc16Calc ;
         return 0;
     }//test CRC
@@ -352,7 +359,7 @@ QByteArray CModbusTcp::reponseEcriture(bool exec)
 {
     _reponse ="";
     _reponse += ":";
-        //MBAP header
+    //MBAP header
     QByteArray data = "00010000001D";
     switch (_mode) {//Unit identifier
     case 1://si parking
@@ -368,9 +375,9 @@ QByteArray CModbusTcp::reponseEcriture(bool exec)
         data += "A";
         break;
     }
-        //fonction code
+    //fonction code
     data += "10";
-        //data
+    //data
     data += _Addr1Word;//adresse du premier mot forcé
     if (exec) data += _nbrOfWord;//nombre de mots forcés si tout s'est bien passé
     else data += "0000";//sinon rien
