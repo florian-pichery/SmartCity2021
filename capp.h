@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QThread>
 
+#include "cbdd.h"
 #include "cgestionmaquette.h"
 #include "czdc.h"
 #include "cconfig.h"
@@ -56,6 +57,7 @@ private:
     CConfig *_config;
     QThread *_gthm;
     CGererServeur *_serv;
+    CBdd *_bdd;
 
 signals:
     void sig_go();

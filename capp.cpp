@@ -2,6 +2,7 @@
 
 CApp::CApp(QObject *parent) : QObject(parent)
 {
+    _bdd = new CBdd();
     _zdc = new CZdc();
     _zdc->init();
     CConfig cfg;
@@ -24,6 +25,7 @@ CApp::~CApp()
     _gthm->quit();
     _gthm->wait();
     delete _zdc;
+    delete _bdd;
 }
 
 //POUR L'IHM

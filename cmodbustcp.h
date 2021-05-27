@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QChar>
 #include <QByteArray>
+#include "cbdd.h"
 
 class CModbusTcp : public QObject
 {
@@ -47,6 +48,8 @@ private:
     int _Addr1WordInt;
     int _fonction;
     int _mode = 0;
+
+    CBdd *_bdd;
 
 signals:
     void sig_erreur(QString mess);

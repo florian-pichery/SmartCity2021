@@ -4,6 +4,7 @@
 
 CModbusTcp::CModbusTcp(QObject *parent) : QObject(parent)
 {
+    _bdd = new CBdd;
     /*
     QByteArray crc16array = _tc.right(4);
     _tc = _tc.left(_tc.size()-4);
@@ -448,7 +449,7 @@ bool CModbusTcp::verificationMdp()
     //qDebug() << _tc;
     QByteArray PREidentifiant = takeCharacter(32);
     QByteArray identifiant;
-    QByteArray host = "root";//getter sur la base de donnée
+    QByteArray host = _bdd->get_idClient().toLatin1();//getter sur la base de donnée
     //qDebug() << identifiant << " : " << PREidentifiant << " host:" <<host;
     for (int i = 1;identifiant != host || PREidentifiant.left(1) != " " ; i++) {
         if (i == 32){
@@ -461,7 +462,7 @@ bool CModbusTcp::verificationMdp()
     }
     QByteArray PREmotDePasse = takeCharacter(32);
     QByteArray motDePasse;
-    QByteArray mdp = "admin";//getter sur la base de donnée
+    QByteArray mdp = _bdd->get_mdpClient().toLatin1();//getter sur la base de donnée
 
     qDebug() << motDePasse << "pRE : " << PREmotDePasse;
     for (int i = 1;motDePasse!= mdp || PREmotDePasse.left(1) != " " ; i++) {

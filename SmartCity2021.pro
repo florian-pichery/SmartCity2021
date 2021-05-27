@@ -6,6 +6,7 @@
 
 QT       += core gui
 QT       += network
+QT       += sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -40,7 +41,8 @@ SOURCES += \
     cmodbustcp.cpp \
     cgererserveur.cpp \
     cgererclient.cpp \
-    cihm.cpp
+    cihm.cpp \
+    cbdd.cpp
 
 HEADERS += \
     cgestionmaquette.h \
@@ -56,7 +58,8 @@ HEADERS += \
     cmodbustcp.h \
     cgererserveur.h \
     cgererclient.h \
-    cihm.h
+    cihm.h \
+    cbdd.h
 
 FORMS += \
     cihm.ui
