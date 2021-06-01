@@ -23,6 +23,7 @@ public:
 private:
     Ui::CIhm *ui;
     CApp *_app;
+    int _compteur = 0;
 
 public slots:
     void on_sigMsgConsigne(QString msg_consigne);

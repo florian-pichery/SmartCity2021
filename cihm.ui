@@ -5,6 +5,14 @@
   <property name="windowModality">
    <enum>Qt::NonModal</enum>
   </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1400</width>
+    <height>900</height>
+   </rect>
+  </property>
   <property name="minimumSize">
    <size>
     <width>1400</width>
@@ -517,10 +525,10 @@
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
-      <x>90</x>
-      <y>410</y>
-      <width>501</width>
-      <height>331</height>
+      <x>40</x>
+      <y>400</y>
+      <width>1081</width>
+      <height>431</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -542,10 +550,10 @@
    <widget class="QWidget" name="verticalLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>710</x>
-      <y>410</y>
-      <width>271</width>
-      <height>331</height>
+      <x>1150</x>
+      <y>400</y>
+      <width>241</width>
+      <height>431</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">

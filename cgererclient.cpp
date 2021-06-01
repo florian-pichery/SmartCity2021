@@ -10,8 +10,7 @@ CGererClient::CGererClient(qintptr sd, QObject *parent) : QObject(parent)
 CGererClient::~CGererClient()
 {
     delete _zdc;
-    qDebug() << "GCererClient::~CGererClient : destruction !";
-    on_info("GCererClient::~CGererClient : destruction !");
+    emit sig_info("GCererClient::~CGererClient : destruction !");
     _sock->close();
     delete _modbus;
     delete _sock;
@@ -32,10 +31,12 @@ void CGererClient::on_goGestionClient()
         _localAddress = _sock->localAddress();//addr IP du serveur
         _peerPort = _sock->peerPort();//port du client
         _localPort = _sock->localPort();//port du serveur
-        on_info("CGererClient::on_goGestionClient : Connexion de IP="+_hostAddress.toString()
-                +" Port="+QString::number(_peerPort)); //affichage dans l'Ihm
 
-        // signaux de fonctionnement de la socket
+        emit sig_info("IP Local="+_localAddress.toString()+" Port="+QString::number(_localPort));
+        emit sig_info("CGererClient::on_goGestionClient : Connexion de IP="+_hostAddress.toString()
+                     +" Port="+QString::number(_peerPort)); //affichage dans l'Ihm
+
+        //signaux de fonctionnement de la socket
         connect(_sock, &QTcpSocket::readyRead, this, &CGererClient::on_readyRead);
         connect(_sock, &QTcpSocket::disconnected, this, &CGererClient::on_disconnected);
 
@@ -43,10 +44,9 @@ void CGererClient::on_goGestionClient()
                 [=](QAbstractSocket::SocketError socketError) {
             switch(socketError) {
             case QAbstractSocket::RemoteHostClosedError:
-                on_erreur("Erreur socket : Remote Host Closed !");
                 break;
             default:
-                on_erreur("Erreur socket : Erreur non précisée : "+QString::number(socketError));
+                emit sig_erreur("Erreur socket : Erreur non précisée : "+QString::number(socketError));
             } // sw
         });// cette longue commande gère les erreurs de manière intelligente et
         // l'affiche ainsi que son code d'erreur sauf si c'est une déconnection
@@ -59,26 +59,22 @@ void CGererClient::on_readyRead()
     QTcpSocket *client = static_cast<QTcpSocket *>(sender()); //on détermine qui envoie le message
     qint64 nb = client->bytesAvailable();// aquisition du nombre d'octets reçus
     QByteArray trameClient=client->readAll();// lecture de la trame qui nous est retourné en ASCII
-    //on_info("IP Local="+_localAddress.toString()+" Port="+QString::number(_localPort));//affichage le l'ip et le port du serveur
     emit sig_info(QString::number(nb)+" caractères reçus de IP="+_hostAddress.toString()+" Port="+QString::number(_peerPort)+" :" );
     //affichage du nombre de d'octets reçus, de l'IP, du port de la source, et le contenu du message
     emit sig_info("trame reçue -> " + trameClient);
-    qDebug()<<"trame reçue -> "<< trameClient;
-    //on_writeToClients("Bien reçu !\n"); // ACK (acquittement : informer à l'émmeteur de la bonne reception du message)
+
     int commande = _modbus->on_trameClient(trameClient);//retourne -1 si mal passé, 0 si trame non complète, 1 si c'est bon
 
     switch(commande){
 
     case -1:    //si mal passé
         emit sig_erreur("CGererClient::on_readyRead : Erreur dans le format de la trame, requette supprimée");
-        //on_writeToClients("format de requette incorrecte, requete supprimée");
         _modbus->deleteTc();
         break;
 
     case 0:     //si trame non complète
         part += 1;
         emit sig_erreur("Trame incomplète, attente de la "+QByteArray::number(part)+"ème partie de la requette.");
-        //on_writeToClients("attente de la "+QByteArray::number(part)+"ème partie de la requette");
         break;
 
     case 1:     //trame complète
@@ -87,7 +83,6 @@ void CGererClient::on_readyRead()
         bool verifier =_modbus->verifier();
         if (!verifier){
             emit sig_erreur("CGererClient::on_readyRead : erreur verification");
-            //on_writeToClients("Vérification de la trame échouée");
             _modbus->deleteTc();
             break;
         }//if(!verifier)
@@ -96,19 +91,23 @@ void CGererClient::on_readyRead()
         int ordre = _modbus->decoder();
         QByteArray reponse;
         QByteArray valeursMots;
+        emit sig_info("Décodage de la trame ...");
         switch (_modbus->get_functionCode()) {
         case 1://Lecture
             valeursMots = read(ordre);//retourne un QbyteArray de la partie data d'un réponse à une lecture
+            emit sig_info("Constitution de la trame de réponse ...");
             reponse = _modbus->reponseLecture(valeursMots);//retourne la trame à envoyer au client
             break;
         case 2://Ecriture
             bool exec = write(ordre);//retourne si ça s'est bien executé
+            emit sig_info("Constitution de la trame de réponse ...");
             reponse = _modbus->reponseEcriture(exec);//retourne la trame à envoyer au client
             break;
         }
+        emit sig_info("Trame : "+reponse);
         on_writeToClients(reponse);
         _modbus->deleteTc();
-        emit sig_info("Réponse envoyée.");
+        emit sig_info("Trame de réponse envoyée.");
         break;
 
     }//sw
@@ -129,6 +128,7 @@ QByteArray CGererClient::read(int ordre)
 
     case 3://Parking
     {
+        emit sig_info("Requette lecture parking");
         value[0] = _zdc->getEtatsBarrieres();
         bit[0] = value[0]%2;
         for (int i=0; i!=7; i++) {
@@ -152,6 +152,7 @@ QByteArray CGererClient::read(int ordre)
         break;
     case 4://RFID
     {
+        emit sig_info("Requette lecture RFID");
         QByteArray rfidE = _zdc->getRfidE();
         QByteArray rfidS = _zdc->getRfidS();
         data += "00";
@@ -162,6 +163,7 @@ QByteArray CGererClient::read(int ordre)
         break;
     case 6://éclairage
     {
+        emit sig_info("Requette lecture éclairage");
         Addr1wordInt = Addr1wordInt-32;
         nbrEclair = _zdc->getNbEclairage();
         for (uint8_t i=0; i<nbrOfWordsInt && nbrEclair > i && nbrEclair >= Addr1wordInt+1 + i ;i++) {
@@ -194,6 +196,7 @@ QByteArray CGererClient::read(int ordre)
         break;
     case 8://Intersection
     {
+        emit sig_info("Requette lecture intersection");
         value[0] = _zdc->getBoutonPietonVoie1();
         bit[0] = value[0]%2;
         for (int i=0; i!=7; i++) {
@@ -258,6 +261,7 @@ bool CGererClient::write(int ordre)
     switch(ordre){
 
     case 1://EcranS
+        emit sig_info("Requette ecriture Ecran.");
         if(tc.size() == 32){
             ligne = QString(tc.left(16));
             _zdc->setLigneSup(ligne);
@@ -267,6 +271,7 @@ bool CGererClient::write(int ordre)
         break;
 
     case 2://Parking
+        emit sig_info("Requette ecriture Parking");
         if (bit[0] == 1 && bit[1] == 0) _zdc->setOrdreBarrieres(128+1);//montée barriere entrée
         if (bit[1] == 1 && bit[0] == 0) _zdc->setOrdreBarrieres(128+2);//descente barriere entrée
         if (bit[2] == 1 && bit[3] == 0) _zdc->setOrdreBarrieres(128+4);//montée barriere sortie
@@ -275,6 +280,7 @@ bool CGererClient::write(int ordre)
         break;
 
     case 5://éclairage
+        emit sig_info("Requette ecriture Eclairage");
         REturn = 0;
         nbrEclair = _zdc->getNbEclairage();
         Addr1wordInt = _modbus->get_Addr1WordInt();
@@ -304,6 +310,7 @@ bool CGererClient::write(int ordre)
         break;
 
     case 7://Intersection
+        emit sig_info("Requette ecriture intersection.");
         if (bit[0] == 0 && bit[1] == 0) _zdc->setModeVoies(128);//orange clignotant
         if (bit[0] == 1 && bit[1] == 0) _zdc->setModeVoies(128+1);//auto
         if (bit[0] == 0 && bit[1] == 1) {//manuel
@@ -341,10 +348,9 @@ bool CGererClient::write(int ordre)
 
 void CGererClient::on_writeToClients(QByteArray rep)
 {
-    qDebug() <<"envoie message ->" << rep;
     qint64 nb = _sock->write(rep);
     if (nb == -1){
-        emit sig_erreur("Erreur d'envoi");
+        emit sig_erreur("Erreur d'envoie de la réponse");
     }
 }
 

@@ -27,7 +27,8 @@ private:
         QList<CGererClient *> _listeClient;
         QList<QThread *> _listeThread;
 
-    quint16 m_noPort;
+    quint16 _noPort;
+    QHostAddress _addr;
 
 signals:
     void sig_goGestionClient();

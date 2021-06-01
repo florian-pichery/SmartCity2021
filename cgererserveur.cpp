@@ -2,10 +2,12 @@
 
 CGererServeur::CGererServeur(quint16 noPort, QObject *parent) : QObject(parent)
 {
-    m_noPort = noPort;
+    _noPort = noPort;
+    _addr = QHostAddress::AnyIPv4;
     _serv = new CMonServeurTcp();
     connect(_serv, &CMonServeurTcp::sig_sdClient, this, &CGererServeur::on_newConnection);
-    _serv->listen(QHostAddress::AnyIPv4, m_noPort);
+    _serv->listen(_addr, _noPort);
+
 }
 
 CGererServeur::~CGererServeur()

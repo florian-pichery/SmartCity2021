@@ -494,12 +494,16 @@ void CIhm::on_cb_manuel_clicked(bool checked)
 
 void CIhm::on_erreur(QString mess)
 {
-    ui->teErreurs->append(mess);
+    _compteur++;
+    ui->teErreurs->append("["+QString::number(_compteur)+"] "+mess);
+    qDebug()<<mess;
 }
 
 void CIhm::on_info(QString mess)
 {
-    ui->teSuivi->append(mess);
+    _compteur++;
+    ui->teSuivi->append("["+QString::number(_compteur)+"] "+mess);
+    qDebug()<<mess;
 }
 
 
