@@ -104,7 +104,7 @@ void CGererClient::on_readyRead()
             reponse = _modbus->reponseEcriture(exec);//retourne la trame à envoyer au client
             break;
         }
-        emit sig_info("Trame : "+reponse);
+        emit sig_info("Trame = "+reponse);
         on_writeToClients(reponse);
         _modbus->deleteTc();
         emit sig_info("Trame de réponse envoyée.");

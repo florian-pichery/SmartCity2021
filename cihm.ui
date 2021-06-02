@@ -527,7 +527,7 @@
      <rect>
       <x>40</x>
       <y>400</y>
-      <width>1081</width>
+      <width>1071</width>
       <height>431</height>
      </rect>
     </property>
@@ -543,14 +543,18 @@
       </widget>
      </item>
      <item>
-      <widget class="QTextEdit" name="teSuivi"/>
+      <widget class="QTextEdit" name="teSuivi">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
    <widget class="QWidget" name="verticalLayoutWidget_2">
     <property name="geometry">
      <rect>
-      <x>1150</x>
+      <x>1130</x>
       <y>400</y>
       <width>241</width>
       <height>431</height>
@@ -568,7 +572,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QTextEdit" name="teErreurs"/>
+      <widget class="QTextEdit" name="teErreurs">
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
