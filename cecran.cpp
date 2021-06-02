@@ -253,10 +253,10 @@ void CEcran::onEcran(QString nb)
     setColor(WHITE);//Default color
     switch(nb.toInt(nullptr, 10)){
     case 3 ... 8:
-        setColor(GREEN);
+        setColor(WHITE);
         break;
     case 0 ... 2:
-        setColor(RED);
+        setRGB(155,0,255);
         break;
     }//SW color
     setCursor(0, 0);

@@ -313,26 +313,26 @@ bool CZdc::getCellule(uint8_t noCarte)
     return cellule;
 }
 
-void CZdc::setBoutonPietonVoie1(uint8_t bp)
+void CZdc::setEtatMode(uint8_t mode)
 {
     lock();
-    _adrZdc->intersection.boutonPieton1 = bp;
+    _adrZdc->intersection.etatMode = mode;
     unlock();
 }
 
-uint8_t CZdc::getBoutonPietonVoie1()
+uint8_t CZdc::getEtatMode()
 {
-    uint8_t boutonPieton;
+    uint8_t mode;
     lock();
-    boutonPieton = _adrZdc->intersection.boutonPieton1;
+    mode = _adrZdc->intersection.etatMode;
     unlock();
-    return boutonPieton;
+    return mode;
 }
 
 void CZdc::setModeVoies(uint8_t mode)
 {
     lock();
-    _adrZdc->intersection.mode = mode;
+    _adrZdc->intersection.ordreMode = mode;
     unlock();
 }
 
@@ -340,7 +340,7 @@ uint8_t CZdc::getModeVoies()
 {
     uint8_t mode;
     lock();
-    mode = _adrZdc->intersection.mode;
+    mode = _adrZdc->intersection.ordreMode;
     unlock();
     return mode;
 }
@@ -375,6 +375,22 @@ uint8_t CZdc::getInterEtat1()
     etat = _adrZdc->intersection.interEtat1;
     unlock();
     return etat;
+}
+
+void CZdc::setBoutonPietonVoie1(uint8_t bp)
+{
+    lock();
+    _adrZdc->intersection.boutonPieton1 = bp;
+    unlock();
+}
+
+uint8_t CZdc::getBoutonPietonVoie1()
+{
+    uint8_t boutonPieton;
+    lock();
+    boutonPieton = _adrZdc->intersection.boutonPieton1;
+    unlock();
+    return boutonPieton;
 }
 
 void CZdc::setBoutonPietonVoie2(uint8_t bp)

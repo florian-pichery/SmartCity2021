@@ -5,9 +5,9 @@ CIntersection::CIntersection(CZdc *zdc, QObject *parent) :  QObject(parent)
     _zdc = zdc;
     _i2c = CI2c::getInstance(this, '1');
     //Init
-    _zdc->setModeVoies(1);//Mode auto par défaut
-    _zdc->setOrdresFeu1(3);//Rouge
-    _zdc->setOrdresFeu2(1);//Vert
+    _zdc->setModeVoies(2);
+    _zdc->setOrdresFeu1(3);
+    _zdc->setOrdresFeu2(1);
     //Fin Init
 }
 
@@ -26,7 +26,7 @@ void CIntersection::onInter()
 
     U_READ octet;
     octet.octet = inter[0];//1er octet
-    _zdc->setModeVoies(octet.partie.bitMode);
+    _zdc->setEtatMode(octet.partie.bitMode);
     _zdc->setInterEtat1(octet.partie.bitCouleurs);
     _zdc->setBoutonPietonVoie1(octet.partie.bitBoutons);
 
@@ -38,16 +38,16 @@ void CIntersection::onInter()
     uint8_t mode = _zdc->getModeVoies();
     uint8_t couleur1 = _zdc->getOrdresFeu1();
     uint8_t couleur2 = _zdc->getOrdresFeu2();
-    mode |= ACK; // Version de test
-    couleur1 |= ACK; //Test
-    couleur2 |= ACK; //Test
+    mode += ACK; // Version de test
+    couleur1 += ACK; //Test
+    couleur2 += ACK; //Test
     U_WRITE uw;
     uw.octet = 0;
 
-    if(mode != MODE_MANUEL){
+   if(mode != MODE_MANUEL){
         uw.partie.bitMode = mode - ACK;
         _i2c->ecrire(addr, &uw.octet, 1);
-        _zdc->setModeVoies(uw.octet);
+        _zdc->setModeVoies(uw.octet - ACK);
     }//IF mode =/ manuel
 
     else{

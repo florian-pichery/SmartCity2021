@@ -11,7 +11,7 @@ CEclairage::CEclairage(CZdc *zdc, QObject *parent) : QObject(parent)
         _zdc->setPresence(i,false);
         _zdc->setCellule(i,false);
         _zdc->setLampFonct(i,63);//6 lampadaires fonctionnants
-        _zdc->setConsigneEclair(i,0); //Éteint par défaut
+        _zdc->setConsigneEclair(i,4); //Éteint par défaut
     }//for
    //Fin Init
 }
@@ -46,8 +46,9 @@ void CEclairage::on_sigEclair(int addr, int nb, int addr_base)
 //    _zdc->setConsigne(ordre);
 
     unsigned char ordre = _zdc->getConsigneEclair(indice);
+    ordre |= ORDRE_RECU;
 
-    if(ordre > ORDRE_RECU){
+    if(ordre >= ORDRE_RECU){
         ordre -= ORDRE_RECU;
         _i2c->ecrire(static_cast<unsigned char>(addr), &ordre, 1);
         _zdc->setConsigneEclair(indice, ordre);

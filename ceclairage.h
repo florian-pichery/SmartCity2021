@@ -10,7 +10,7 @@
 
 typedef struct{     //LSB vers MSB
     uint8_t
-        bitPresence : 1, bitJN : 1, bitLamps : 6;
+        bitJN : 1, bitPresence : 1, bitLamps : 6;
 }T_LAMP;
 
 typedef union{

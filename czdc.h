@@ -43,7 +43,8 @@ typedef struct eclairage{
 
 typedef struct intersection{
     int addr;// Adresse i²c de l'esclave
-    uint8_t mode;// Sur les deux bits de poids faible (1 et 0) : 00 = Orange clignotant / 01 = Automatique / 10 = Manuel //
+    uint8_t etatMode;// Sur les deux bits de poids faible (1 et 0) : 00 = Orange clignotant / 01 = Automatique / 10 = Manuel //
+    uint8_t ordreMode;// Sur les deux bits de poids faible (1 et 0) : 00 = Orange clignotant / 01 = Automatique / 10 = Manuel //
     //Voie 1
     uint8_t boutonPieton1; /* 4 par trame de voie (bit 6,5,4 en lecture)
                            =>100 : 4 boutons appuyés / 011 : 3 boutons appuyés
@@ -121,8 +122,10 @@ public:
 //Fin éclairage
 //Intersection
 public:
-    void setModeVoies(uint8_t mode);/* Définition du mode de l'éclairage
+    void setEtatMode(uint8_t mode);/* Définition du mode de l'éclairage
         sur les deux bits de poids faible (1 et 0) : 00 = Orange clignotant / 01 = Automatique / 10 = Manuel*/
+    uint8_t getEtatMode(); //LECTURE
+    void setModeVoies(uint8_t mode);// ECRITURE //Définition du mode de l'éclairage sur les deux bits de poids faible (1 et 0) : 00 = Orange clignotant / 01 = Automatique / 10 = Manuel*/
     uint8_t getModeVoies();
     /* Voie 1 */
     void setBoutonPietonVoie1(uint8_t bp);// Définition du nombre de boutons piétons cliqués défini par CIntersection
