@@ -29,6 +29,7 @@ private:
 
 signals:
     void sigEcran(QString nb);
+    void sigRestart();
 
 public slots:
     void onPark();

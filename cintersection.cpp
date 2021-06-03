@@ -4,11 +4,11 @@ CIntersection::CIntersection(CZdc *zdc, QObject *parent) :  QObject(parent)
 {
     _zdc = zdc;
     _i2c = CI2c::getInstance(this, '1');
-    //Init
-    _zdc->setModeVoies(2);
-    _zdc->setOrdresFeu1(3);
-    _zdc->setOrdresFeu2(1);
-    //Fin Init
+//    //Init
+//    _zdc->setModeVoies(2);
+//    _zdc->setOrdresFeu1(3);
+//    _zdc->setOrdresFeu2(1);
+//    //Fin Init
 }
 
 CIntersection::~CIntersection()
@@ -38,9 +38,9 @@ void CIntersection::onInter()
     uint8_t mode = _zdc->getModeVoies();
     uint8_t couleur1 = _zdc->getOrdresFeu1();
     uint8_t couleur2 = _zdc->getOrdresFeu2();
-    mode += ACK; // Version de test
-    couleur1 += ACK; //Test
-    couleur2 += ACK; //Test
+//    mode += ACK; // Version de test
+//    couleur1 += ACK; //Test
+//    couleur2 += ACK; //Test
     U_WRITE uw;
     uw.octet = 0;
 

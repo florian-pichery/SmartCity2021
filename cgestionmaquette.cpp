@@ -16,6 +16,9 @@ CGestionMaquette::CGestionMaquette()
 
 //    connect(this, &CGestionMaquette::sigInter, _inter, &CIntersection::onInter);
 
+//    connect(this, &CGestionMaquette::sigPark, _park, &CParking::onPark);
+//    connect(_park, &CParking::sigRestart, this, &CGestionMaquette::on_go);
+
 }
 
 CGestionMaquette::~CGestionMaquette()
@@ -30,6 +33,8 @@ CGestionMaquette::~CGestionMaquette()
 void CGestionMaquette::on_go()
 {
 //    emit sigInter();
+
+//    emit sigPark();
 
 //    //Eclairage : lance le cycle de l'éclairage
     int addr = _zdc->getAddrEclair(); //Passage des adresses en int dû à des problèmes de compilation avec le uint8_t
