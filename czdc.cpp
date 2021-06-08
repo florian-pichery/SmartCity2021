@@ -34,8 +34,8 @@ void CZdc::init()
     QString nb = QString::number(getCpt());
     QString sup;
     sup = "PLACES LIBRES:";
-    setLigneInf(nb);
     setLigneSup(sup);
+    setLigneInf(nb);
 }
 
 void CZdc::setNbEclairage(uint8_t nb)

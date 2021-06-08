@@ -8,20 +8,27 @@ CIhm::CIhm(QWidget *parent) :
     ui->setupUi(this);
     _app = new CApp(this);
 
-    ui->teEclair->setText("Puissance d'éclairage\nJour/nuit\nPrésence de personne\n");
+    ui->teEclair->setText("Puissance d'éclairage");
     ui->teInter->setText("Mode des voies\nCouleur de la voie 1\nCouleur de la voie 2");
     ui->tePark->setText("Action sur la barrière d'entrée\nAction sur la barrière de sortie");
 
-    /*Connect des signaux de CApp vers CIhmI2c*/
+    ui->comboBoxVoie1->setEnabled(false);
+    ui->comboBoxVoie2->setEnabled(false);
+
+    int cpt = _app->getCpt();
+
+    ui->lcdNumber->display(cpt);
+
+    /*Connect des signaux de CApp vers CIhm*/
 
     connect(_app, &CApp::sig_erreur, this, &CIhm::on_erreur);
     connect(_app, &CApp::sig_info, this, &CIhm::on_info);
     connect(_app, &CApp::sig_msgConsigne, this, &CIhm::on_sigMsgConsigne);
-    connect(_app, &CApp::sig_msgCellule, this, &CIhm::on_sigMsgCellule);
-    connect(_app, &CApp::sig_msgPresence, this, &CIhm::on_sigMsgPresence);
     connect(_app, &CApp::sig_msgInterOrdre1, this, &CIhm::on_sigMsginterOrdre1);
     connect(_app, &CApp::sig_msgInterOrdre2, this, &CIhm::on_sigMsginterOrdre2);
     connect(_app, &CApp::sig_msgMode, this, &CIhm::on_sigMsgMode);
+    connect(_app, &CApp::sig_msgParkOrdreE, this, &CIhm::on_sigMsgParkOrdreE);
+    connect(_app, &CApp::sig_msgParkOrdreS, this, &CIhm::on_sigMsgParkOrdreS);
 }
 
 CIhm::~CIhm()
@@ -68,30 +75,6 @@ void CIhm::on_sigMsgConsigne(QString msg_consigne)
     }
 }
 
-void CIhm::on_sigMsgCellule(QString msg_cellule)
-{
-    const int lineToDelete = 1; // To delete the second line.
-    QTextBlock b = ui->teEclair->document()->findBlockByLineNumber(lineToDelete);
-    if (b.isValid()) {
-        QTextCursor cursor(b);
-        cursor.select(QTextCursor::BlockUnderCursor);
-        cursor.removeSelectedText();
-        cursor.insertText("\nJour/nuit :" + msg_cellule);
-    }
-}
-
-void CIhm::on_sigMsgPresence(QString msg_presence)
-{
-    const int lineToDelete = 2; // To delete the second line.
-    QTextBlock b = ui->teEclair->document()->findBlockByLineNumber(lineToDelete);
-    if (b.isValid()) {
-        QTextCursor cursor(b);
-        cursor.select(QTextCursor::BlockUnderCursor);
-        cursor.removeSelectedText();
-        cursor.insertText("\nPrésence de personne :" + msg_presence);
-    }
-}
-
 void CIhm::on_sigMsginterOrdre1(QString msg_interOrdre1)
 {
     const int lineToDelete = 1; // To delete the second line.
@@ -124,7 +107,31 @@ void CIhm::on_sigMsgMode(QString msg_mode)
         QTextCursor cursor(b);
         cursor.select(QTextCursor::BlockUnderCursor);
         cursor.removeSelectedText();
-        cursor.insertText("\nMode des voies :" + msg_mode);
+        cursor.insertText("Mode des voies :" + msg_mode);
+    }
+}
+
+void CIhm::on_sigMsgParkOrdreE(QString msg_parkOrdre)
+{
+    const int lineToDelete = 0; // To delete the first line.
+    QTextBlock b = ui->tePark->document()->findBlockByLineNumber(lineToDelete);
+    if (b.isValid()) {
+        QTextCursor cursor(b);
+        cursor.select(QTextCursor::BlockUnderCursor);
+        cursor.removeSelectedText();
+        cursor.insertText("Action sur la barrière d'entrée :" + msg_parkOrdre);
+    }
+}
+
+void CIhm::on_sigMsgParkOrdreS(QString msg_parkOrdre)
+{
+    const int lineToDelete = 1; // To delete the first line.
+    QTextBlock b = ui->tePark->document()->findBlockByLineNumber(lineToDelete);
+    if (b.isValid()) {
+        QTextCursor cursor(b);
+        cursor.select(QTextCursor::BlockUnderCursor);
+        cursor.removeSelectedText();
+        cursor.insertText("\nAction sur la barrière de sortie :" + msg_parkOrdre);
     }
 }
 
@@ -137,7 +144,7 @@ void CIhm::on_cb_0_clicked(bool checked)
 {
     if(checked == true){
 
-        //_app->setConsigne(0); //appel de la fonction dans CApp
+        _app->setConsigne(0); //appel de la fonction dans CApp
 
        ui->cb_50->setEnabled(false);//Quand cb_0 coché, cb_50 pas cochable.
        ui->cb_100->setEnabled(false);//La même chose pour cb_100.
@@ -159,7 +166,7 @@ void CIhm::on_cb_50_clicked(bool checked)
 {
     if(checked == true){
 
-        //_app->setConsigne(1);
+        _app->setConsigne(1);
 
        ui->cb_0->setEnabled(false);
        ui->cb_100->setEnabled(false);
@@ -182,7 +189,7 @@ void CIhm::on_cb_100_clicked(bool checked)
 {
     if(checked == true){
 
-        //_app->setConsigne(2);
+        _app->setConsigne(2);
 
        ui->cb_0->setEnabled(false);
        ui->cb_50->setEnabled(false);
@@ -199,238 +206,9 @@ void CIhm::on_cb_100_clicked(bool checked)
     }
   }
 }
-
-void CIhm::on_cb_jour_clicked(bool checked)
-/*Ici est un cas particulier, c'est le jour donc pas de lumière -> pas de possibilité de pouvoir mettre de la lumière
-Le 0% est forcé par défaut et ne peut être enlevé qu'à la condition que ça ne soit plus le jour*/
-{
-    if(checked == true){
-        //_app->setCellule(true);
-
-       ui->cb_0->setChecked(true);
-       ui->cb_0->setEnabled(false);
-       //_app->setConsigne(0);
-
-       ui->cb_50->setEnabled(false);
-       ui->cb_100->setEnabled(false);
-       ui->cb_nuit->setEnabled(false);
-       ui->cb_presence->setEnabled(false);
-       ui->cb_absence->setEnabled(false);
-    }else{
-       ui->cb_0->setChecked(false);
-       int lineToDelete = 0; // Pour supprimer la première ligne
-       QTextBlock b = ui->teEclair->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("Puissance d'éclairage");
-       }
-       ui->cb_0->setEnabled(true);
-       ui->cb_50->setEnabled(true);
-       ui->cb_100->setEnabled(true);
-       ui->cb_nuit->setEnabled(true);
-       ui->cb_presence->setEnabled(true);
-       ui->cb_absence->setEnabled(true);
-       lineToDelete = 1; // Pour supprimer la deuxième ligne
-       b = ui->teEclair->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("\nJour/nuit");
-      }
-   }
-}
-
-void CIhm::on_cb_nuit_clicked(bool checked)
-{
-    if(checked == true){
-        //_app->setCellule(false);
-
-       ui->cb_jour->setEnabled(false);
-    }else{
-       ui->cb_jour->setEnabled(true);
-       const int lineToDelete = 1; // Pour supprimer la deuxième ligne
-       QTextBlock b = ui->teEclair->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("\nJour/nuit");
-      }
-   }
-}
-
-void CIhm::on_cb_presence_clicked(bool checked)
-{
-    if(checked == true){
-        //_app->setPresence(true);
-
-       ui->cb_absence->setEnabled(false);
-    }else{
-       ui->cb_absence->setEnabled(true);
-       const int lineToDelete = 2; // Pour supprimer la troisième ligne
-       QTextBlock b = ui->teEclair->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("\nPrésence de personne");
-      }
-   }
-}
-
-void CIhm::on_cb_absence_clicked(bool checked)
-{
-    if(checked == true){
-        //_app->setPresence(false);
-
-       ui->cb_presence->setEnabled(false);
-    }else{
-       ui->cb_presence->setEnabled(true);
-       const int lineToDelete = 2; // Pour supprimer la troisième ligne
-       QTextBlock b = ui->teEclair->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("\nPrésence de personne");
-        }
-    }
-}
-
 //Fin partie Éclairage
 
 //Partie intersection
-
-void CIhm::on_cb_red_clicked(bool checked)
-{
-    if(checked == true){
-        _app->setInterOrdre1(0);
-
-       ui->cb_orange->setEnabled(false);
-       ui->cb_green->setEnabled(false);
-    }else{
-       ui->cb_orange->setEnabled(true);
-       ui->cb_green->setEnabled(true);
-       const int lineToDelete = 1; // Pour supprimer la première ligne
-       QTextBlock b = ui->teInter->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("\nCouleur de la voie 1");
-        }
-    }
-}
-
-void CIhm::on_cb_red2_clicked(bool checked)//Continuer la deuxième voie
-{
-    if(checked == true){
-        _app->setInterOrdre2(0);
-
-       ui->cb_orange2->setEnabled(false);
-       ui->cb_green2->setEnabled(false);
-    }else{
-       ui->cb_orange2->setEnabled(true);
-       ui->cb_green2->setEnabled(true);
-       const int lineToDelete = 3; // Pour supprimer la dernière ligne
-       QTextBlock b = ui->teInter->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("\nCouleur de la voie 2");
-       }
-    }
-}
-
-
-void CIhm::on_cb_orange_clicked(bool checked)
-{
-    if(checked == true){
-        _app->setInterOrdre1(1);
-
-       ui->cb_red->setEnabled(false);
-       ui->cb_green->setEnabled(false);
-    }else{
-       ui->cb_red->setEnabled(true);
-       ui->cb_green->setEnabled(true);
-       const int lineToDelete = 1; // Pour supprimer la première ligne
-       QTextBlock b = ui->teInter->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("\nCouleur de la voie 1");
-        }
-    }
-}
-
-void CIhm::on_cb_orange2_clicked(bool checked)
-{
-    if(checked == true){
-        _app->setInterOrdre2(1);
-
-       ui->cb_red2->setEnabled(false);
-       ui->cb_green2->setEnabled(false);
-    }else{
-       ui->cb_red2->setEnabled(true);
-       ui->cb_green2->setEnabled(true);
-       const int lineToDelete = 3; // Pour supprimer la dernière ligne
-       QTextBlock b = ui->teInter->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("\nCouleur de la voie 2");
-       }
-    }
-}
-
-void CIhm::on_cb_green_clicked(bool checked)
-{
-    if(checked == true){
-        _app->setInterOrdre1(2);
-
-       ui->cb_red->setEnabled(false);
-       ui->cb_orange->setEnabled(false);
-    }else{
-       ui->cb_red->setEnabled(true);
-       ui->cb_orange->setEnabled(true);
-       const int lineToDelete = 1; // Pour supprimer la deuxième ligne
-       QTextBlock b = ui->teInter->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("\nCouleur de la voie 1");
-        }
-    }
-}
-
-void CIhm::on_cb_green2_clicked(bool checked)
-{
-    if(checked == true){
-        _app->setInterOrdre2(2);
-
-       ui->cb_red2->setEnabled(false);
-       ui->cb_orange2->setEnabled(false);
-    }else{
-       ui->cb_red2->setEnabled(true);
-       ui->cb_orange2->setEnabled(true);
-       const int lineToDelete = 0; // Pour supprimer la première ligne
-       QTextBlock b = ui->teInter->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("\nCouleur de la voie 2");
-       }
-    }
-}
-
 
 void CIhm::on_cb_auto_clicked(bool checked)
 {
@@ -440,21 +218,9 @@ void CIhm::on_cb_auto_clicked(bool checked)
         //Empêche de cliquer sur les autres boutons (étant en automatique)
         ui->cb_manuel->setEnabled(false);
         ui->cb_cligno->setEnabled(false);
-        ui->cb_red->setEnabled(false);
-        ui->cb_red2->setEnabled(false);
-        ui->cb_orange->setEnabled(false);
-        ui->cb_orange2->setEnabled(false);
-        ui->cb_green->setEnabled(false);
-        ui->cb_green2->setEnabled(false);
     }else {
         ui->cb_manuel->setEnabled(true);
         ui->cb_cligno->setEnabled(true);
-        ui->cb_red->setEnabled(true);
-        ui->cb_red2->setEnabled(true);
-        ui->cb_orange->setEnabled(true);
-        ui->cb_orange2->setEnabled(true);
-        ui->cb_green->setEnabled(true);
-        ui->cb_green2->setEnabled(true);
         const int lineToDelete = 0; // Pour supprimer la première ligne
         QTextBlock b = ui->teInter->document()->findBlockByLineNumber(lineToDelete);
         if (b.isValid()) {
@@ -482,14 +248,166 @@ void CIhm::on_cb_cligno_clicked(bool checked)
             QTextCursor cursor(b);
             cursor.select(QTextCursor::BlockUnderCursor);
             cursor.removeSelectedText();
-            cursor.insertText("\nCouleur de la voie 2");
+            cursor.insertText("Mode des voies");
         }
     }
 }
 
 void CIhm::on_cb_manuel_clicked(bool checked)
 {
+    if(checked == true){
+        _app->setMode(2);
 
+        ui->cb_auto->setEnabled(false);
+        ui->cb_cligno->setEnabled(false);
+        ui->comboBoxVoie1->setEnabled(true);
+        ui->comboBoxVoie2->setEnabled(true);
+    }else {
+        ui->cb_auto->setEnabled(true);
+        ui->cb_cligno->setEnabled(true);
+        ui->comboBoxVoie1->setEnabled(false);
+        ui->comboBoxVoie2->setEnabled(false);
+        const int lineToDelete = 0; // Pour supprimer la première ligne
+        QTextBlock b = ui->teInter->document()->findBlockByLineNumber(lineToDelete);
+        if (b.isValid()) {
+            QTextCursor cursor(b);
+            cursor.select(QTextCursor::BlockUnderCursor);
+            cursor.removeSelectedText();
+            cursor.insertText("Mode des voies");
+        }
+    }
+}
+
+void CIhm::on_comboBoxVoie1_currentIndexChanged(int index)
+{
+   switch(index){
+    case 0 : _app->setInterOrdre1(0); break;
+    case 1 : _app->setInterOrdre1(1); break;
+    case 2 : _app->setInterOrdre1(2); break;
+    case 3 : _app->setInterOrdre1(3); break;
+   }
+}
+
+void CIhm::on_comboBoxVoie2_currentIndexChanged(int index)
+{
+    switch(index){
+     case 0 : _app->setInterOrdre2(0); break;
+     case 1 : _app->setInterOrdre2(1); break;
+     case 2 : _app->setInterOrdre2(2); break;
+     case 3 : _app->setInterOrdre2(3); break;
+    }
+}
+
+//Fin partie Intersection
+
+//Partie Parking
+
+void CIhm::on_cbMontEnt_clicked(bool checked)
+{
+    if(checked == true){
+        _app->setParkOrdre(1);
+
+        ui->cbDescEnt->setEnabled(false);
+    }else {
+        ui->cbDescEnt->setEnabled(true);
+        const int lineToDelete = 0; // Pour supprimer la première ligne
+        QTextBlock b = ui->tePark->document()->findBlockByLineNumber(lineToDelete);
+        if (b.isValid()) {
+            QTextCursor cursor(b);
+            cursor.select(QTextCursor::BlockUnderCursor);
+            cursor.removeSelectedText();
+            cursor.insertText("Action sur la barrière d'entrée");
+        }
+    }
+}
+
+void CIhm::on_cbDescEnt_clicked(bool checked)
+{
+    if(checked == true){
+        _app->setParkOrdre(2);
+
+        ui->cbMontEnt->setEnabled(false);
+    }else {
+        ui->cbMontEnt->setEnabled(true);
+        const int lineToDelete = 0; // Pour supprimer la première ligne
+        QTextBlock b = ui->tePark->document()->findBlockByLineNumber(lineToDelete);
+        if (b.isValid()) {
+            QTextCursor cursor(b);
+            cursor.select(QTextCursor::BlockUnderCursor);
+            cursor.removeSelectedText();
+            cursor.insertText("Action sur la barrière d'entrée");
+        }
+    }
+}
+
+void CIhm::on_cbMontSor_clicked(bool checked)
+{
+    if(checked == true){
+        _app->setParkOrdre(4);
+
+        ui->cbDescSor->setEnabled(false);
+    }else {
+        ui->cbDescSor->setEnabled(true);
+        const int lineToDelete = 1; // Pour supprimer la première ligne
+        QTextBlock b = ui->tePark->document()->findBlockByLineNumber(lineToDelete);
+        if (b.isValid()) {
+            QTextCursor cursor(b);
+            cursor.select(QTextCursor::BlockUnderCursor);
+            cursor.removeSelectedText();
+            cursor.insertText("\nAction sur la barrière de sortie");
+        }
+    }
+}
+
+void CIhm::on_cbDescSor_clicked(bool checked)
+{
+    if(checked == true){
+        _app->setParkOrdre(8);
+
+        ui->cbMontSor->setEnabled(false);
+    }else {
+        ui->cbMontSor->setEnabled(true);
+        const int lineToDelete = 1; // Pour supprimer la première ligne
+        QTextBlock b = ui->tePark->document()->findBlockByLineNumber(lineToDelete);
+        if (b.isValid()) {
+            QTextCursor cursor(b);
+            cursor.select(QTextCursor::BlockUnderCursor);
+            cursor.removeSelectedText();
+            cursor.insertText("\nAction sur la barrière de sortie");
+        }
+    }
+}
+
+void CIhm::on_leSup_returnPressed()
+{
+    if(ui->leSup->text().isEmpty()){
+        _app->setLigneSup("Ligne superieure");
+    }else {
+        _app->setLigneSup(ui->leSup->text());
+    }
+}
+
+void CIhm::on_leInf_returnPressed()
+{
+    if(ui->leInf->text().isEmpty()){
+        _app->setLigneInf("Ligne inferieure");
+    }else {
+        _app->setLigneInf(ui->leInf->text());
+    }
+}
+
+void CIhm::on_pbPlus_clicked()
+{
+   _app->setCptPlus();
+   int cpt = _app->getCpt();
+   ui->lcdNumber->display(cpt);
+}
+
+void CIhm::on_pbMoins_clicked()
+{
+    _app->setCptMoins();
+    int cpt = _app->getCpt();
+    ui->lcdNumber->display(cpt);
 }
 
 void CIhm::on_erreur(QString mess)
@@ -505,5 +423,3 @@ void CIhm::on_info(QString mess)
     ui->teSuivi->append("["+QString::number(_compteur)+"] "+mess);
     qDebug()<<mess;
 }
-
-

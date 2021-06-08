@@ -37,14 +37,6 @@ void CEclairage::on_sigEclair(int addr, int nb, int addr_base)
     _zdc->setPresence(indice, octet.partie.bitPresence);
     _zdc->setLampFonct(indice, octet.partie.bitLamps);
 
-//    //Test I2C avec Ninnin à voir
-
-//    unsigned char ordre;
-//    ordre = 1;
-
-//    _i2c->ecrire(addr, &ordre, 1);
-//    _zdc->setConsigne(ordre);
-
     unsigned char ordre = _zdc->getConsigneEclair(indice);
     ordre |= ORDRE_RECU;
 

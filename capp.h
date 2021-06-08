@@ -33,8 +33,6 @@ public:
 
 //Eclairage
     void setConsigne(uint8_t consigne);
-    void setCellule(bool cellule);
-    void setPresence(bool presence);
 //Fin Eclairage
 
 //Intersection
@@ -45,7 +43,8 @@ public:
 
 //Parking
     void setParkOrdre(uint8_t parkOrdre);
-    void setRFID(QByteArray rfid);
+    void setLigneSup(QString ligne);
+    void setLigneInf(QString ligne);
     int getCpt();
     void setCptPlus();
     void setCptMoins();
@@ -81,7 +80,6 @@ signals:
     void sig_info(QString mess);
 
 private slots:
-
     void on_erreur(QString mess);
     void on_info(QString mess);
 
