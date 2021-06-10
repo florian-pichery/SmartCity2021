@@ -106,12 +106,6 @@ QString CBdd::set_i2cParking(QString addrI2C, QString etats)
     return adrI2C;
 }
 
-
-
-
-
-
-
 QString CBdd::mod_i2cAfficheur(QString addrI2C, QString message)
 {
     verifierParamsConnexion();
@@ -178,12 +172,6 @@ QString CBdd::mod_i2cParking(QString addrI2C, QString etats)
     qDebug() << adrI2C;
     return adrI2C;
 }
-
-
-
-
-
-
 
 QString CBdd::del_i2cAfficheur(QString addrI2C)
 {

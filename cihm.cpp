@@ -15,7 +15,6 @@ CIhm::CIhm(QWidget *parent) :
     int cpt = _app->getCpt();
 
     ui->lcdNumber->display(cpt);
-
     /*Connect des signaux de CApp vers CIhm*/
 
     connect(_app, &CApp::sig_erreur, this, &CIhm::on_erreur);

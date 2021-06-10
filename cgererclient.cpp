@@ -34,7 +34,7 @@ void CGererClient::on_goGestionClient()
 
         emit sig_info("IP Local="+_localAddress.toString()+" Port="+QString::number(_localPort));
         emit sig_info("CGererClient::on_goGestionClient : Connexion de IP="+_hostAddress.toString()
-                     +" Port="+QString::number(_peerPort)); //affichage dans l'Ihm
+                      +" Port="+QString::number(_peerPort)); //affichage dans l'Ihm
 
         //signaux de fonctionnement de la socket
         connect(_sock, &QTcpSocket::readyRead, this, &CGererClient::on_readyRead);
@@ -193,31 +193,37 @@ QByteArray CGererClient::read(int ordre)
         emit sig_info("Requette lecture éclairage");
         Addr1wordInt = Addr1wordInt-32;
         nbrEclair = _zdc->getNbEclairage();
-        for (uint8_t i=0; i<nbrOfWordsInt && nbrEclair > i && nbrEclair >= Addr1wordInt+1 + i ;i++) {
-            if (!_zdc->getPresence(i+Addr1wordInt)) dataInt+=1;
-            if (!_zdc->getCellule(i+Addr1wordInt)) dataInt+=2;
+        for (uint8_t i=0; i < nbrOfWordsInt ;i++) {
 
-            value[0] = _zdc->getLampFonct(i+Addr1wordInt);
-            bit[0] = value[0]%2;
-            for (int i=0; i!=7; i++) {
-                value[i+1] = (value[i]-bit[i])/2;
-                bit[i+1] = value[i+1]%2;
+            if (nbrEclair > i + Addr1wordInt ){
+                if (!_zdc->getPresence(i+Addr1wordInt)) dataInt+=1;
+                if (!_zdc->getCellule(i+Addr1wordInt)) dataInt+=2;
+
+                value[0] = _zdc->getLampFonct(i+Addr1wordInt);
+                bit[0] = value[0]%2;
+                for (int i=0; i!=7; i++) {
+                    value[i+1] = (value[i]-bit[i])/2;
+                    bit[i+1] = value[i+1]%2;
+                }
+
+                if (bit[2] == 1) dataInt+=4;
+                if (bit[3] == 1) dataInt+=8;
+                if (bit[4] == 1) dataInt+=16;
+                if (bit[5] == 1) dataInt+=32;
+                if (bit[6] == 1) dataInt+=64;
+                if (bit[7] == 1) dataInt+=128;
+
+                dataCalcString = QString::number( dataInt, 16 ).toUpper();
+                dataCalcArray = dataCalcString.toLatin1();
+                if (dataCalcArray.size() == 1) data += "000";
+                if (dataCalcArray.size() == 2) data += "00";
+                if (dataCalcArray.size() == 3) data += "0";
+                data += dataCalcArray;
+                dataInt = 0;
+
+            }else {
+                data += "-ABS";
             }
-
-            if (bit[2] == 1) dataInt+=4;
-            if (bit[3] == 1) dataInt+=8;
-            if (bit[4] == 1) dataInt+=16;
-            if (bit[5] == 1) dataInt+=32;
-            if (bit[6] == 1) dataInt+=64;
-            if (bit[7] == 1) dataInt+=128;
-
-            dataCalcString = QString::number( dataInt, 16 ).toUpper();
-            dataCalcArray = dataCalcString.toLatin1();
-            if (dataCalcArray.size() == 1) data += "000";
-            if (dataCalcArray.size() == 2) data += "00";
-            if (dataCalcArray.size() == 3) data += "0";
-            data += dataCalcArray;
-            dataInt = 0;
         }
     }
         break;

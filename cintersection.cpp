@@ -27,7 +27,7 @@ void CIntersection::onInter()
     unsigned char inter[2];
     _i2c->lire(addr, inter, 2); // Lecture
 
-    _bdd->set_i2cIntersection(QString(addr), "0", "0", "0", "0", "0");
+    //_bdd->set_i2cIntersection(QString(addr), "0", "0", "0", "0", "0");
 
     U_READ octet;
     octet.octet = inter[0];//1er octet
@@ -39,7 +39,7 @@ void CIntersection::onInter()
     _zdc->setInterEtat2(octet.partie.bitCouleurs);
     _zdc->setBoutonPietonVoie2(octet.partie.bitBoutons);
 
-    _bdd->mod_i2cIntersection(QString(addr), QString(_zdc->getEtatMode()), QString(_zdc->getBoutonPietonVoie1()), QString(_zdc->getBoutonPietonVoie2()), QString(_zdc->getInterEtat1()), QString(_zdc->getInterEtat2()));
+    //_bdd->mod_i2cIntersection(QString(addr), QString(_zdc->getEtatMode()), QString(_zdc->getBoutonPietonVoie1()), QString(_zdc->getBoutonPietonVoie2()), QString(_zdc->getInterEtat1()), QString(_zdc->getInterEtat2()));
 
     //WRITE
     uint8_t mode = _zdc->getModeVoies();
