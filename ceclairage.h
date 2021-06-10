@@ -5,6 +5,7 @@
 
 #include "czdc.h"
 #include "ci2c.h"
+#include "cbdd.h"
 
 #define ORDRE_RECU 128
 
@@ -28,6 +29,7 @@ public:
 private:
     CI2c *_i2c;
     CZdc *_zdc;
+    CBdd *_bdd;
 
 signals:
     void sigEclair(int addr, int nb, int addr_base);

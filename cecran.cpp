@@ -15,6 +15,7 @@ CEcran::~CEcran()
     clear();
     setColorOff();
     CI2c::freeInstance();
+    _bdd->del_i2cAfficheur(QString(LCD_ADDRESS));
 }
 
 void CEcran::begin(int lines, int dotsize)
@@ -249,7 +250,7 @@ void CEcran::setColor(unsigned char color)
 
 void CEcran::onEcran(QString nb)
 {
-    begin();
+    _bdd->set_i2cAfficheur("62"," ");
     setColor(WHITE);//Default color
     switch(nb.toInt(nullptr, 10)){
     case 3 ... 8:
@@ -265,6 +266,6 @@ void CEcran::onEcran(QString nb)
     setCursor(0, 1);
     QString inf = _zdc->getLigneInf();//Lecture de la deuxième ligne dans la ZDC
     ecrire(inf);
-
+    _bdd->mod_i2cAfficheur("62", sup+inf);
     emit sigRestart();
 }

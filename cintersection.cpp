@@ -16,6 +16,7 @@ CIntersection::CIntersection(CZdc *zdc, QObject *parent) :  QObject(parent)
 CIntersection::~CIntersection()
 {
     CI2c::freeInstance();
+    _bdd->del_i2cIntersection(QString(_zdc->getAddrInter()));
 }
 
 void CIntersection::onInter()
@@ -26,6 +27,8 @@ void CIntersection::onInter()
     unsigned char inter[2];
     _i2c->lire(addr, inter, 2); // Lecture
 
+    _bdd->set_i2cIntersection(QString(addr), "0", "0", "0", "0", "0");
+
     U_READ octet;
     octet.octet = inter[0];//1er octet
     _zdc->setEtatMode(octet.partie.bitMode);
@@ -35,6 +38,8 @@ void CIntersection::onInter()
     octet.octet = inter[1];//2ème octet
     _zdc->setInterEtat2(octet.partie.bitCouleurs);
     _zdc->setBoutonPietonVoie2(octet.partie.bitBoutons);
+
+    _bdd->mod_i2cIntersection(QString(addr), QString(_zdc->getEtatMode()), QString(_zdc->getBoutonPietonVoie1()), QString(_zdc->getBoutonPietonVoie2()), QString(_zdc->getInterEtat1()), QString(_zdc->getInterEtat2()));
 
     //WRITE
     uint8_t mode = _zdc->getModeVoies();

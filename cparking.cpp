@@ -15,11 +15,13 @@ CParking::CParking(CZdc *zdc, QObject *parent) : QObject(parent)
 CParking::~CParking()
 {
     CI2c::freeInstance();
+    _bdd->del_i2cParking(QString(_zdc->getAddrPark()));
 }
 
 void CParking::onPark()
 {
     unsigned char addr = static_cast<unsigned char>(_zdc->getAddrPark());
+    _bdd->set_i2cParking(QString(addr), "0");
 
     unsigned char parking[11];
     QByteArray RFIDe;
@@ -28,6 +30,8 @@ void CParking::onPark()
     _i2c->lire(addr, parking, 11); // Lecture
     T_PARK_STATE *parkState;
     parkState = reinterpret_cast<T_PARK_STATE *>(&parking[0]);
+
+    _bdd->mod_i2cParking(QString(addr), QString(parkState->bitsStates));
     _zdc->setEtatsBarrieres(parkState->bitsStates);
 
     RFIDe = QByteArray(reinterpret_cast<char *>(parking+1), 5); //Conversion de unsigned char * vers QByteArray

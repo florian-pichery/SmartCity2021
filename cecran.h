@@ -7,6 +7,7 @@
 
 #include "czdc.h"
 #include "ci2c.h"
+#include "cbdd.h"
 
 // Device I2C Adresses
 #define LCD_ADDRESS     0x3e
@@ -103,6 +104,7 @@ public:
 private:
     CI2c *_i2c;
     CZdc *_zdc;
+    CBdd *_bdd;
     void send(int, int);
     void setReg(unsigned char adr, unsigned char data);
     int m_displayfunction;

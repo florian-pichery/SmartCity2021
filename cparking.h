@@ -10,6 +10,7 @@
 
 #include "czdc.h"
 #include "ci2c.h"
+#include "cbdd.h"
 
 typedef struct{         //LSB vers MSB
     uint8_t bitsStates : 8;// 7:ButtUrgExit 6:ButtUrgEntr 5:PersEntr 4: PersExit
@@ -26,6 +27,7 @@ public:
 private:
     CI2c *_i2c;
     CZdc *_zdc;
+    CBdd *_bdd;
 
 signals:
     void sigEcran(QString nb);

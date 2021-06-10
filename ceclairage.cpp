@@ -19,6 +19,9 @@ CEclairage::CEclairage(CZdc *zdc, QObject *parent) : QObject(parent)
 CEclairage::~CEclairage()
 {
     CI2c::freeInstance();
+    for(int i = 0; i < _zdc->getNbEclairage(); i++){
+        _bdd->del_i2cEclairage(QString(_zdc->getAddrEclair()+i));
+    }
 }
 
 void CEclairage::on_sigEclair(int addr, int nb, int addr_base)
@@ -30,6 +33,8 @@ void CEclairage::on_sigEclair(int addr, int nb, int addr_base)
         return;
     }//if addr
 
+    _bdd->set_i2cEclairage(QString(addr), "0", "0", "0", "6");
+
     U_LAMP octet;
     _i2c->lire(static_cast<unsigned char>(addr), &octet.octet, 1); // Lecture
 
@@ -39,6 +44,7 @@ void CEclairage::on_sigEclair(int addr, int nb, int addr_base)
     _zdc->setPresence(indice, octet.partie.bitPresence);
     _zdc->setLampFonct(indice, octet.partie.bitLamps);
 
+
     unsigned char ordre = _zdc->getConsigneEclair(indice);
     ordre |= ORDRE_RECU;
 
@@ -47,6 +53,8 @@ void CEclairage::on_sigEclair(int addr, int nb, int addr_base)
         _i2c->ecrire(static_cast<unsigned char>(addr), &ordre, 1);
         _zdc->setConsigneEclair(indice, ordre);
     }
+
+    _bdd->mod_i2cEclairage(QString(addr), QString(ordre), QString(octet.partie.bitPresence), QString(octet.partie.bitPresence), QString(octet.partie.bitLamps));
 
     addr = addr + 1;
 

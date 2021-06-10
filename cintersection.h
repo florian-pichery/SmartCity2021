@@ -10,6 +10,7 @@
 
 #include "czdc.h"
 #include "ci2c.h"
+#include "cbdd.h"
 
 //READ//
 
@@ -55,6 +56,7 @@ public:
 private:
     CI2c *_i2c;
     CZdc *_zdc;
+    CBdd *_bdd;
     U_WRITE uw;
     unsigned char ancienOctet;
 
