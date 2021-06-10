@@ -4,7 +4,7 @@
 #define AUCUN_ORDRE 4
 #define ORDRE_RECU 128
 #define ACK 128
-#define MODE_MANUEL 130
+#define MODE_MANUEL 2
 
 #include <QObject>
 
@@ -55,6 +55,8 @@ public:
 private:
     CI2c *_i2c;
     CZdc *_zdc;
+    U_WRITE uw;
+    unsigned char ancienOctet;
 
 signals:
     void sigRestart();

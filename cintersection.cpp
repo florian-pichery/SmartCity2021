@@ -4,11 +4,13 @@ CIntersection::CIntersection(CZdc *zdc, QObject *parent) :  QObject(parent)
 {
     _zdc = zdc;
     _i2c = CI2c::getInstance(this, '1');
-//    //Init
-//    _zdc->setModeVoies(2);
-//    _zdc->setOrdresFeu1(3);
-//    _zdc->setOrdresFeu2(1);
-//    //Fin Init
+    _zdc->setModeVoies(1);
+    uw.octet = 1;
+    ancienOctet = 128;
+    //    //TEST
+    //    _zdc->setOrdresFeu1(3);
+    //    _zdc->setOrdresFeu2(3);
+    //    //Fin TEST
 }
 
 CIntersection::~CIntersection()
@@ -36,33 +38,42 @@ void CIntersection::onInter()
 
     //WRITE
     uint8_t mode = _zdc->getModeVoies();
-    uint8_t couleur1 = _zdc->getOrdresFeu1();
-    uint8_t couleur2 = _zdc->getOrdresFeu2();
-//    mode += ACK; // Version de test
-//    couleur1 += ACK; //Test
-//    couleur2 += ACK; //Test
-    U_WRITE uw;
-    uw.octet = 0;
+    //    mode += ACK; // Version de test
+    //    couleur1 += ACK; //Test
+    //    couleur2 += ACK; //Test
 
-   if(mode != MODE_MANUEL){
-        uw.partie.bitMode = mode - ACK;
-        _i2c->ecrire(addr, &uw.octet, 1);
-        _zdc->setModeVoies(uw.octet - ACK);
-    }//IF mode =/ manuel
-
-    else{
-        uw.partie.bitMode = mode - ACK;
+    if(mode >= ACK){
+        mode &= ~ACK;
+        uint8_t couleur1 = _zdc->getOrdresFeu1();
+        uint8_t couleur2 = _zdc->getOrdresFeu2();
+        uw.partie.bitMode = mode;
         if(couleur1 >= ACK){
             uw.partie.bitCouleurs1 = couleur1 - ACK;
         }//IF changement couleur voie1
-        if(couleur2 > ACK){
+        if(couleur2 >= ACK){
             uw.partie.bitCouleurs2 = couleur2 - ACK;
         }//IF changement couleur voie2
-        _i2c->ecrire(addr, &uw.octet, 1);
-        _zdc->setModeVoies(uw.octet - uw.partie.bitCouleurs2);
-        _zdc->setOrdresFeu1(uw.octet - (uw.partie.bitMode + uw.partie.bitCouleurs2));
-        _zdc->setOrdresFeu2(uw.octet - (uw.partie.bitMode + uw.partie.bitCouleurs1));
-    }//IF Mode manuel
 
+        if(mode != MODE_MANUEL){
+            uw.partie.bitMode = mode;
+
+            if(uw.octet != ancienOctet){
+                _i2c->ecrire(addr, &uw.octet, 1);
+                qDebug() << uw.octet;
+                _zdc->setModeVoies(uw.octet);
+                ancienOctet = uw.octet;
+            }//IF nouvel octet != ancien octet
+        }//IF mode != manuel
+        else{
+            if(uw.octet != ancienOctet){
+                _i2c->ecrire(addr, &uw.octet, 1);
+                _zdc->setModeVoies(uw.partie.bitMode);
+                _zdc->setOrdresFeu1(uw.partie.bitCouleurs1);
+                _zdc->setOrdresFeu2(uw.partie.bitCouleurs2);
+                ancienOctet = uw.octet;
+            }//IF nouvel octet != ancien octet
+        }//IF Mode manuel
+    }//IF Ordre
+    sleep(1);
     emit sigRestart();
 }//OnInter

@@ -45,9 +45,9 @@ private slots:
     void on_cb_100_clicked(bool checked);
 //Fin Eclairage
 //Intersection
-    void on_cb_auto_clicked(bool checked);
-    void on_cb_cligno_clicked(bool checked);
-    void on_cb_manuel_clicked(bool checked);
+    void on_rbAuto_clicked(bool checked);
+    void on_rbCligno_clicked(bool checked);
+    void on_rbManu_clicked(bool checked);
     void on_comboBoxVoie1_currentIndexChanged(int index);
     void on_comboBoxVoie2_currentIndexChanged(int index);
 //Fin Intersection

@@ -31,17 +31,17 @@ void CParking::onPark()
     _zdc->setEtatsBarrieres(parkState->bitsStates);
 
     RFIDe = QByteArray(reinterpret_cast<char *>(parking+1), 5); //Conversion de unsigned char * vers QByteArray
-    qDebug() << RFIDe;
+    //qDebug() << RFIDe;
     _zdc->setRfidE(RFIDe);
 
     RFIDs = QByteArray(reinterpret_cast<char *>(parking+6), 5);
-    qDebug() << RFIDs;
+    //qDebug() << RFIDs;
     _zdc->setRfidS(RFIDs);
 
     usleep(200);
-    //emit sigRestart();
+    emit sigRestart();
 
-    emit sigEcran(static_cast<QString>(_zdc->getCpt()));
+    //emit sigEcran(static_cast<QString>(_zdc->getCpt()));
 
     uint8_t order = _zdc->getOrdreBarrieres();
     if(order >= 128){

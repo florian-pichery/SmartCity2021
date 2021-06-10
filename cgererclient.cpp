@@ -34,7 +34,7 @@ void CGererClient::on_goGestionClient()
 
         emit sig_info("IP Local="+_localAddress.toString()+" Port="+QString::number(_localPort));
         emit sig_info("CGererClient::on_goGestionClient : Connexion de IP="+_hostAddress.toString()
-                     +" Port="+QString::number(_peerPort)); //affichage dans l'Ihm
+                      +" Port="+QString::number(_peerPort)); //affichage dans l'Ihm
 
         //signaux de fonctionnement de la socket
         connect(_sock, &QTcpSocket::readyRead, this, &CGererClient::on_readyRead);
@@ -338,8 +338,12 @@ bool CGererClient::write(int ordre)
 
     case 7://Intersection
         emit sig_info("Requette ecriture intersection.");
-        if (bit[0] == 0 && bit[1] == 0) _zdc->setModeVoies(128);//orange clignotant
-        if (bit[0] == 1 && bit[1] == 0) _zdc->setModeVoies(128+1);//auto
+        if ( (bit[0] == 0 && bit[1] == 0) || (bit[0] == 1 && bit[1] == 0) ){
+            _zdc->setOrdresFeu1(128);
+            _zdc->setOrdresFeu2(128);
+        }//eteint si auto ou orange clignotant
+        if (bit[0] == 0 && bit[1] == 0)_zdc->setModeVoies(128);//orange clignotant
+        if (bit[0] == 1 && bit[1] == 0)_zdc->setModeVoies(128+1);//auto
         if (bit[0] == 0 && bit[1] == 1) {//manuel
             _zdc->setModeVoies(128+2);
             if (bit[6] == 1){

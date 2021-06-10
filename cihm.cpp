@@ -12,9 +12,6 @@ CIhm::CIhm(QWidget *parent) :
     ui->teInter->setText("Mode des voies\nCouleur de la voie 1\nCouleur de la voie 2");
     ui->tePark->setText("Action sur la barrière d'entrée\nAction sur la barrière de sortie");
 
-    ui->comboBoxVoie1->setEnabled(false);
-    ui->comboBoxVoie2->setEnabled(false);
-
     int cpt = _app->getCpt();
 
     ui->lcdNumber->display(cpt);
@@ -146,20 +143,20 @@ void CIhm::on_cb_0_clicked(bool checked)
 
         _app->setConsigne(0); //appel de la fonction dans CApp
 
-       ui->cb_50->setEnabled(false);//Quand cb_0 coché, cb_50 pas cochable.
-       ui->cb_100->setEnabled(false);//La même chose pour cb_100.
+        ui->cb_50->setEnabled(false);//Quand cb_0 coché, cb_50 pas cochable.
+        ui->cb_100->setEnabled(false);//La même chose pour cb_100.
     }else{
-       ui->cb_50->setEnabled(true);//Quand décoché, rend cochable les autres
-       ui->cb_100->setEnabled(true);
-       const int lineToDelete = 0; // Pour supprimer la première ligne
-       QTextBlock b = ui->teEclair->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("Puissance d'éclairage");
+        ui->cb_50->setEnabled(true);//Quand décoché, rend cochable les autres
+        ui->cb_100->setEnabled(true);
+        const int lineToDelete = 0; // Pour supprimer la première ligne
+        QTextBlock b = ui->teEclair->document()->findBlockByLineNumber(lineToDelete);
+        if (b.isValid()) {
+            QTextCursor cursor(b);
+            cursor.select(QTextCursor::BlockUnderCursor);
+            cursor.removeSelectedText();
+            cursor.insertText("Puissance d'éclairage");
+        }
     }
-  }
 }
 
 void CIhm::on_cb_50_clicked(bool checked)
@@ -168,20 +165,20 @@ void CIhm::on_cb_50_clicked(bool checked)
 
         _app->setConsigne(1);
 
-       ui->cb_0->setEnabled(false);
-       ui->cb_100->setEnabled(false);
+        ui->cb_0->setEnabled(false);
+        ui->cb_100->setEnabled(false);
     }else{
-       ui->cb_0->setEnabled(true);
-       ui->cb_100->setEnabled(true);
-       const int lineToDelete = 0; // Pour supprimer la première ligne
-       QTextBlock b = ui->teEclair->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("Puissance d'éclairage");
+        ui->cb_0->setEnabled(true);
+        ui->cb_100->setEnabled(true);
+        const int lineToDelete = 0; // Pour supprimer la première ligne
+        QTextBlock b = ui->teEclair->document()->findBlockByLineNumber(lineToDelete);
+        if (b.isValid()) {
+            QTextCursor cursor(b);
+            cursor.select(QTextCursor::BlockUnderCursor);
+            cursor.removeSelectedText();
+            cursor.insertText("Puissance d'éclairage");
+        }
     }
-  }
 }
 
 
@@ -191,110 +188,61 @@ void CIhm::on_cb_100_clicked(bool checked)
 
         _app->setConsigne(2);
 
-       ui->cb_0->setEnabled(false);
-       ui->cb_50->setEnabled(false);
+        ui->cb_0->setEnabled(false);
+        ui->cb_50->setEnabled(false);
     }else{
-       ui->cb_0->setEnabled(true);
-       ui->cb_50->setEnabled(true);
-       const int lineToDelete = 0; // Pour supprimer la première ligne
-       QTextBlock b = ui->teEclair->document()->findBlockByLineNumber(lineToDelete);
-       if (b.isValid()) {
-           QTextCursor cursor(b);
-           cursor.select(QTextCursor::BlockUnderCursor);
-           cursor.removeSelectedText();
-           cursor.insertText("Puissance d'éclairage");
+        ui->cb_0->setEnabled(true);
+        ui->cb_50->setEnabled(true);
+        const int lineToDelete = 0; // Pour supprimer la première ligne
+        QTextBlock b = ui->teEclair->document()->findBlockByLineNumber(lineToDelete);
+        if (b.isValid()) {
+            QTextCursor cursor(b);
+            cursor.select(QTextCursor::BlockUnderCursor);
+            cursor.removeSelectedText();
+            cursor.insertText("Puissance d'éclairage");
+        }
     }
-  }
 }
 //Fin partie Éclairage
 
 //Partie intersection
-
-void CIhm::on_cb_auto_clicked(bool checked)
-{
-    if(checked == true){
-        _app->setMode(1);//définir le mode sur 01 : Auto
-
-        //Empêche de cliquer sur les autres boutons (étant en automatique)
-        ui->cb_manuel->setEnabled(false);
-        ui->cb_cligno->setEnabled(false);
-    }else {
-        ui->cb_manuel->setEnabled(true);
-        ui->cb_cligno->setEnabled(true);
-        const int lineToDelete = 0; // Pour supprimer la première ligne
-        QTextBlock b = ui->teInter->document()->findBlockByLineNumber(lineToDelete);
-        if (b.isValid()) {
-            QTextCursor cursor(b);
-            cursor.select(QTextCursor::BlockUnderCursor);
-            cursor.removeSelectedText();
-            cursor.insertText("Mode des voies");
-        }
-    }
-}
-
-void CIhm::on_cb_cligno_clicked(bool checked)
+void CIhm::on_rbCligno_clicked(bool checked)
 {
     if(checked == true){
         _app->setMode(0);//définir le mode sur 00 : Orange Clignotant
-
-        ui->cb_auto->setEnabled(false);
-        ui->cb_manuel->setEnabled(false);
-    }else {
-        ui->cb_manuel->setEnabled(true);
-        ui->cb_auto->setEnabled(true);
-        const int lineToDelete = 0; // Pour supprimer la première ligne
-        QTextBlock b = ui->teInter->document()->findBlockByLineNumber(lineToDelete);
-        if (b.isValid()) {
-            QTextCursor cursor(b);
-            cursor.select(QTextCursor::BlockUnderCursor);
-            cursor.removeSelectedText();
-            cursor.insertText("Mode des voies");
-        }
     }
 }
 
-void CIhm::on_cb_manuel_clicked(bool checked)
+void CIhm::on_rbAuto_clicked(bool checked)
+{
+    if(checked == true){
+        _app->setMode(1);//définir le mode sur 01 : Auto
+    }
+}
+void CIhm::on_rbManu_clicked(bool checked)
 {
     if(checked == true){
         _app->setMode(2);
-
-        ui->cb_auto->setEnabled(false);
-        ui->cb_cligno->setEnabled(false);
-        ui->comboBoxVoie1->setEnabled(true);
-        ui->comboBoxVoie2->setEnabled(true);
-    }else {
-        ui->cb_auto->setEnabled(true);
-        ui->cb_cligno->setEnabled(true);
-        ui->comboBoxVoie1->setEnabled(false);
-        ui->comboBoxVoie2->setEnabled(false);
-        const int lineToDelete = 0; // Pour supprimer la première ligne
-        QTextBlock b = ui->teInter->document()->findBlockByLineNumber(lineToDelete);
-        if (b.isValid()) {
-            QTextCursor cursor(b);
-            cursor.select(QTextCursor::BlockUnderCursor);
-            cursor.removeSelectedText();
-            cursor.insertText("Mode des voies");
-        }
     }
 }
 
 void CIhm::on_comboBoxVoie1_currentIndexChanged(int index)
 {
-   switch(index){
-    case 0 : _app->setInterOrdre1(0); break;
-    case 1 : _app->setInterOrdre1(1); break;
-    case 2 : _app->setInterOrdre1(2); break;
-    case 3 : _app->setInterOrdre1(3); break;
-   }
+    switch(index){
+    case 0 : _app->setInterOrdre1(0+ACK); break;
+    case 1 : _app->setInterOrdre1(1+ACK); break;
+    case 2 : _app->setInterOrdre1(2+ACK); break;
+    case 3 : _app->setInterOrdre1(3+ACK); break;
+    }
 }
 
 void CIhm::on_comboBoxVoie2_currentIndexChanged(int index)
 {
     switch(index){
-     case 0 : _app->setInterOrdre2(0); break;
-     case 1 : _app->setInterOrdre2(1); break;
-     case 2 : _app->setInterOrdre2(2); break;
-     case 3 : _app->setInterOrdre2(3); break;
+    case 0 : _app->setInterOrdre2(0+ACK); break;
+    case 1 : _app->setInterOrdre2(1+ACK); break;
+    case 2 : _app->setInterOrdre2(2+ACK); break;
+    case 3 : _app->setInterOrdre2(3+ACK); break;
     }
 }
 
@@ -398,9 +346,9 @@ void CIhm::on_leInf_returnPressed()
 
 void CIhm::on_pbPlus_clicked()
 {
-   _app->setCptPlus();
-   int cpt = _app->getCpt();
-   ui->lcdNumber->display(cpt);
+    _app->setCptPlus();
+    int cpt = _app->getCpt();
+    ui->lcdNumber->display(cpt);
 }
 
 void CIhm::on_pbMoins_clicked()

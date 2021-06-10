@@ -87,7 +87,7 @@ bool CModbusTcp::verifier()
     uint16_t crc16Calc = calculCrc16(_tc);//on calcule le crc de la trame
     if (crc16 != crc16Calc){
         emit sig_erreur("CRC16 mauvais, crc recupéré = "+QString::number(crc16)
-                              +" crc calculé = "+QString::number(crc16Calc));
+                        +" crc calculé = "+QString::number(crc16Calc));
         return 0;
     }//test CRC
 

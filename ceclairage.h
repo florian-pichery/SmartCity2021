@@ -33,6 +33,7 @@ signals:
     void sigEclair(int addr, int nb, int addr_base);
     void sigParking();
     void sigInter();
+    void sigRestart();
 
 public slots:
     void on_sigEclair(int addr, int nb, int addr_base);
