@@ -80,7 +80,7 @@ bool CModbusTcp::verifier()
     uint16_t crc16Calc = calculCrc16(_tc);//on calcule le crc de la trame
     if (crc16 != crc16Calc){
         emit sig_erreur("CRC16 mauvais, crc recupéré = "+QString::number(crc16)
-                      +" crc calculé = "+QString::number(crc16Calc));
+                        +" crc calculé = "+QString::number(crc16Calc));
         return 0;
     }//test CRC
     QByteArray transIdent = takeCharacter(4);
@@ -100,7 +100,7 @@ bool CModbusTcp::verifier()
     uint Uint_lenght = valueOf(lenght);
     if (static_cast<int>(Uint_lenght) != _tc.size()+2+4+4+4+4) {
         emit sig_erreur("La taille recupérée est mauvaise, taille récupérée = "+QString::number(Uint_lenght)
-                      +", taille calculée = "+QString::number(_tc.size()+2+4+4+4+4));
+                        +", taille calculée = "+QString::number(_tc.size()+2+4+4+4+4));
         return 0;
     }//test taille
 

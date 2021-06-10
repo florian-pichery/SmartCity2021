@@ -203,9 +203,9 @@ int CEcran::ecrire(QString text)
 {
     for(int i=0;i<text.length();i++)
     {
-       unsigned char data[2] = {0x40, (unsigned char)(text.at(i).toLatin1())};
-       _i2c->ecrire(LCD_ADDRESS, data, 2);
-       QThread::msleep(10);
+        unsigned char data[2] = {0x40, (unsigned char)(text.at(i).toLatin1())};
+        _i2c->ecrire(LCD_ADDRESS, data, 2);
+        QThread::msleep(10);
     }
     return 1; // assume sucess
 }
@@ -266,5 +266,5 @@ void CEcran::onEcran(QString nb)
     QString inf = _zdc->getLigneInf();//Lecture de la deuxième ligne dans la ZDC
     ecrire(inf);
 
-    emit sigInter();
+    emit sigRestart();
 }

@@ -116,6 +116,7 @@ signals:
     void sigErreur(QString mess);
     void sigInter();
     void sigEcran();
+    void sigRestart();
 
 public slots:
     void onErreur(QString mess);

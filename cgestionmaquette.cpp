@@ -9,15 +9,20 @@ CGestionMaquette::CGestionMaquette()
     _inter = new CIntersection(_zdc, nullptr);
 
     connect(this, &CGestionMaquette::sigEclair, _eclair, &CEclairage::on_sigEclair);
-    connect(_eclair, &CEclairage::sigParking, _park, &CParking::onPark);
-    connect(_park, &CParking::sigEcran, _ecran, &CEcran::onEcran);
-    connect(_ecran, &CEcran::sigInter, _inter, &CIntersection::onInter);
+    //    connect(_eclair, &CEclairage::sigParking, _park, &CParking::onPark);
+    //    connect(_park, &CParking::sigEcran, _ecran, &CEcran::onEcran);
+    //    connect(_ecran, &CEcran::sigInter, _inter, &CIntersection::onInter);
     connect(_inter, &CIntersection::sigRestart, this, &CGestionMaquette::on_go);
 
-//    connect(this, &CGestionMaquette::sigInter, _inter, &CIntersection::onInter);
+    connect(this, &CGestionMaquette::sigInter, _inter, &CIntersection::onInter);
+    connect(this, &CGestionMaquette::sigPark, _park, &CParking::onPark);
+    connect(this, &CGestionMaquette::sigEcran, _ecran, &CEcran::onEcran);
 
-//    connect(this, &CGestionMaquette::sigPark, _park, &CParking::onPark);
-//    connect(_park, &CParking::sigRestart, this, &CGestionMaquette::on_go);
+    connect(_ecran, &CEcran::sigRestart, this, &CGestionMaquette::on_go);
+    connect(_park, &CParking::sigRestart, this, &CGestionMaquette::on_go);
+    connect(_eclair, &CEclairage::sigRestart, this, &CGestionMaquette::on_go);
+
+
 
 }
 
@@ -32,12 +37,14 @@ CGestionMaquette::~CGestionMaquette()
 
 void CGestionMaquette::on_go()
 {
-//    emit sigInter();
+        emit sigInter();
 
-//    emit sigPark();
+    //    emit sigPark();
 
-//    //Eclairage : lance le cycle de l'éclairage
-    int addr = _zdc->getAddrEclair(); //Passage des adresses en int dû à des problèmes de compilation avec le uint8_t
-    int nb = _zdc->getNbEclairage();
-    emit sigEclair(addr, nb, addr);
+    //    //Eclairage : lance le cycle de l'éclairage
+    //    int addr = _zdc->getAddrEclair(); //Passage des adresses en int dû à des problèmes de compilation avec le uint8_t
+    //    int nb = _zdc->getNbEclairage();
+    //    emit sigEclair(addr, nb, addr);
+
+    //    emit sigEcran("8");
 }

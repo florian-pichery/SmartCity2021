@@ -13,7 +13,7 @@ CEclairage::CEclairage(CZdc *zdc, QObject *parent) : QObject(parent)
         _zdc->setLampFonct(i,63);//6 lampadaires fonctionnants
         _zdc->setConsigneEclair(i,4); //Éteint par défaut
     }//for
-   //Fin Init
+    //Fin Init
 }
 
 CEclairage::~CEclairage()
@@ -24,7 +24,9 @@ CEclairage::~CEclairage()
 void CEclairage::on_sigEclair(int addr, int nb, int addr_base)
 {
     if (addr > (addr_base+nb-1)){
-        emit sigParking();
+        sleep(2);
+        emit sigRestart();
+        //emit sigParking();
         return;
     }//if addr
 
