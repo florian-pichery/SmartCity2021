@@ -34,7 +34,7 @@ void CGererClient::on_goGestionClient()
 
         emit sig_info("IP Local="+_localAddress.toString()+" Port="+QString::number(_localPort));
         emit sig_info("CGererClient::on_goGestionClient : Connexion de IP="+_hostAddress.toString()
-                      +" Port="+QString::number(_peerPort)); //affichage dans l'Ihm
+                     +" Port="+QString::number(_peerPort)); //affichage dans l'Ihm
 
         //signaux de fonctionnement de la socket
         connect(_sock, &QTcpSocket::readyRead, this, &CGererClient::on_readyRead);
@@ -125,6 +125,7 @@ QByteArray CGererClient::read(int ordre)
     uint8_t nbrEclair;
     QByteArray dataCalcArray ="";
     QString dataCalcString;
+    qDebug()<<ordre;
     switch (ordre) {
 
     case 3://Parking
@@ -192,6 +193,7 @@ QByteArray CGererClient::read(int ordre)
         emit sig_info("Requette lecture éclairage");
         Addr1wordInt = Addr1wordInt-32;
         nbrEclair = _zdc->getNbEclairage();
+        qDebug()<<i<nbrOfWordsInt && nbrEclair > i && nbrEclair >= Addr1wordInt+1 + i ;
         for (uint8_t i=0; i<nbrOfWordsInt && nbrEclair > i && nbrEclair >= Addr1wordInt+1 + i ;i++) {
             if (!_zdc->getPresence(i+Addr1wordInt)) dataInt+=1;
             if (!_zdc->getCellule(i+Addr1wordInt)) dataInt+=2;
@@ -218,6 +220,7 @@ QByteArray CGererClient::read(int ordre)
             data += dataCalcArray;
             dataInt = 0;
         }
+        qDebug()<<data;
     }
         break;
     case 8://Intersection
@@ -342,8 +345,9 @@ bool CGererClient::write(int ordre)
             _zdc->setOrdresFeu1(128);
             _zdc->setOrdresFeu2(128);
         }//eteint si auto ou orange clignotant
-        if (bit[0] == 0 && bit[1] == 0)_zdc->setModeVoies(128);//orange clignotant
-        if (bit[0] == 1 && bit[1] == 0)_zdc->setModeVoies(128+1);//auto
+
+        if (bit[0] == 0 && bit[1] == 0) _zdc->setModeVoies(128);//orange clignotant
+        if (bit[0] == 1 && bit[1] == 0) _zdc->setModeVoies(128+1);//auto
         if (bit[0] == 0 && bit[1] == 1) {//manuel
             _zdc->setModeVoies(128+2);
             if (bit[6] == 1){
