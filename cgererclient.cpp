@@ -193,7 +193,6 @@ QByteArray CGererClient::read(int ordre)
         emit sig_info("Requette lecture éclairage");
         Addr1wordInt = Addr1wordInt-32;
         nbrEclair = _zdc->getNbEclairage();
-        qDebug()<<i<nbrOfWordsInt && nbrEclair > i && nbrEclair >= Addr1wordInt+1 + i ;
         for (uint8_t i=0; i<nbrOfWordsInt && nbrEclair > i && nbrEclair >= Addr1wordInt+1 + i ;i++) {
             if (!_zdc->getPresence(i+Addr1wordInt)) dataInt+=1;
             if (!_zdc->getCellule(i+Addr1wordInt)) dataInt+=2;
@@ -220,7 +219,6 @@ QByteArray CGererClient::read(int ordre)
             data += dataCalcArray;
             dataInt = 0;
         }
-        qDebug()<<data;
     }
         break;
     case 8://Intersection
