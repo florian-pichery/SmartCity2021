@@ -3,14 +3,13 @@
 
 CGererClient::CGererClient(qintptr sd, QObject *parent) : QObject(parent)
 {
-    _sd = sd;
+    _sd = sd;//Descripteur de la socket
     _zdc = new CZdc;
 }
 
 CGererClient::~CGererClient()
 {
     delete _zdc;
-    emit sig_info("GCererClient::~CGererClient : destruction !");
     _sock->close();
     delete _modbus;
     delete _sock;
@@ -19,6 +18,7 @@ CGererClient::~CGererClient()
 
 void CGererClient::on_goGestionClient()
 {
+    //départ gestion du client
     _modbus = new CModbusTcp;
     connect(_modbus, &CModbusTcp::sig_info, this, &CGererClient::on_info);
     connect(_modbus, &CModbusTcp::sig_erreur, this, &CGererClient::on_erreur);
@@ -56,6 +56,7 @@ void CGererClient::on_goGestionClient()
 
 void CGererClient::on_readyRead()
 {
+    //à la reception d'un message venant du client
     QTcpSocket *client = static_cast<QTcpSocket *>(sender()); //on détermine qui envoie le message
     qint64 nb = client->bytesAvailable();// aquisition du nombre d'octets reçus
     QByteArray trameClient=client->readAll();// lecture de la trame qui nous est retourné en ASCII
@@ -67,14 +68,14 @@ void CGererClient::on_readyRead()
 
     switch(commande){
 
-    case -1:    //si mal passé
+    case -1:    //si trame ne possède pas de ':' délimitant les début et fin de trame
         emit sig_erreur("CGererClient::on_readyRead : Erreur dans le format de la trame, requette supprimée");
         _modbus->deleteTc();
         break;
 
     case 0:     //si trame non complète
         part += 1;
-        emit sig_erreur("Trame incomplète, attente de la "+QByteArray::number(part)+"ème partie de la requette.");
+        emit sig_info("Trame incomplète, attente de la "+QByteArray::number(part)+"ème partie de la requette.");
         break;
 
     case 1:     //trame complète
@@ -153,12 +154,37 @@ QByteArray CGererClient::read(int ordre)
     case 4://RFID
     {
         emit sig_info("Requette lecture RFID");
-        QByteArray rfidE = _zdc->getRfidE();
-        QByteArray rfidS = _zdc->getRfidS();
-        data += "00";
+        QByteArray rfidE = "00";
+        QByteArray rfidS = "00";
+        QByteArray GetRfidE = _zdc->getRfidE();
+        QByteArray GetRfidS = _zdc->getRfidS();
+        qDebug()<<GetRfidE;
+
+        uint UintrfidE[5];
+        uint UintrfidS[5];
+        QByteArray QrfidE[5];
+        QByteArray QrfidS[5];
+
+        for(int i = 0; i != 5; i++){
+            UintrfidE[i] = QString(GetRfidE.left(2)).toUInt(nullptr,16);
+            GetRfidE = GetRfidE.right(GetRfidE.size()-2);
+            QrfidE[i] = QString::number( UintrfidE[i], 16 ).toUpper().toLatin1();
+            if(QrfidE[i].size()==1) rfidE += "0";
+            if(QrfidE[i].size()==0) rfidE += "00";
+            rfidE += QrfidE[i];
+        }
         data+= rfidE.toUpper();
-        data += "00";
+
+        for(int i = 0; i != 5 ; i++){
+            UintrfidS[i] = QString(GetRfidS.left(2)).toUInt(nullptr,16);
+            GetRfidS = GetRfidS.right(GetRfidS.size()-2);
+            QrfidS[i] = QString::number( UintrfidS[i], 16 ).toUpper().toLatin1();
+            if(QrfidS[i].size()==1) rfidS += "0";
+            if(QrfidS[i].size()==0) rfidS += "00";
+            rfidS += QrfidS[i];
+        }
         data+= rfidS.toUpper();
+        qDebug()<<rfidE;
     }
         break;
     case 6://éclairage
@@ -234,6 +260,7 @@ QByteArray CGererClient::read(int ordre)
 
     return data;
 }
+
 
 bool CGererClient::write(int ordre)
 {

@@ -2,16 +2,17 @@
 
 CGererServeur::CGererServeur(quint16 noPort, QObject *parent) : QObject(parent)
 {
-    _noPort = noPort;
-    _addr = QHostAddress::AnyIPv4;
-    _serv = new CMonServeurTcp();
+    _noPort = noPort;//Recupere le paramètre port donné par CApp
+    _serv = new CMonServeurTcp();//instantiation de l'object serveur TCP, celui ci hérite de la classe QTcpServeur
     connect(_serv, &CMonServeurTcp::sig_sdClient, this, &CGererServeur::on_newConnection);
-    _serv->listen(_addr, _noPort);
+    _serv->listen(QHostAddress::AnyIPv4, _noPort);//écoute du serveur
 
 }
 
 CGererServeur::~CGererServeur()
-{// effacement des threads
+{
+    //destruction de l'object serveur
+    // effacement des threads
     for (int i=0 ; i<_listeThread.size() ; i++) {
         _listeThread.at(i)->quit();  // demande au thread de se terminer
         _listeThread.at(i)->wait();  // attends la fin de la boucle événements
@@ -50,6 +51,7 @@ void CGererServeur::on_newConnection(qintptr sd)
 
 void CGererServeur::on_disconnected()
 {
+    //deconnection d'un client
     CGererClient *client = static_cast<CGererClient *>(sender());
     // le signal disconnected est parfois envoyé 2 fois !!! la 2ème fois, client = 0 !
     // Alors on filtre.
@@ -68,6 +70,7 @@ void CGererServeur::on_disconnected()
     } // if 0
 }
 
+//signaux IHM
 void CGererServeur::on_erreur(QString mess)
 {
     emit sig_erreur(mess);

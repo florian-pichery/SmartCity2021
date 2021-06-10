@@ -4,7 +4,12 @@
 
 CModbusTcp::CModbusTcp(QObject *parent) : QObject(parent)
 {
-    _bdd = new CBdd;
+    /*
+    QByteArray crc16array = _tc.right(4);
+    _tc = _tc.left(_tc.size()-4);
+    QString stringCrc16 = QString::fromStdString(crc16array.data());
+    crc16 = stringCrc16.toUInt(nullptr,16);
+*/
 }
 
 CModbusTcp::~CModbusTcp()
@@ -47,8 +52,8 @@ uint8_t CModbusTcp::get_nbrOfWords()
 
 int CModbusTcp::on_trameClient(QByteArray trameClient)
 {
-    //les trames au complet contiendrons :data-crc16:
-    _tc += trameClient;
+    //methode qui permet de vérifier que la trame est au format :data:
+    _tc += trameClient;//on met la trame dans une variable commune
 
     //test et purge début trame
     int deb = _tc.indexOf(":",0); // recherche début trame
@@ -60,11 +65,11 @@ int CModbusTcp::on_trameClient(QByteArray trameClient)
     // test et purge fin de trame
     for (int i = 0; i != _tc.size(); i++) {
         u[i] = _tc.indexOf(":", i);
-        if (u[i] > u[i-1])
+        if (u[i] > u[i-1])//Sert pour prendre le dernier caractère ':' de la trame
             fin  = u[i];
     }
 
-    if (fin == -1) return 0; // on attend la suite
+    if (fin == -1) return 0; // si il n'y a pas de caractère ':' on attend la suite
     _tc.remove(fin, _tc.size()-fin);  // au cas ou, on enlève tout après la fin
     _tc.remove(0, deb+1);  // on enlève tout avant le : au cas ou
     return 1;
@@ -72,10 +77,12 @@ int CModbusTcp::on_trameClient(QByteArray trameClient)
 
 bool CModbusTcp::verifier()
 {
-    QByteArray crc16array = _tc.right(4);
-    QString stringCrc16 = QString::fromStdString(crc16array.data());
-    uint crc16 = stringCrc16.toUInt(nullptr,16);
+    //trame qui permet de vérifier que la trame respecte le protocole modbus établi
+
     //on récupere le Crc de la trame
+    QByteArray crc16array = _tc.right(4);//on prend les 4dernier caractère de la trame
+    QString stringCrc16 = QString::fromStdString(crc16array.data());
+    uint crc16 = stringCrc16.toUInt(nullptr,16);//convertion en unsigned int
     _tc = _tc.left(_tc.size()-4);//on enleve le Crc de la trame
     uint16_t crc16Calc = calculCrc16(_tc);//on calcule le crc de la trame
     if (crc16 != crc16Calc){
@@ -83,12 +90,14 @@ bool CModbusTcp::verifier()
                         +" crc calculé = "+QString::number(crc16Calc));
         return 0;
     }//test CRC
+
     QByteArray transIdent = takeCharacter(4);
     uint Uint_transIdent = valueOf(transIdent);
     if (Uint_transIdent != 1) {
         emit sig_erreur("transaction identifier mauvais");
         return 0;
     }//test transaction IDENT
+
     QByteArray protIdent = takeCharacter(4);
     uint Uint_protIdent = valueOf(protIdent);
     if (Uint_protIdent != 0) {
@@ -191,7 +200,7 @@ int CModbusTcp::decodeParking()
             return 2;//Ecriture parking
 
         default:
-            qDebug() << "erreur 1er mot" << Uint_Addr1Word;
+            emit sig_erreur("erreur 1er mot"+ QString::number(Uint_Addr1Word));
             return false;
         }
 
@@ -435,7 +444,7 @@ bool CModbusTcp::verificationMdp()
 {
     QByteArray PREidentifiant = takeCharacter(32);
     QByteArray identifiant;
-    QByteArray host = _bdd->get_idClient().toLatin1();//getter sur la base de donnée
+    QByteArray host = "";//_bdd->get_idClient().toLatin1();//getter sur la base de donnée
     if (host == "") host = "root";
     for (int i = 1;identifiant != host || PREidentifiant.left(1) != " " ; i++) {
         if (i == 32){
@@ -447,7 +456,7 @@ bool CModbusTcp::verificationMdp()
 
     QByteArray PREmotDePasse = takeCharacter(32);
     QByteArray motDePasse;
-    QByteArray mdp = _bdd->get_mdpClient().toLatin1();//getter sur la base de donnée
+    QByteArray mdp = "";//_bdd->get_mdpClient().toLatin1();//getter sur la base de donnée
     if (mdp == "") mdp = "admin";
     for (int i = 1;motDePasse!= mdp || PREmotDePasse.left(1) != " " ; i++) {
         if (i == 32){
@@ -455,14 +464,13 @@ bool CModbusTcp::verificationMdp()
         }
         motDePasse += PREmotDePasse.left(1);
         PREmotDePasse = PREmotDePasse.right(PREmotDePasse.size()-1);
-        //qDebug() << motDePasse << " : " << PREmotDePasse;
     }
-
     return true;
 }
 
 QByteArray CModbusTcp::takeCharacter(int nbOfBytes)
 {
+    //méthode qui prend un nombre de caractère donné de la trame client
     QByteArray byteArrayTaked = _tc.left(nbOfBytes); //on récupère les nbrOfBytes premiers caractère de la variable commune _tc
     _tc = _tc.right(_tc.size()-nbOfBytes); //on enleve ces caractères a la variable commune
     return byteArrayTaked;//retourne les nbOfBytes premiers caractères de _tc
@@ -470,6 +478,7 @@ QByteArray CModbusTcp::takeCharacter(int nbOfBytes)
 
 uint CModbusTcp::valueOf(QByteArray ByteArray)
 {
+    //methode qui retourne la valeur en décimale dans un unsigned int d'un QByteArray en Hexadécimal
     QString stringByteArray = QString::fromStdString(ByteArray.data());
     uint uintByteArray = stringByteArray.toUInt(nullptr,16);
     return uintByteArray;
@@ -477,6 +486,7 @@ uint CModbusTcp::valueOf(QByteArray ByteArray)
 
 uint16_t CModbusTcp::calculCrc16(QByteArray ByteArray)
 {
+    //methode qui permet de calculer le CRC16 modbus d'un QByteArray
     uint8_t nbDec;
     uint8_t yaun;
     uint8_t indice;
